@@ -3,237 +3,408 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestión de envío de visa links | Distelsa</title>
+    <title>Gestión de Envío de Visa Links</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #0056b3; --dark: #002d5e; --bg: #f4f7f6; --success: #28a745; --danger: #d9534f; --warning: #ffc107; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; }
+        :root { 
+            --p: #0f4c81; --p-h: #0a365c; --s: #10b981; --d: #ef4444; 
+            --wsp: #25D366; --n: #64748b; --bg: #f8fafc; 
+        }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); margin: 0; color: #1e293b; }
         
-        /* LOGIN ORIGINAL STYLE */
-        #loginPage { background: linear-gradient(135deg, var(--dark) 0%, var(--primary) 100%); height: 100vh; display: flex; align-items: center; justify-content: center; }
-        .login-box { background: white; padding: 40px; border-radius: 12px; width: 350px; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.4); }
+        /* PANTALLA DE LOGIN */
+        #login-screen { height: 100vh; display: flex; align-items: center; justify-content: center; background: var(--p); }
+        .login-box { background: white; padding: 40px; border-radius: 12px; width: 320px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
         
-        /* APP STYLE */
-        #appPage { display: none; }
-        header { background: var(--dark); color: white; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; }
-        .container { max-width: 1000px; margin: 20px auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-        .seccion-dinamica { background: #f9f9f9; padding: 15px; border-radius: 6px; margin-bottom: 20px; border: 1px solid #e0e0e0; }
-        .equipo-item { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 10px; margin-bottom: 10px; align-items: center; background: white; padding: 10px; border: 1px solid #ddd; border-radius: 4px; }
+        /* ANIMACIÓN DE ERROR / CAMPOS VACÍOS */
+        @keyframes blink { 50% { border-color: var(--d); background: #fff5f5; } }
+        .blink-alert { animation: blink 0.4s ease-in-out 2; border-color: var(--d) !important; }
+
+        /* CABECERA (HEADER) */
+        .header { background: white; padding: 12px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .bell-icon { font-size: 20px; cursor: pointer; position: relative; margin-right: 15px; color: var(--n); transition: transform 0.2s; }
+        .bell-icon:hover { transform: scale(1.1); }
+        .bell-dot { position: absolute; top: 0; right: 0; width: 8px; height: 8px; background: var(--d); border-radius: 50%; border: 2px solid white; }
         
-        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-        .btn-enviar { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        .badge { font-size: 10px; padding: 4px 10px; border-radius: 50px; color: white; font-weight: 800; text-transform: uppercase; margin-left: 10px; letter-spacing: 0.5px; }
+        .bg-wsp { background: var(--wsp); }
+        .bg-cc { background: var(--p); }
+        .logout-btn { background: none; border: none; color: var(--d); cursor: pointer; font-size: 11px; font-weight: bold; margin-left: 15px; text-decoration: underline; }
+
+        /* CONTENEDOR PRINCIPAL */
+        .container { max-width: 1100px; margin: 25px auto; padding: 0 20px; }
+        .card { background: white; padding: 25px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        h3 { margin: 0 0 20px 0; color: var(--p); border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; font-weight: 800; font-size: 16px; text-transform: uppercase; }
+
+        label { display: block; font-size: 11px; font-weight: 700; color: var(--n); text-transform: uppercase; margin-bottom: 6px; }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 14px; box-sizing: border-box; outline: none; transition: all 0.2s; }
+        input:focus, select:focus, textarea:focus { border-color: var(--p); box-shadow: 0 0 0 3px rgba(15, 76, 129, 0.1); }
+
+        /* SECCIÓN DE EQUIPOS */
+        .grid-eq { display: grid; grid-template-columns: 1.2fr 1fr 1fr 1.5fr 110px 50px; gap: 12px; background: #f8fafc; padding: 15px; border-radius: 8px 8px 0 0; align-items: end; border: 1px solid #e2e8f0; border-bottom: none; }
+        .btn-add { background: var(--p); color: white; border: none; height: 44px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 22px; transition: background 0.2s; }
+        .btn-add:hover { background: var(--p-h); }
+        .desc-box { background: #f8fafc; padding: 0 15px 15px; border-radius: 0 0 8px 8px; border: 1px solid #e2e8f0; border-top: none; }
         
-        /* MODALES */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; z-index: 1000; }
-        .modal-content { background: white; width: 420px; padding: 25px; border-radius: 8px; }
-        
-        /* TABLAS */
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 13px; }
-        th { background: #f0f0f0; padding: 12px; text-align: left; }
-        td { padding: 12px; border-bottom: 1px solid #ddd; }
+        .item-row { display: flex; justify-content: space-between; align-items: center; padding: 14px; border: 1px solid #e2e8f0; margin-top: 10px; border-radius: 8px; font-size: 14px; background: white; }
+        .item-row b { color: var(--p); }
+
+        /* BOTONERA INFERIOR */
+        .footer-actions { display: flex; gap: 12px; margin-top: 25px; padding-top: 25px; border-top: 2px solid #f1f5f9; align-items: center; flex-wrap: wrap; }
+        .btn-f { border: none; padding: 14px 24px; border-radius: 8px; font-weight: 800; cursor: pointer; font-size: 13px; text-transform: uppercase; transition: all 0.2s; }
+        .btn-l { background: #f1f5f9; color: var(--n); border: 1px solid #cbd5e1; }
+        .btn-r { background: var(--p); color: white; }
+        .btn-w { background: var(--wsp); color: white; }
+        .btn-c { background: var(--s); color: white; flex-grow: 1; font-size: 15px; }
+        .btn-f:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
+
+        #app-content { display: none; }
     </style>
 </head>
 <body>
 
-<div id="loginPage">
-    <div class="login-box">
-        <div style="font-size: 28px; font-weight: 800; color: var(--primary);">Grupo Distelsa</div>
-        <p style="color: #666; margin-bottom: 30px;">Gestión de Envío de Visa Links</p>
-        <form id="formLogin">
-            <input type="text" id="user" placeholder="Usuario" required style="margin-bottom:15px">
-            <input type="password" id="pass" placeholder="Contraseña" required style="margin-bottom:20px">
-            <button type="submit" id="btnLog" class="btn-enviar">INGRESAR</button>
-        </form>
-        <div id="msgLogin" style="color:red; margin-top:15px; display:none"></div>
+    <div id="login-screen">
+        <div class="login-box">
+            <h2 style="color:var(--p); margin:0; font-size: 22px; font-weight: 800;">Gestión Visa Links</h2>
+            <p style="color:var(--n); font-size:12px; margin-bottom:30px; font-weight: 600;">SISTEMA DE AGENTES</p>
+            <input type="text" id="u" placeholder="Usuario" style="margin-bottom:15px;">
+            <input type="password" id="p" placeholder="Contraseña">
+            <button class="btn-add" style="width:100%; margin-top:25px; font-size:14px;" onclick="doLogin()">ACCEDER AL PANEL</button>
+        </div>
     </div>
-</div>
 
-<div id="appPage">
-    <header>
-        <div><strong>Grupo Distelsa</strong> | <span id="txtPerfil">Perfil</span></div>
-        <div>Agente: <span id="txtAgente">...</span> <button onclick="cerrarSesion()" style="background:var(--danger); color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer; margin-left:10px">Salir</button></div>
-    </header>
-
-    <div class="container">
-        <h2>Registrar Nueva Gestión</h2>
-        <form id="formGestion">
-            <div class="grid-2">
-                <div><label>Tipo de Servicio:</label>
-                    <select id="tipoServicio" onchange="cambiarTipoServicio()">
-                        <option value="visita">Diagnóstico / Visita (Q175)</option>
-                        <option value="otros">Otros Servicios (Monto Manual)</option>
-                    </select>
+    <div id="app-content">
+        <div class="header">
+            <strong style="color:var(--p); font-size: 18px; text-transform: uppercase;">Gestión de Envío de Visa Links</strong>
+            <div style="display:flex; align-items:center;">
+                <div class="bell-icon" onclick="alert('Campana de Notificaciones\nNo tienes alertas pendientes.')" title="Notificaciones">
+                    🔔<div class="bell-dot"></div>
                 </div>
-                <div><label>Método de Pago:</label>
-                    <select id="metodoPago" onchange="toggleMetodoPago()">
-                        <option value="visa">Visa Link</option>
-                        <option value="deposito">Depósito / Transferencia</option>
-                    </select>
+                <span id="user-display" style="font-weight:700; font-size:14px; color: var(--p);">Usuario</span>
+                <span id="p-badge" class="badge">Perfil</span>
+                <button class="logout-btn" onclick="cerrarSesion()">Salir</button>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="card">
+                <h3>1. Detalle del Equipo y Servicio</h3>
+                <div class="grid-eq">
+                    <div><label>Producto</label><input type="text" id="inP" class="val-eq" placeholder="Ej. Lavadora"></div>
+                    <div><label>Marca</label><input type="text" id="inM" class="val-eq" placeholder="Ej. LG"></div>
+                    <div><label>Modelo</label><input type="text" id="inMo" placeholder="Opcional"></div>
+                    <div>
+                        <label>Tipo de Servicio</label>
+                        <select id="inS" onchange="checkServicio()">
+                            <option value="Diagnóstico Línea Blanca">Diagnóstico Línea Blanca (Q175)</option>
+                            <option value="Diagnóstico de TV">Diagnóstico de TV (Q175)</option>
+                            <option value="Mantenimiento">Mantenimiento</option>
+                            <option value="Instalación">Instalación</option>
+                            <option value="Presupuesto">Presupuesto</option>
+                            <option value="Otro">Otro</option>
+                        </select>
+                    </div>
+                    <div><label>Precio (Q)</label><input type="number" id="inPr" value="175" readonly style="background:#f1f5f9;"></div>
+                    <button class="btn-add" onclick="agregarEquipo()" title="Agregar a la lista">+</button>
+                </div>
+                <div class="desc-box">
+                    <label id="lblD">Falla reportada</label>
+                    <textarea id="inD" rows="2" class="val-eq" placeholder="Describa los detalles aquí..."></textarea>
+                </div>
+                <div id="eqList"></div>
+            </div>
+
+            <div class="card">
+                <h3>2. Datos de Cliente y Facturación</h3>
+                <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:15px;">
+                    <div><label>Nombre del Cliente *</label><input type="text" id="cN" class="val-c"></div>
+                    <div><label>Teléfono *</label><input type="text" id="cT" class="val-c"></div>
+                    <div><label>Email</label><input type="email" id="cM"></div>
+                </div>
+                <div style="display:grid; grid-template-columns:1.5fr 1fr 1fr; gap:15px; margin-top:15px;">
+                    <div><label>Dirección de Servicio *</label><input type="text" id="cD" class="val-c"></div>
+                    <div><label>Nombre a Facturar</label><input type="text" id="cFN" placeholder="Si es diferente al cliente"></div>
+                    <div><label>NIT / CF *</label><input type="text" id="cNi" class="val-c" placeholder="Ej. 123456-7"></div>
                 </div>
             </div>
 
-            <div class="seccion-dinamica">
-                <h4>1. Datos de Contacto y Facturación</h4>
-                <div class="grid-2">
-                    <input type="text" id="cNombre" placeholder="Nombre contacto" required>
-                    <input type="text" id="cTel" placeholder="Teléfono" required>
-                    <input type="text" id="fNit" placeholder="NIT o CF" required>
-                    <input type="text" id="fNom" placeholder="Nombre Factura" required>
-                    <input type="email" id="fMail" placeholder="Correo electrónico" style="grid-column: span 2" required>
-                    <input type="text" id="cDir" placeholder="Dirección exacta" style="grid-column: span 2" required>
-                </div>
-            </div>
-
-            <div id="seccionVisita" class="seccion-dinamica">
-                <label>Equipos a Revisar (Q175 c/u):</label>
-                <div id="listaEquipos">
-                    <div class="equipo-item">
-                        <input type="text" placeholder="Marca" class="eq-marca" required>
-                        <input type="text" placeholder="Modelo" class="eq-modelo" required>
-                        <input type="text" placeholder="Falla" class="eq-falla" required>
-                        <button type="button" style="background:none; color:red; border:none; cursor:pointer" disabled>X</button>
+            <div class="card">
+                <h3>3. Cierre y Generación de Cobro</h3>
+                <div style="display:grid; grid-template-columns:1.2fr 1fr; gap:20px;">
+                    <div style="background:#eff6ff; padding:15px; border-radius:8px; border-left:4px solid #2563eb; display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <span style="font-size:10px; font-weight:800; color:#1e40af; letter-spacing: 0.5px;">BANCO INDUSTRIAL - MONETARIA</span>
+                            <div style="font-size:24px; font-weight:800; color:#1e3a8a; margin-top: 2px;">000-99572</div>
+                        </div>
+                        <button onclick="copiarCuenta()" style="border:1px solid #bfdbfe; background:white; padding:8px 12px; border-radius:6px; cursor:pointer; font-weight:bold; color:#1e40af; transition: 0.2s;" id="btnCopy">Copiar</button>
+                    </div>
+                    <div>
+                        <label>URL Visa Link (Opcional)</label>
+                        <input type="url" id="vL" placeholder="https://vlink.gt/..." style="height: 52px;">
                     </div>
                 </div>
-                <button type="button" onclick="agregarEquipo()" style="background:var(--success); color:white; border:none; padding:5px; margin-top:5px; border-radius:4px">+ Agregar Equipo</button>
-            </div>
+                <div style="margin-top:15px;">
+                    <label>Observaciones de la Gestión</label>
+                    <textarea id="obs" rows="2" placeholder="Notas internas para despacho o administración..."></textarea>
+                </div>
 
-            <div id="seccionMontoManual" class="seccion-dinamica" style="display:none">
-                <input type="text" id="conceptoManual" placeholder="Concepto del cobro">
-                <input type="number" id="montoManual" placeholder="Monto Q" oninput="actualizarTotal()" style="margin-top:10px">
+                <div class="footer-actions">
+                    <div style="margin-right:auto;">
+                        <label style="font-size: 13px;">Total a Cobrar:</label>
+                        <div style="font-size:32px; font-weight:800; color:var(--p)">Q <span id="tot">0.00</span></div>
+                    </div>
+                    <button class="btn-f btn-l" onclick="confirmarLimpieza()">Limpiar Todo</button>
+                    <button class="btn-f btn-r" onclick="enviarGestion('Solo Registro')">Solo Registro</button>
+                    <button class="btn-f btn-w" onclick="enviarGestion('Comprobante WhatsApp')">WhatsApp</button>
+                    <button class="btn-f btn-c" onclick="enviarGestion('Gestión Cobro')">Confirmar Cobro</button>
+                </div>
             </div>
+        </div>
+    </div>
 
-            <input type="url" id="vLink" placeholder="Enlace de Visa Link" style="margin-bottom:20px">
+    <script>
+        // ==========================================
+        // ⚙️ CONFIGURACIÓN DEL BACKEND
+        // ==========================================
+        const API_URL = "https://script.google.com/macros/s/AKfycbxS6NAykpBosys3NlYsw2eYGtj1nnwD2gwlc1GVwMHfpuOHZ0r9Q_TOSXv68PuukBvh2w/exec"; 
+        
+        let EQUIPOS = [];
+        let USUARIO_ACTUAL = {};
+
+        // 1. INICIALIZACIÓN Y MEMORIA (Evita login repetitivo)
+        window.onload = () => {
+            const sesionGuardada = localStorage.getItem('visaLinks_sesion');
+            if(sesionGuardada) { 
+                USUARIO_ACTUAL = JSON.parse(sesionGuardada); 
+                mostrarPanelApp(); 
+            }
+        };
+
+        // 2. SISTEMA DE LOGIN
+        async function doLogin() {
+            const u = document.getElementById('u').value.trim();
+            const p = document.getElementById('p').value.trim();
             
-            <div style="font-size: 24px; font-weight: bold; text-align: right; margin-bottom: 20px;">Total: Q <span id="lblTotal">175.00</span></div>
-            <button type="submit" id="btnEnviar" class="btn-enviar">ENVIAR A PENDIENTES</button>
-        </form>
-    </div>
+            if(!u || !p) {
+                alert("Por favor, ingresa tu usuario y contraseña.");
+                return;
+            }
 
-    <div class="container">
-        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #eee; margin-bottom: 15px;">
-            <div style="display: flex; gap: 20px;">
-                <h3 id="tabP" style="cursor:pointer; color:var(--primary); border-bottom: 3px solid var(--primary)" onclick="switchTab('P')">⏳ Pendientes</h3>
-                <h3 id="tabH" style="cursor:pointer; color:#777" onclick="switchTab('H')">📁 Historial</h3>
-            </div>
-            <input type="text" id="txtBuscar" placeholder="Buscar por NIT, Nombre, ID..." onkeyup="filtrarTabla()" style="width:250px">
-        </div>
+            const btn = document.querySelector('#login-screen .btn-add');
+            btn.innerText = "VERIFICANDO...";
+            btn.style.opacity = "0.7";
 
-        <div id="vistaP">
-            <table id="tablaPendientes">
-                <thead><tr><th>Contacto</th><th>Detalle</th><th>Monto</th><th>Acción</th></tr></thead>
-                <tbody></tbody>
-            </table>
-            <div id="paginacion" style="text-align:center; margin-top:10px; font-size:12px"></div>
-        </div>
-        <div id="vistaH" style="display:none">
-            <table id="tablaHistorial">
-                <thead><tr><th>Cliente</th><th>Monto</th><th>Estado</th></tr></thead>
-                <tbody></tbody>
-            </table>
-        </div>
-    </div>
-</div>
-
-<script>
-    const API = 'https://script.google.com/macros/s/AKfycbw7dXYAATQpNABTVP7uZZc39XGdh0I_jJMg-YEHmGMxlgyZRtSaNphvWAugyB8cdhEwJA/exec'; // <--- PEGA TU URL DE IMPLEMENTACIÓN
-    let DATA_LOCAL = [];
-
-    // LÓGICA DE LOGIN PERSISTENTE [cite: 2026-02-09]
-    window.onload = () => { if(localStorage.getItem('distelsa_token')) mostrarApp(); };
-
-    document.getElementById('formLogin').onsubmit = async (e) => {
-        e.preventDefault();
-        const res = await fetch(API, {
-            method: 'POST',
-            body: JSON.stringify({ usuario: document.getElementById('user').value, password: document.getElementById('pass').value })
-        });
-        const r = await res.json();
-        if(r.status === 'success') {
-            localStorage.setItem('distelsa_user', r.data.usuario);
-            localStorage.setItem('distelsa_nombre', r.data.nombre);
-            localStorage.setItem('distelsa_rol', r.data.rol);
-            localStorage.setItem('distelsa_perfil', r.data.perfil);
-            localStorage.setItem('distelsa_token', r.data.token);
-            mostrarApp();
-        } else {
-            document.getElementById('msgLogin').innerText = r.data;
-            document.getElementById('msgLogin').style.display = 'block';
+            try {
+                const r = await fetch(API_URL, { 
+                    method: 'POST', 
+                    body: JSON.stringify({ action: 'login', user: u, pass: p }) 
+                });
+                const res = await r.json();
+                
+                if(res.success) { 
+                    USUARIO_ACTUAL = res; 
+                    localStorage.setItem('visaLinks_sesion', JSON.stringify(res)); 
+                    mostrarPanelApp(); 
+                } else { 
+                    alert("Credenciales incorrectas. Verifica tus datos."); 
+                }
+            } catch(e) { 
+                alert("Error de conexión con el servidor. Verifica tu internet o la URL de la API."); 
+            } finally {
+                btn.innerText = "ACCEDER AL PANEL";
+                btn.style.opacity = "1";
+            }
         }
-    };
 
-    function mostrarApp() {
-        document.getElementById('loginPage').style.display = 'none';
-        document.getElementById('appPage').style.display = 'block';
-        document.getElementById('txtAgente').innerText = localStorage.getItem('distelsa_nombre');
-        document.getElementById('txtPerfil').innerText = localStorage.getItem('distelsa_perfil');
-        cargarBandeja();
-    }
+        function cerrarSesion() {
+            if(confirm("¿Estás seguro de cerrar sesión?")) {
+                localStorage.removeItem('visaLinks_sesion');
+                location.reload();
+            }
+        }
 
-    async function cargarBandeja() {
-        const url = `${API}?accion=getData&perfil=${localStorage.getItem('distelsa_perfil')}&rol=${localStorage.getItem('distelsa_rol')}`;
-        const res = await fetch(url);
-        const r = await res.json();
-        DATA_LOCAL = r.data.pendientes;
-        renderTabla(DATA_LOCAL);
-        renderHistorial(r.data.historial);
-    }
+        function mostrarPanelApp() {
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('app-content').style.display = 'block';
+            
+            // Setear datos visuales del usuario
+            document.getElementById('user-display').innerText = USUARIO_ACTUAL.nombre;
+            const badge = document.getElementById('p-badge');
+            badge.innerText = USUARIO_ACTUAL.perfil;
+            badge.className = "badge " + (USUARIO_ACTUAL.perfil === 'WhatsApp' ? 'bg-wsp' : 'bg-cc');
+        }
 
-    // PAGINACIÓN DE LOS PRIMEROS 10 [cite: 2026-02-09]
-    function renderTabla(lista) {
-        const body = document.querySelector('#tablaPendientes tbody');
-        const slice = lista.slice(0, 10);
-        body.innerHTML = slice.map(i => `
-            <tr>
-                <td><strong>${i.contactoNombre}</strong><br><small>Tel: ${i.telefono}</small></td>
-                <td><small>NIT: ${i.nit}<br>${i.detalle}</small></td>
-                <td>Q${i.monto}</td>
-                <td><button onclick="confirmar('${i.id}')" style="background:var(--success); color:white; border:none; padding:5px; border-radius:4px; cursor:pointer">Pagar</button></td>
-            </tr>
-        `).join('');
-        document.getElementById('paginacion').innerText = `Mostrando ${slice.length} de ${lista.length} pendientes.`;
-    }
+        // 3. LÓGICA DE EQUIPOS Y SERVICIOS
+        function checkServicio() {
+            const select = document.getElementById('inS').value;
+            const precioInput = document.getElementById('inPr');
+            const labelDesc = document.getElementById('lblD');
 
-    // BÚSQUEDA EN 6 COLUMNAS [cite: 2026-02-16]
-    function filtrarTabla() {
-        const q = document.getElementById('txtBuscar').value.toLowerCase();
-        const filtrados = DATA_LOCAL.filter(i => 
-            i.contactoNombre.toLowerCase().includes(q) || i.nit.toLowerCase().includes(q) || 
-            i.id.toLowerCase().includes(q) || i.detalle.toLowerCase().includes(q) || 
-            i.telefono.toLowerCase().includes(q) || i.agente.toLowerCase().includes(q)
-        );
-        renderTabla(filtrados);
-    }
+            // Cambio dinámico de etiquetas según la selección
+            if(select.includes("Diagnóstico")) {
+                labelDesc.innerText = "Falla reportada";
+                precioInput.value = 175; 
+                precioInput.readOnly = true; 
+                precioInput.style.background = "#f1f5f9";
+            } else {
+                labelDesc.innerText = "Servicio solicitado";
+                precioInput.value = ""; 
+                precioInput.readOnly = false; 
+                precioInput.style.background = "white"; 
+                precioInput.focus();
+            }
+        }
 
-    function agregarEquipo() {
-        const div = document.createElement('div');
-        div.className = 'equipo-item';
-        div.innerHTML = `<input type="text" class="eq-marca" required><input type="text" class="eq-modelo" required><input type="text" class="eq-falla" required><button type="button" onclick="this.parentElement.remove();actualizarTotal()" style="color:red;border:none;background:none;cursor:pointer">X</button>`;
-        document.getElementById('listaEquipos').appendChild(div);
-        actualizarTotal();
-    }
+        function agregarEquipo() {
+            const p = document.getElementById('inP');
+            const m = document.getElementById('inM');
+            const pr = document.getElementById('inPr');
+            const d = document.getElementById('inD');
+            const mo = document.getElementById('inMo');
+            const s = document.getElementById('inS');
 
-    function actualizarTotal() {
-        const tipo = document.getElementById('tipoServicio').value;
-        let total = tipo === 'visita' ? document.querySelectorAll('.equipo-item').length * 175 : document.getElementById('montoManual').value || 0;
-        document.getElementById('lblTotal').innerText = parseFloat(total).toFixed(2);
-    }
+            // Validación visual de campos vacíos
+            if(!p.value || !m.value || !pr.value || !d.value) { 
+                [p, m, pr, d].forEach(input => {
+                    if(!input.value) input.classList.add('blink-alert');
+                });
+                setTimeout(() => {
+                    document.querySelectorAll('.blink-alert').forEach(el => el.classList.remove('blink-alert'));
+                }, 1000); 
+                return; 
+            }
+            
+            EQUIPOS.push({ 
+                prod: p.value, 
+                marca: m.value, 
+                mod: mo.value || 'N/A', 
+                serv: s.value, 
+                precio: parseFloat(pr.value), 
+                desc: d.value 
+            });
+            
+            renderizarEquipos();
+            
+            // Limpiar campos de ingreso
+            [p, m, mo, d].forEach(input => input.value = "");
+            p.focus();
+        }
 
-    function cambiarTipoServicio() {
-        const t = document.getElementById('tipoServicio').value;
-        document.getElementById('seccionVisita').style.display = t === 'visita' ? 'block' : 'none';
-        document.getElementById('seccionMontoManual').style.display = t === 'visita' ? 'none' : 'block';
-        actualizarTotal();
-    }
+        function renderizarEquipos() {
+            let html = "";
+            let total = 0;
+            
+            EQUIPOS.forEach((eq, index) => { 
+                total += eq.precio; 
+                html += `
+                <div class="item-row">
+                    <span><b>${eq.prod} ${eq.marca}</b> - ${eq.serv} <br> <small style="color:#64748b">${eq.desc}</small></span>
+                    <span style="font-weight:bold; font-size:16px;">
+                        Q${eq.precio.toFixed(2)} 
+                        <button onclick="eliminarEquipo(${index})" style="color:var(--d); border:none; background:none; cursor:pointer; font-size:18px; margin-left:10px;" title="Eliminar">✕</button>
+                    </span>
+                </div>`; 
+            });
+            
+            document.getElementById('eqList').innerHTML = html;
+            document.getElementById('tot').innerText = total.toFixed(2);
+        }
 
-    function cerrarSesion() { localStorage.clear(); location.reload(); }
-    function switchTab(t) {
-        document.getElementById('vistaP').style.display = t === 'P' ? 'block' : 'none';
-        document.getElementById('vistaH').style.display = t === 'H' ? 'block' : 'none';
-        document.getElementById('tabP').style.color = t === 'P' ? 'var(--primary)' : '#777';
-        document.getElementById('tabH').style.color = t === 'H' ? 'var(--primary)' : '#777';
-        document.getElementById('tabP').style.borderBottom = t === 'P' ? '3px solid var(--primary)' : 'none';
-        document.getElementById('tabH').style.borderBottom = t === 'H' ? '3px solid var(--primary)' : 'none';
-    }
-</script>
+        function eliminarEquipo(index) {
+            EQUIPOS.splice(index, 1);
+            renderizarEquipos();
+        }
+
+        // 4. FUNCIONES AUXILIARES Y ENVÍO DE DATOS
+        function copiarCuenta() {
+            navigator.clipboard.writeText('00099572');
+            const btn = document.getElementById('btnCopy');
+            btn.innerText = "Copiado!";
+            btn.style.background = "#10b981";
+            btn.style.color = "white";
+            setTimeout(() => {
+                btn.innerText = "Copiar";
+                btn.style.background = "white";
+                btn.style.color = "#1e40af";
+            }, 2000);
+        }
+
+        function confirmarLimpieza() { 
+            if(confirm("¿Estás seguro de limpiar todo el formulario? Se perderán los datos no guardados.")) {
+                limpiarFormulario(); 
+            }
+        }
+        
+        function limpiarFormulario() { 
+            EQUIPOS = []; 
+            renderizarEquipos(); 
+            document.querySelectorAll('input:not(#inPr), textarea').forEach(i => i.value = ""); 
+            document.getElementById('inS').selectedIndex = 0; 
+            checkServicio(); 
+        }
+
+        async function enviarGestion(estadoFiltro) {
+            const camposRequeridos = document.querySelectorAll('.val-c');
+            let hayError = false;
+            
+            camposRequeridos.forEach(campo => { 
+                if(!campo.value.trim()) { 
+                    campo.classList.add('blink-alert'); 
+                    hayError = true; 
+                } 
+            });
+            
+            if(EQUIPOS.length === 0) {
+                alert("Debes agregar al menos un equipo / servicio a la lista.");
+                return;
+            }
+            
+            if(hayError) {
+                setTimeout(() => document.querySelectorAll('.blink-alert').forEach(el => el.classList.remove('blink-alert')), 1000);
+                return;
+            }
+
+            // Preparar el NIT + Nombre a facturar si existe
+            const nFacturar = document.getElementById('cFN').value.trim();
+            const nitBase = document.getElementById('cNi').value.trim();
+            const nitFinal = nFacturar ? `${nitBase} - Facturar a: ${nFacturar}` : nitBase;
+
+            const payload = { 
+                agente: USUARIO_ACTUAL.nombre, 
+                perfil: USUARIO_ACTUAL.perfil, 
+                cliente: document.getElementById('cN').value.trim(), 
+                telefono: document.getElementById('cT').value.trim(), 
+                direccion: document.getElementById('cD').value.trim(), 
+                nit: nitFinal, 
+                equipos: EQUIPOS, 
+                link: document.getElementById('vL').value.trim() || 'BI_TRANSF', 
+                observaciones: document.getElementById('obs').value.trim() || 'Ninguna', 
+                estado: estadoFiltro 
+            };
+            
+            // Cambiar botones a estado de carga
+            const botones = document.querySelectorAll('.footer-actions button');
+            botones.forEach(b => { b.disabled = true; b.style.opacity = "0.5"; });
+
+            try {
+                const r = await fetch(API_URL, { 
+                    method: 'POST', 
+                    body: JSON.stringify({ action: 'guardar', payload: payload }) 
+                });
+                const res = await r.json();
+                
+                if(res.success) { 
+                    alert("¡Éxito! Gestión guardada como: " + estadoFiltro); 
+                    limpiarFormulario(); 
+                } else {
+                    alert("Error al guardar: " + res.error);
+                }
+            } catch(e) {
+                alert("Error de conexión al guardar la gestión.");
+            } finally {
+                botones.forEach(b => { b.disabled = false; b.style.opacity = "1"; });
+            }
+        }
+    </script>
 </body>
 </html>

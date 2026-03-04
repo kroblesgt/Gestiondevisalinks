@@ -90,9 +90,51 @@
 
         <div class="main-content">
             
-            <section id="sec-admin" class="card hidden">
-                <h2>Administración de Usuarios</h2>
-                <p>En construcción...</p>
+<section id="sec-admin" class="card hidden">
+                <h2><i class="fas fa-users-cog"></i> Administración de Usuarios</h2>
+                
+                <div class="section-box">
+                    <h4 style="margin-top:0;">Crear Nuevo Usuario</h4>
+                    <div class="grid-3">
+                        <div class="input-group"><input type="text" id="admin-user" placeholder="Usuario (ej. jperez) *"></div>
+                        <div class="input-group"><input type="text" id="admin-nombre" placeholder="Nombre Completo *"></div>
+                        <div class="input-group"><input type="password" id="admin-pass" placeholder="Contraseña *"></div>
+                        <div class="input-group">
+                            <select id="admin-rol">
+                                <option value="">Seleccionar Rol *</option>
+                                <option value="Administrador">Administrador</option>
+                                <option value="Líder">Líder</option>
+                                <option value="Agente">Agente</option>
+                            </select>
+                        </div>
+                        <div class="input-group"><input type="text" id="admin-campana" placeholder="Campaña (ej. Call Center ST) *"></div>
+                        <div style="display: flex; align-items: flex-end; margin-bottom: 15px;">
+                            <button class="btn-action bg-blue" id="btnCrearUsuario" onclick="crearUsuario(this)" style="width: 100%; justify-content: center;"><i class="fas fa-user-plus"></i> Guardar Usuario</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-box">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h4 style="margin-top:0;">Lista de Usuarios</h4>
+                        <button class="btn-action bg-gray" onclick="cargarUsuarios()"><i class="fas fa-sync"></i> Actualizar</button>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Usuario</th>
+                                <th>Nombre Completo</th>
+                                <th>Rol</th>
+                                <th>Campaña</th>
+                                <th>En Línea</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-usuarios-body">
+                            <tr><td colspan="6" style="text-align:center;">Cargando usuarios...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
             </section>
 
             <section id="sec-gestion" class="card">
@@ -180,7 +222,7 @@
 
     <script>
         // ======= CONFIGURACIÓN DE LA API =======
-        const API_URL = 'https://script.google.com/macros/s/AKfycbx-mCY3buZ2m3adhLmJOzzd1NEyzy5yyUWR9bnNZrdh3zpbmyWvJnvryJrjTp4qEaVsYQ/exec';
+        const API_URL = 'https://script.google.com/macros/s/AKfycbwthMnWIL_KGC1EnUp9syT0kZMF3H7bei1xnix6XkgC7S4wmbaovUtpz9RmY5WksKR7SA/exec';
 
         // --- NAVEGACIÓN Y LOGIN ---
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
@@ -320,6 +362,99 @@
                 }
             } catch(error) {
                 alert("Error de red. Verifique su conexión.");
+            } finally {
+                btnObj.disabled = false;
+                btnObj.innerHTML = btnTextoOriginal;
+            }
+        }
+        // --- LÓGICA DE ADMINISTRACIÓN DE USUARIOS ---
+        
+        // Modificamos verSeccion para que cargue los usuarios automáticamente al entrar a esa pestaña
+        const verSeccionOriginal = verSeccion;
+        verSeccion = function(id) {
+            verSeccionOriginal(id);
+            if(id === 'sec-admin') {
+                cargarUsuarios();
+            }
+        };
+
+        async function cargarUsuarios() {
+            const tbody = document.getElementById('tabla-usuarios-body');
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;"><i class="fas fa-spinner fa-spin"></i> Cargando...</td></tr>';
+            
+            try {
+                let response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ action: 'obtenerUsuarios' })
+                });
+                let result = await response.json();
+                
+                if (result.success) {
+                    tbody.innerHTML = '';
+                    result.data.forEach(u => {
+                        let badgeColor = u.enLinea === 'SI' ? 'bg-green' : 'bg-gray';
+                        tbody.innerHTML += `
+                            <tr>
+                                <td><strong>${u.id}</strong></td>
+                                <td>${u.usuario}</td>
+                                <td>${u.nombre}</td>
+                                <td>${u.rol}</td>
+                                <td>${u.campana}</td>
+                                <td><span class="badge ${badgeColor}">${u.enLinea || 'NO'}</span></td>
+                            </tr>
+                        `;
+                    });
+                } else {
+                    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:red;">Error: ${result.message}</td></tr>`;
+                }
+            } catch (error) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:red;">Error de conexión.</td></tr>`;
+            }
+        }
+
+        async function crearUsuario(btnObj) {
+            let user = document.getElementById('admin-user').value;
+            let nombre = document.getElementById('admin-nombre').value;
+            let pass = document.getElementById('admin-pass').value;
+            let rol = document.getElementById('admin-rol').value;
+            let campana = document.getElementById('admin-campana').value;
+
+            if(!user || !nombre || !pass || !rol || !campana) {
+                alert("Por favor completa todos los campos.");
+                return;
+            }
+
+            let btnTextoOriginal = btnObj.innerHTML;
+            btnObj.disabled = true;
+            btnObj.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+
+            try {
+                let response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({
+                        action: 'guardarUsuario',
+                        datos: { usuario: user, nombre: nombre, password: pass, rol: rol, campana: campana }
+                    })
+                });
+                let result = await response.json();
+
+                if (result.success) {
+                    alert(result.message);
+                    // Limpiar campos
+                    document.getElementById('admin-user').value = '';
+                    document.getElementById('admin-nombre').value = '';
+                    document.getElementById('admin-pass').value = '';
+                    document.getElementById('admin-rol').value = '';
+                    document.getElementById('admin-campana').value = '';
+                    // Recargar la tabla
+                    cargarUsuarios();
+                } else {
+                    alert("Error: " + result.message);
+                }
+            } catch (error) {
+                alert("Error de conexión al crear usuario.");
             } finally {
                 btnObj.disabled = false;
                 btnObj.innerHTML = btnTextoOriginal;

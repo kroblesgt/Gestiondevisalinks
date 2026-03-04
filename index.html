@@ -3,406 +3,326 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestión de Envío de Visa Links</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <title>Gestión Call Center ST | Grupo Distelsa</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        :root { 
-            --p: #0f4c81; --p-h: #0a365c; --s: #10b981; --d: #ef4444; 
-            --wsp: #25D366; --n: #64748b; --bg: #f8fafc; 
-        }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); margin: 0; color: #1e293b; }
+        :root { --rojo-distelsa: #e30613; --azul-distelsa: #003366; --fondo: #f4f6f9; --sidebar-w: 250px; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; background: var(--fondo); color: #333; overflow-x: hidden; }
+
+        /* --- LOGIN --- */
+        #login-view { position: fixed; inset: 0; background: linear-gradient(135deg, var(--azul-distelsa) 0%, #001f3f 100%); display: flex; justify-content: center; align-items: center; z-index: 2000; }
+        .login-card { background: white; padding: 40px; border-radius: 12px; width: 340px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); text-align: center; }
+        .login-card img { width: 180px; margin-bottom: 20px; }
+        .input-group { text-align: left; margin-bottom: 15px; }
+        .input-group label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 5px; color: var(--azul-distelsa); }
+        .input-group input { width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 14px; transition: border 0.3s; }
+        .error-blink { animation: blink 0.5s 2; border-color: var(--rojo-distelsa) !important; }
+        @keyframes blink { 0%, 100% { background: white; } 50% { background: #ffe6e6; border-color: var(--rojo-distelsa); } }
+        .btn-primary { width: 100%; padding: 12px; background: var(--rojo-distelsa); color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; transition: background 0.3s; font-size: 15px; }
+        .btn-primary:hover { background: #b3000b; }
+        .btn-primary:disabled { background: #999; cursor: not-allowed; }
+
+        /* --- ESTRUCTURA --- */
+        #app-view { display: none; }
+        header { position: fixed; top: 0; left: 0; right: 0; height: 60px; background: white; border-bottom: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; z-index: 1000; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .header-title { color: var(--azul-distelsa); font-size: 22px; font-weight: 800; display: flex; align-items: center; gap: 10px; }
+        .user-profile { display: flex; align-items: center; gap: 15px; text-align: right; }
         
-        /* PANTALLA DE LOGIN */
-        #login-screen { height: 100vh; display: flex; align-items: center; justify-content: center; background: var(--p); }
-        .login-box { background: white; padding: 40px; border-radius: 12px; width: 320px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
+        .sidebar { position: fixed; top: 60px; left: 0; bottom: 0; width: var(--sidebar-w); background: var(--azul-distelsa); color: white; padding-top: 20px; }
+        .nav-item { padding: 15px 20px; cursor: pointer; display: flex; align-items: center; gap: 12px; transition: 0.2s; font-size: 15px; }
+        .nav-item:hover, .nav-item.active { background: rgba(255,255,255,0.1); border-left: 4px solid var(--rojo-distelsa); }
         
-        /* ANIMACIÓN DE ERROR / CAMPOS VACÍOS */
-        @keyframes blink { 50% { border-color: var(--d); background: #fff5f5; } }
-        .blink-alert { animation: blink 0.4s ease-in-out 2; border-color: var(--d) !important; }
+        .main-content { margin-left: var(--sidebar-w); margin-top: 60px; padding: 25px; }
+        .card { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 20px; }
 
-        /* CABECERA (HEADER) */
-        .header { background: white; padding: 12px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-        .bell-icon { font-size: 20px; cursor: pointer; position: relative; margin-right: 15px; color: var(--n); transition: transform 0.2s; }
-        .bell-icon:hover { transform: scale(1.1); }
-        .bell-dot { position: absolute; top: 0; right: 0; width: 8px; height: 8px; background: var(--d); border-radius: 50%; border: 2px solid white; }
+        /* --- FORMAS Y TABLAS --- */
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; }
+        .input-group select, .input-group textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
+        .section-box { border: 1px solid #eee; padding: 15px; border-radius: 8px; margin-bottom: 15px; background: #fafafa; }
         
-        .badge { font-size: 10px; padding: 4px 10px; border-radius: 50px; color: white; font-weight: 800; text-transform: uppercase; margin-left: 10px; letter-spacing: 0.5px; }
-        .bg-wsp { background: var(--wsp); }
-        .bg-cc { background: var(--p); }
-        .logout-btn { background: none; border: none; color: var(--d); cursor: pointer; font-size: 11px; font-weight: bold; margin-left: 15px; text-decoration: underline; }
-
-        /* CONTENEDOR PRINCIPAL */
-        .container { max-width: 1100px; margin: 25px auto; padding: 0 20px; }
-        .card { background: white; padding: 25px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-        h3 { margin: 0 0 20px 0; color: var(--p); border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; font-weight: 800; font-size: 16px; text-transform: uppercase; }
-
-        label { display: block; font-size: 11px; font-weight: 700; color: var(--n); text-transform: uppercase; margin-bottom: 6px; }
-        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 14px; box-sizing: border-box; outline: none; transition: all 0.2s; }
-        input:focus, select:focus, textarea:focus { border-color: var(--p); box-shadow: 0 0 0 3px rgba(15, 76, 129, 0.1); }
-
-        /* SECCIÓN DE EQUIPOS */
-        .grid-eq { display: grid; grid-template-columns: 1.2fr 1fr 1fr 1.5fr 110px 50px; gap: 12px; background: #f8fafc; padding: 15px; border-radius: 8px 8px 0 0; align-items: end; border: 1px solid #e2e8f0; border-bottom: none; }
-        .btn-add { background: var(--p); color: white; border: none; height: 44px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 22px; transition: background 0.2s; }
-        .btn-add:hover { background: var(--p-h); }
-        .desc-box { background: #f8fafc; padding: 0 15px 15px; border-radius: 0 0 8px 8px; border: 1px solid #e2e8f0; border-top: none; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; }
+        th { background: var(--azul-distelsa); color: white; padding: 12px; text-align: left; }
+        td { padding: 12px; border-bottom: 1px solid #eee; }
+        .badge { padding: 5px 10px; border-radius: 4px; font-size: 11px; font-weight: bold; color: white; }
         
-        .item-row { display: flex; justify-content: space-between; align-items: center; padding: 14px; border: 1px solid #e2e8f0; margin-top: 10px; border-radius: 8px; font-size: 14px; background: white; }
-        .item-row b { color: var(--p); }
-
-        /* BOTONERA INFERIOR */
-        .footer-actions { display: flex; gap: 12px; margin-top: 25px; padding-top: 25px; border-top: 2px solid #f1f5f9; align-items: center; flex-wrap: wrap; }
-        .btn-f { border: none; padding: 14px 24px; border-radius: 8px; font-weight: 800; cursor: pointer; font-size: 13px; text-transform: uppercase; transition: all 0.2s; }
-        .btn-l { background: #f1f5f9; color: var(--n); border: 1px solid #cbd5e1; }
-        .btn-r { background: var(--p); color: white; }
-        .btn-w { background: var(--wsp); color: white; }
-        .btn-c { background: var(--s); color: white; flex-grow: 1; font-size: 15px; }
-        .btn-f:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
-
-        #app-content { display: none; }
+        .btn-action { padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; color: white; font-weight: bold; display: inline-flex; align-items: center; gap: 6px; transition: 0.2s;}
+        .btn-action:hover { opacity: 0.9; }
+        .bg-blue { background: var(--azul-distelsa); } .bg-red { background: var(--rojo-distelsa); } .bg-green { background: #25d366; } .bg-gray { background: #6c757d; }
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
-    <div id="login-screen">
-        <div class="login-box">
-            <h2 style="color:var(--p); margin:0; font-size: 22px; font-weight: 800;">Gestión Visa Links</h2>
-            <p style="color:var(--n); font-size:12px; margin-bottom:30px; font-weight: 600;">SISTEMA DE AGENTES</p>
-            <input type="text" id="u" placeholder="Usuario" style="margin-bottom:15px;">
-            <input type="password" id="p" placeholder="Contraseña">
-            <button class="btn-add" style="width:100%; margin-top:25px; font-size:14px;" onclick="doLogin()">ACCEDER AL PANEL</button>
+    <div id="login-view">
+        <div class="login-card">
+            <img src="https://www.distelsa.com.gt/media/logo/stores/1/logo_distelsa.png" alt="Distelsa">
+            <h2 style="color: var(--azul-distelsa); margin-top: 0; font-size: 20px;">Gestión de Cobros ST</h2>
+            <form id="loginForm">
+                <div class="input-group"><label>Usuario *</label><input type="text" id="user" placeholder="Su usuario"></div>
+                <div class="input-group"><label>Contraseña *</label><input type="password" id="pass" placeholder="••••••••"></div>
+                <div style="text-align: left; margin-bottom: 20px; font-size: 13px;">
+                    <input type="checkbox" id="keepSession"> <label for="keepSession" style="display:inline; font-weight:normal; color:#555;">Mantener sesión activa</label>
+                </div>
+                <button type="submit" id="btnLogin" class="btn-primary">INICIAR SESIÓN</button>
+            </form>
         </div>
     </div>
 
-    <div id="app-content">
-        <div class="header">
-            <strong style="color:var(--p); font-size: 18px; text-transform: uppercase;">Gestión de Envío de Visa Links</strong>
-            <div style="display:flex; align-items:center;">
-                <div class="bell-icon" onclick="alert('Campana de Notificaciones\nNo tienes alertas pendientes.')" title="Notificaciones">
-                    🔔<div class="bell-dot"></div>
+    <div id="app-view">
+        <header>
+            <div class="header-title"><i class="fas fa-headset"></i> Gestión de Cobro</div>
+            <div class="user-profile">
+                <div>
+                    <strong id="displayUser" style="color: var(--azul-distelsa);">Usuario</strong><br>
+                    <small id="displayCampana" style="color: var(--rojo-distelsa); font-weight:bold;">Campaña: Call Center ST</small>
                 </div>
-                <span id="user-display" style="font-weight:700; font-size:14px; color: var(--p);">Usuario</span>
-                <span id="p-badge" class="badge">Perfil</span>
-                <button class="logout-btn" onclick="cerrarSesion()">Salir</button>
+                <button onclick="location.reload()" class="btn-action bg-red"><i class="fas fa-sign-out-alt"></i> Salir</button>
             </div>
+        </header>
+
+        <div class="sidebar">
+            <div class="nav-item active" onclick="verSeccion('sec-admin')"><i class="fas fa-users-cog"></i> 1. Usuarios</div>
+            <div class="nav-item" onclick="verSeccion('sec-gestion')"><i class="fas fa-file-invoice-dollar"></i> 4. Gestión de Cobro</div>
+            <div class="nav-item" onclick="verSeccion('sec-seguimiento')"><i class="fas fa-history"></i> 5. Seguimientos</div>
         </div>
 
-        <div class="container">
-            <div class="card">
-                <h3>1. Detalle del Equipo y Servicio</h3>
-                <div class="grid-eq">
-                    <div><label>Producto</label><input type="text" id="inP" class="val-eq" placeholder="Ej. Lavadora"></div>
-                    <div><label>Marca</label><input type="text" id="inM" class="val-eq" placeholder="Ej. LG"></div>
-                    <div><label>Modelo</label><input type="text" id="inMo" placeholder="Opcional"></div>
-                    <div>
-                        <label>Tipo de Servicio</label>
-                        <select id="inS" onchange="checkServicio()">
-                            <option value="Diagnóstico Línea Blanca">Diagnóstico Línea Blanca (Q175)</option>
-                            <option value="Diagnóstico de TV">Diagnóstico de TV (Q175)</option>
-                            <option value="Mantenimiento">Mantenimiento</option>
-                            <option value="Instalación">Instalación</option>
-                            <option value="Presupuesto">Presupuesto</option>
-                            <option value="Otro">Otro</option>
-                        </select>
-                    </div>
-                    <div><label>Precio (Q)</label><input type="number" id="inPr" value="175" readonly style="background:#f1f5f9;"></div>
-                    <button class="btn-add" onclick="agregarEquipo()" title="Agregar a la lista">+</button>
-                </div>
-                <div class="desc-box">
-                    <label id="lblD">Falla reportada</label>
-                    <textarea id="inD" rows="2" class="val-eq" placeholder="Describa los detalles aquí..."></textarea>
-                </div>
-                <div id="eqList"></div>
-            </div>
+        <div class="main-content">
+            
+            <section id="sec-admin" class="card hidden">
+                <h2>Administración de Usuarios</h2>
+                <p>En construcción...</p>
+            </section>
 
-            <div class="card">
-                <h3>2. Datos de Cliente y Facturación</h3>
-                <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:15px;">
-                    <div><label>Nombre del Cliente *</label><input type="text" id="cN" class="val-c"></div>
-                    <div><label>Teléfono *</label><input type="text" id="cT" class="val-c"></div>
-                    <div><label>Email</label><input type="email" id="cM"></div>
-                </div>
-                <div style="display:grid; grid-template-columns:1.5fr 1fr 1fr; gap:15px; margin-top:15px;">
-                    <div><label>Dirección de Servicio *</label><input type="text" id="cD" class="val-c"></div>
-                    <div><label>Nombre a Facturar</label><input type="text" id="cFN" placeholder="Si es diferente al cliente"></div>
-                    <div><label>NIT / CF *</label><input type="text" id="cNi" class="val-c" placeholder="Ej. 123456-7"></div>
-                </div>
-            </div>
-
-            <div class="card">
-                <h3>3. Cierre y Generación de Cobro</h3>
-                <div style="display:grid; grid-template-columns:1.2fr 1fr; gap:20px;">
-                    <div style="background:#eff6ff; padding:15px; border-radius:8px; border-left:4px solid #2563eb; display:flex; justify-content:space-between; align-items:center;">
-                        <div>
-                            <span style="font-size:10px; font-weight:800; color:#1e40af; letter-spacing: 0.5px;">BANCO INDUSTRIAL - MONETARIA</span>
-                            <div style="font-size:24px; font-weight:800; color:#1e3a8a; margin-top: 2px;">000-99572</div>
+            <section id="sec-gestion" class="card">
+                <h2>Formulario de Gestión</h2>
+                
+                <div class="section-box">
+                    <h4 style="margin-top:0;">1. Servicio Solicitado</h4>
+                    <div class="grid-3">
+                        <div class="input-group">
+                            <label>Tipo *</label>
+                            <select id="gc-tipo" onchange="manejarTipoServicio()">
+                                <option value="">Seleccionar...</option>
+                                <option value="Diagnostico De Linea Blanca">Diagnóstico De Línea Blanca</option>
+                                <option value="Diagnostico de TV">Diagnóstico de TV</option>
+                                <option value="Mantenimiento">Mantenimiento</option>
+                                <option value="Instalacion">Instalación</option>
+                                <option value="Presupuesto">Presupuesto</option>
+                                <option value="Otro">Otro</option>
+                            </select>
                         </div>
-                        <button onclick="copiarCuenta()" style="border:1px solid #bfdbfe; background:white; padding:8px 12px; border-radius:6px; cursor:pointer; font-weight:bold; color:#1e40af; transition: 0.2s;" id="btnCopy">Copiar</button>
+                        <div class="input-group"><label id="lbl-detalle">Servicio Solicitado *</label><input type="text" id="gc-detalle"></div>
+                        <div class="input-group"><label>Precio (Q) *</label><input type="number" id="gc-precio" value="0"></div>
                     </div>
-                    <div>
-                        <label>URL Visa Link (Opcional)</label>
-                        <input type="url" id="vL" placeholder="https://vlink.gt/..." style="height: 52px;">
+                    <div class="grid-3">
+                        <div class="input-group"><label>Producto *</label><input type="text" id="gc-producto"></div>
+                        <div class="input-group"><label>Marca *</label><input type="text" id="gc-marca"></div>
+                        <div class="input-group" style="display:flex; gap:10px; align-items:flex-end;">
+                            <div style="flex:1;"><label>Modelo</label><input type="text" id="gc-modelo"></div>
+                            <button class="btn-action bg-blue" onclick="agregarServicio()"><i class="fas fa-plus"></i> Add</button>
+                        </div>
                     </div>
-                </div>
-                <div style="margin-top:15px;">
-                    <label>Observaciones de la Gestión</label>
-                    <textarea id="obs" rows="2" placeholder="Notas internas para despacho o administración..."></textarea>
+                    
+                    <table id="tabla-servicios" class="hidden">
+                        <thead><tr><th>Servicio</th><th>Detalle/Falla</th><th>Prod/Marca</th><th>Precio</th><th>X</th></tr></thead>
+                        <tbody id="lista-servicios"></tbody>
+                    </table>
+                    <h3 id="total-servicios" style="text-align:right; color:var(--azul-distelsa); margin-bottom:0;">Total: Q0.00</h3>
                 </div>
 
-                <div class="footer-actions">
-                    <div style="margin-right:auto;">
-                        <label style="font-size: 13px;">Total a Cobrar:</label>
-                        <div style="font-size:32px; font-weight:800; color:var(--p)">Q <span id="tot">0.00</span></div>
+                <div id="sec-contacto" class="section-box">
+                    <h4 style="margin-top:0;">2. Datos de Contacto</h4>
+                    <div class="grid-2">
+                        <div class="input-group"><input type="text" id="gc-nitCli" placeholder="NIT Contacto *"></div>
+                        <div class="input-group"><input type="text" id="gc-nomCli" placeholder="Nombre Contacto *"></div>
+                        <div class="input-group"><input type="text" id="gc-telCli" placeholder="Teléfono *"></div>
+                        <div class="input-group"><input type="text" id="gc-dirCli" placeholder="Dirección *"></div>
+                        <div class="input-group"><input type="email" id="gc-corCli" placeholder="Correo (Opcional)"></div>
+                        <div class="input-group"><textarea id="gc-obsTec" placeholder="Observaciones Técnico (Opcional)" rows="2"></textarea></div>
                     </div>
-                    <button class="btn-f btn-l" onclick="confirmarLimpieza()">Limpiar Todo</button>
-                    <button class="btn-f btn-r" onclick="enviarGestion('Solo Registro')">Solo Registro</button>
-                    <button class="btn-f btn-w" onclick="enviarGestion('Comprobante WhatsApp')">WhatsApp</button>
-                    <button class="btn-f btn-c" onclick="enviarGestion('Gestión Cobro')">Confirmar Cobro</button>
                 </div>
-            </div>
+
+                <div class="section-box">
+                    <h4 style="margin-top:0;">3. Datos de Facturación</h4>
+                    <div class="grid-3">
+                        <div class="input-group"><input type="text" id="gc-nitFac" placeholder="NIT Facturación *"></div>
+                        <div class="input-group"><input type="text" id="gc-nomFac" placeholder="Nombre Facturación *"></div>
+                        <div class="input-group"><input type="email" id="gc-corFac" placeholder="Correo Electrónico *"></div>
+                    </div>
+                </div>
+
+                <div class="section-box">
+                    <h4 style="margin-top:0;">4. Pagos y Confirmación</h4>
+                    <div style="background:#e9ecef; padding:10px; border-radius:4px; margin-bottom:15px; font-size:14px;"><i class="fas fa-university"></i> <b>Banco Industrial | Monetaria: 0999-666-66 | Distribuidora Electrónica S.A.</b></div>
+                    <div class="input-group"><input type="text" id="gc-visa" placeholder="Visa Link (Opcional)"></div>
+                    <div style="background:#fff3cd; padding:15px; border-radius:4px;">
+                        <label style="font-weight:bold; cursor:pointer;"><input type="checkbox" id="check-datos"> Confirmo que todos los datos están correctos *</label>
+                        <textarea id="gc-obsGen" placeholder="Observaciones Generales" style="width:100%; margin-top:10px; padding:10px; border:1px solid #ccc;"></textarea>
+                    </div>
+                </div>
+
+                <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:20px;">
+                    <button class="btn-action bg-gray" onclick="limpiarGestor()"><i class="fas fa-eraser"></i> Limpiar Pantalla</button>
+                    <button class="btn-action bg-blue" id="btnGuardar1" onclick="enviarGestor('Solo Guardado', this)"><i class="fas fa-save"></i> Solo Guardar</button>
+                    <button class="btn-action bg-red" id="btnGuardar2" onclick="enviarGestor('Correo Enviado', this)"><i class="fas fa-envelope"></i> Enviar Correo</button>
+                    <button class="btn-action bg-green" id="btnGuardar3" onclick="enviarGestor('WhatsApp', this)"><i class="fab fa-whatsapp"></i> WhatsApp</button>
+                </div>
+            </section>
+
+            <section id="sec-seguimiento" class="card hidden">
+                <h2>Historial y Seguimientos</h2>
+                <p>En construcción...</p>
+            </section>
         </div>
     </div>
 
     <script>
-        // ==========================================
-        // ⚙️ CONFIGURACIÓN DEL BACKEND
-        // ==========================================
-        const API_URL = "https://script.google.com/macros/s/AKfycbxS6NAykpBosys3NlYsw2eYGtj1nnwD2gwlc1GVwMHfpuOHZ0r9Q_TOSXv68PuukBvh2w/exec"; 
-        
-        let EQUIPOS = [];
-        let USUARIO_ACTUAL = {};
+        // ======= CONFIGURACIÓN DE LA API =======
+        const API_URL = 'https://script.google.com/macros/s/AKfycbzCcQM7CVBucElNcwKYaV1dqvsUKNCyoQC-zMcdGrYdgPXCq2QUoUmTRUdhK8Xxv0PSOg/exec';
 
-        // 1. INICIALIZACIÓN Y MEMORIA (Evita login repetitivo)
-        window.onload = () => {
-            const sesionGuardada = localStorage.getItem('visaLinks_sesion');
-            if(sesionGuardada) { 
-                USUARIO_ACTUAL = JSON.parse(sesionGuardada); 
-                mostrarPanelApp(); 
-            }
-        };
-
-        // 2. SISTEMA DE LOGIN
-        async function doLogin() {
-            const u = document.getElementById('u').value.trim();
-            const p = document.getElementById('p').value.trim();
+        // --- NAVEGACIÓN Y LOGIN ---
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            let u = document.getElementById('user'); let p = document.getElementById('pass'); let b = document.getElementById('btnLogin');
             
-            if(!u || !p) {
-                alert("Por favor, ingresa tu usuario y contraseña.");
-                return;
+            if(!u.value || !p.value) { 
+                if(!u.value) u.classList.add('error-blink'); if(!p.value) p.classList.add('error-blink'); 
+                setTimeout(()=> { u.classList.remove('error-blink'); p.classList.remove('error-blink'); }, 1000); return; 
             }
-
-            const btn = document.querySelector('#login-screen .btn-add');
-            btn.innerText = "VERIFICANDO...";
-            btn.style.opacity = "0.7";
+            
+            b.disabled = true; b.innerText = "CONECTANDO...";
 
             try {
-                const r = await fetch(API_URL, { 
-                    method: 'POST', 
-                    body: JSON.stringify({ action: 'login', user: u, pass: p }) 
+                // Petición a Google Sheets
+                let response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // 'text/plain' evita el bloqueo de CORS
+                    body: JSON.stringify({ action: 'login', usuario: u.value, password: p.value })
                 });
-                const res = await r.json();
                 
-                if(res.success) { 
-                    USUARIO_ACTUAL = res; 
-                    localStorage.setItem('visaLinks_sesion', JSON.stringify(res)); 
-                    mostrarPanelApp(); 
-                } else { 
-                    alert("Credenciales incorrectas. Verifica tus datos."); 
-                }
-            } catch(e) { 
-                alert("Error de conexión con el servidor. Verifica tu internet o la URL de la API."); 
-            } finally {
-                btn.innerText = "ACCEDER AL PANEL";
-                btn.style.opacity = "1";
-            }
-        }
+                let data = await response.json();
 
-        function cerrarSesion() {
-            if(confirm("¿Estás seguro de cerrar sesión?")) {
-                localStorage.removeItem('visaLinks_sesion');
-                location.reload();
-            }
-        }
-
-        function mostrarPanelApp() {
-            document.getElementById('login-screen').style.display = 'none';
-            document.getElementById('app-content').style.display = 'block';
-            
-            // Setear datos visuales del usuario
-            document.getElementById('user-display').innerText = USUARIO_ACTUAL.nombre;
-            const badge = document.getElementById('p-badge');
-            badge.innerText = USUARIO_ACTUAL.perfil;
-            badge.className = "badge " + (USUARIO_ACTUAL.perfil === 'WhatsApp' ? 'bg-wsp' : 'bg-cc');
-        }
-
-        // 3. LÓGICA DE EQUIPOS Y SERVICIOS
-        function checkServicio() {
-            const select = document.getElementById('inS').value;
-            const precioInput = document.getElementById('inPr');
-            const labelDesc = document.getElementById('lblD');
-
-            // Cambio dinámico de etiquetas según la selección
-            if(select.includes("Diagnóstico")) {
-                labelDesc.innerText = "Falla reportada";
-                precioInput.value = 175; 
-                precioInput.readOnly = true; 
-                precioInput.style.background = "#f1f5f9";
-            } else {
-                labelDesc.innerText = "Servicio solicitado";
-                precioInput.value = ""; 
-                precioInput.readOnly = false; 
-                precioInput.style.background = "white"; 
-                precioInput.focus();
-            }
-        }
-
-        function agregarEquipo() {
-            const p = document.getElementById('inP');
-            const m = document.getElementById('inM');
-            const pr = document.getElementById('inPr');
-            const d = document.getElementById('inD');
-            const mo = document.getElementById('inMo');
-            const s = document.getElementById('inS');
-
-            // Validación visual de campos vacíos
-            if(!p.value || !m.value || !pr.value || !d.value) { 
-                [p, m, pr, d].forEach(input => {
-                    if(!input.value) input.classList.add('blink-alert');
-                });
-                setTimeout(() => {
-                    document.querySelectorAll('.blink-alert').forEach(el => el.classList.remove('blink-alert'));
-                }, 1000); 
-                return; 
-            }
-            
-            EQUIPOS.push({ 
-                prod: p.value, 
-                marca: m.value, 
-                mod: mo.value || 'N/A', 
-                serv: s.value, 
-                precio: parseFloat(pr.value), 
-                desc: d.value 
-            });
-            
-            renderizarEquipos();
-            
-            // Limpiar campos de ingreso
-            [p, m, mo, d].forEach(input => input.value = "");
-            p.focus();
-        }
-
-        function renderizarEquipos() {
-            let html = "";
-            let total = 0;
-            
-            EQUIPOS.forEach((eq, index) => { 
-                total += eq.precio; 
-                html += `
-                <div class="item-row">
-                    <span><b>${eq.prod} ${eq.marca}</b> - ${eq.serv} <br> <small style="color:#64748b">${eq.desc}</small></span>
-                    <span style="font-weight:bold; font-size:16px;">
-                        Q${eq.precio.toFixed(2)} 
-                        <button onclick="eliminarEquipo(${index})" style="color:var(--d); border:none; background:none; cursor:pointer; font-size:18px; margin-left:10px;" title="Eliminar">✕</button>
-                    </span>
-                </div>`; 
-            });
-            
-            document.getElementById('eqList').innerHTML = html;
-            document.getElementById('tot').innerText = total.toFixed(2);
-        }
-
-        function eliminarEquipo(index) {
-            EQUIPOS.splice(index, 1);
-            renderizarEquipos();
-        }
-
-        // 4. FUNCIONES AUXILIARES Y ENVÍO DE DATOS
-        function copiarCuenta() {
-            navigator.clipboard.writeText('00099572');
-            const btn = document.getElementById('btnCopy');
-            btn.innerText = "Copiado!";
-            btn.style.background = "#10b981";
-            btn.style.color = "white";
-            setTimeout(() => {
-                btn.innerText = "Copiar";
-                btn.style.background = "white";
-                btn.style.color = "#1e40af";
-            }, 2000);
-        }
-
-        function confirmarLimpieza() { 
-            if(confirm("¿Estás seguro de limpiar todo el formulario? Se perderán los datos no guardados.")) {
-                limpiarFormulario(); 
-            }
-        }
-        
-        function limpiarFormulario() { 
-            EQUIPOS = []; 
-            renderizarEquipos(); 
-            document.querySelectorAll('input:not(#inPr), textarea').forEach(i => i.value = ""); 
-            document.getElementById('inS').selectedIndex = 0; 
-            checkServicio(); 
-        }
-
-        async function enviarGestion(estadoFiltro) {
-            const camposRequeridos = document.querySelectorAll('.val-c');
-            let hayError = false;
-            
-            camposRequeridos.forEach(campo => { 
-                if(!campo.value.trim()) { 
-                    campo.classList.add('blink-alert'); 
-                    hayError = true; 
-                } 
-            });
-            
-            if(EQUIPOS.length === 0) {
-                alert("Debes agregar al menos un equipo / servicio a la lista.");
-                return;
-            }
-            
-            if(hayError) {
-                setTimeout(() => document.querySelectorAll('.blink-alert').forEach(el => el.classList.remove('blink-alert')), 1000);
-                return;
-            }
-
-            // Preparar el NIT + Nombre a facturar si existe
-            const nFacturar = document.getElementById('cFN').value.trim();
-            const nitBase = document.getElementById('cNi').value.trim();
-            const nitFinal = nFacturar ? `${nitBase} - Facturar a: ${nFacturar}` : nitBase;
-
-            const payload = { 
-                agente: USUARIO_ACTUAL.nombre, 
-                perfil: USUARIO_ACTUAL.perfil, 
-                cliente: document.getElementById('cN').value.trim(), 
-                telefono: document.getElementById('cT').value.trim(), 
-                direccion: document.getElementById('cD').value.trim(), 
-                nit: nitFinal, 
-                equipos: EQUIPOS, 
-                link: document.getElementById('vL').value.trim() || 'BI_TRANSF', 
-                observaciones: document.getElementById('obs').value.trim() || 'Ninguna', 
-                estado: estadoFiltro 
-            };
-            
-            // Cambiar botones a estado de carga
-            const botones = document.querySelectorAll('.footer-actions button');
-            botones.forEach(b => { b.disabled = true; b.style.opacity = "0.5"; });
-
-            try {
-                const r = await fetch(API_URL, { 
-                    method: 'POST', 
-                    body: JSON.stringify({ action: 'guardar', payload: payload }) 
-                });
-                const res = await r.json();
-                
-                if(res.success) { 
-                    alert("¡Éxito! Gestión guardada como: " + estadoFiltro); 
-                    limpiarFormulario(); 
+                if (data.success) {
+                    document.getElementById('login-view').style.display = 'none';
+                    document.getElementById('app-view').style.display = 'block';
+                    document.getElementById('displayUser').innerText = data.usuario.toUpperCase();
+                    document.getElementById('displayCampana').innerText = "Campaña: " + data.campana;
                 } else {
-                    alert("Error al guardar: " + res.error);
+                    alert("Error: " + data.message);
+                    b.disabled = false; b.innerText = "INICIAR SESIÓN";
                 }
-            } catch(e) {
-                alert("Error de conexión al guardar la gestión.");
+            } catch (error) {
+                alert("Error de conexión. Intente nuevamente.");
+                b.disabled = false; b.innerText = "INICIAR SESIÓN";
+            }
+        });
+
+        function verSeccion(id) {
+            document.querySelectorAll('.main-content > section').forEach(s => s.classList.add('hidden'));
+            document.getElementById(id).classList.remove('hidden');
+            document.querySelectorAll('.sidebar .nav-item').forEach(n => n.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+        }
+
+        // --- LÓGICA GESTIÓN DE COBRO ---
+        let servicios = [];
+        
+        function manejarTipoServicio() {
+            let tipo = document.getElementById('gc-tipo').value;
+            let lbl = document.getElementById('lbl-detalle');
+            let precio = document.getElementById('gc-precio');
+            let contContacto = document.getElementById('sec-contacto');
+            
+            if(tipo.includes('Diagnostico')) { lbl.innerText = "Falla Reportada *"; precio.value = 175; precio.readOnly = true; }
+            else { lbl.innerText = "Servicio Solicitado *"; precio.value = 0; precio.readOnly = false; }
+            
+            if(tipo === 'Presupuesto') contContacto.classList.add('hidden');
+            else contContacto.classList.remove('hidden');
+        }
+
+        function agregarServicio() {
+            let t = document.getElementById('gc-tipo').value; let d = document.getElementById('gc-detalle').value;
+            let p = document.getElementById('gc-producto').value; let m = document.getElementById('gc-marca').value; let mod = document.getElementById('gc-modelo').value;
+            let pr = parseFloat(document.getElementById('gc-precio').value) || 0;
+            
+            if(!t || !d || !p || !m) { alert("Complete los campos obligatorios del servicio."); return; }
+            
+            servicios.push({tipo:t, det:d, prod:p, marca:m, modelo: mod, pre:pr});
+            renderTablaServicios();
+            
+            document.getElementById('gc-tipo').value = ""; document.getElementById('gc-detalle').value = "";
+            document.getElementById('gc-producto').value = ""; document.getElementById('gc-marca').value = ""; document.getElementById('gc-modelo').value = "";
+            manejarTipoServicio();
+        }
+
+        function renderTablaServicios() {
+            let tb = document.getElementById('lista-servicios'); tb.innerHTML = ""; let tot = 0;
+            if(servicios.length > 0) document.getElementById('tabla-servicios').classList.remove('hidden');
+            else document.getElementById('tabla-servicios').classList.add('hidden');
+
+            servicios.forEach((s, i) => {
+                tot += s.pre;
+                tb.innerHTML += `<tr><td>${s.tipo}</td><td>${s.det}</td><td>${s.prod}/${s.marca}</td><td>Q${s.pre.toFixed(2)}</td><td><button style="color:red; border:none; background:none; cursor:pointer;" onclick="servicios.splice(${i},1); renderTablaServicios();"><i class="fas fa-trash"></i></button></td></tr>`;
+            });
+            document.getElementById('total-servicios').innerText = `Total: Q${tot.toFixed(2)}`;
+        }
+
+        function limpiarGestor() {
+            document.querySelectorAll('#sec-gestion input').forEach(i => { if(i.type==='checkbox') i.checked=false; else i.value=''; });
+            document.querySelectorAll('#sec-gestion select, #sec-gestion textarea').forEach(i => i.value='');
+            servicios = []; renderTablaServicios(); manejarTipoServicio();
+        }
+
+        // FUNCIÓN QUE ENVÍA DATOS A GOOGLE SHEETS
+        async function enviarGestor(metodo, btnObj) {
+            if(!document.getElementById('check-datos').checked) { alert("Debe confirmar que los datos son correctos."); return; }
+            if(servicios.length === 0) { alert("Debe agregar al menos 1 servicio."); return; }
+            
+            let btnTextoOriginal = btnObj.innerHTML;
+            btnObj.disabled = true;
+            btnObj.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+
+            let payload = {
+                action: 'guardarGestion',
+                datos: {
+                    agente: document.getElementById('displayUser').innerText,
+                    nitCliente: document.getElementById('gc-nitCli').value,
+                    nombreCliente: document.getElementById('gc-nomCli').value,
+                    telefono: document.getElementById('gc-telCli').value,
+                    direccion: document.getElementById('gc-dirCli').value,
+                    correoCliente: document.getElementById('gc-corCli').value,
+                    obsTecnico: document.getElementById('gc-obsTec').value,
+                    nitFactura: document.getElementById('gc-nitFac').value,
+                    nombreFactura: document.getElementById('gc-nomFac').value,
+                    correoFactura: document.getElementById('gc-corFac').value,
+                    visaLink: document.getElementById('gc-visa').value,
+                    obsGenerales: document.getElementById('gc-obsGen').value,
+                    metodoEnvio: metodo,
+                    listaServicios: servicios
+                }
+            };
+
+            try {
+                let response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify(payload)
+                });
+                let data = await response.json();
+
+                if(data.success) {
+                    alert("¡Éxito! " + data.message);
+                    limpiarGestor();
+                } else {
+                    alert("Error en el servidor: " + data.message);
+                }
+            } catch(error) {
+                alert("Error de red. Verifique su conexión.");
             } finally {
-                botones.forEach(b => { b.disabled = false; b.style.opacity = "1"; });
+                btnObj.disabled = false;
+                btnObj.innerHTML = btnTextoOriginal;
             }
         }
     </script>

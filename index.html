@@ -3,445 +3,288 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Call Center ST - Sistema de Gestión</title>
+    <title>Gestión de Cobro - Call Center ST</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* ==========================================
-           VARIABLES Y ESTILOS GLOBALES
-           ========================================== */
         :root {
-            --azul-distelsa: #0033a0;
+            --azul-oscuro: #002d72;
+            --azul-claro: #f0f4f8;
             --rojo-distelsa: #e3000f;
-            --gris-fondo: #f4f7f6;
-            --texto-oscuro: #333;
+            --blanco: #ffffff;
+            --gris-borde: #e0e0e0;
         }
 
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: var(--gris-fondo); color: var(--texto-oscuro); }
-        
-        /* UTILIDADES */
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; background-color: #f8f9fa; color: #333; }
         .hidden { display: none !important; }
-        .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px; }
-        .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; margin-bottom: 15px; }
-        .card { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px; }
-        .section-box { border: 1px solid #e0e0e0; padding: 20px; border-radius: 6px; margin-bottom: 20px; background-color: #fafafa; }
-        
-        /* BOTONES E INPUTS */
-        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; font-family: inherit; }
-        .btn-action { padding: 10px 15px; border: none; border-radius: 5px; color: white; cursor: pointer; font-weight: bold; display: inline-flex; align-items: center; gap: 8px; font-size: 14px; transition: 0.3s;}
-        .btn-action:disabled { opacity: 0.6; cursor: not-allowed; }
-        .bg-blue { background-color: var(--azul-distelsa); }
-        .bg-blue:hover { background-color: #002277; }
-        .bg-red { background-color: var(--rojo-distelsa); }
-        .bg-red:hover { background-color: #b3000b; }
-        .bg-green { background-color: #28a745; }
-        .bg-gray { background-color: #6c757d; }
-        
-        /* TABLAS Y BADGES */
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; background: white; }
-        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; font-size: 14px; }
-        th { background-color: var(--azul-distelsa); color: white; }
-        .badge { padding: 5px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; color: white; }
 
-        /* ==========================================
-           PANTALLA DE LOGIN
-           ========================================== */
-        #login-screen { height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--azul-distelsa) 0%, #001b5e 100%); }
-        .login-box { background: white; padding: 40px; border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); width: 350px; text-align: center; }
-        .login-box h2 { color: var(--azul-distelsa); margin-bottom: 20px; }
-        .login-box input { margin-bottom: 15px; }
-        
-        /* ==========================================
-           LAYOUT PRINCIPAL (MENÚ Y CONTENIDO)
-           ========================================== */
-        #app-container { display: flex; min-height: 100vh; }
-        
-        .sidebar { width: 250px; background-color: #fff; box-shadow: 2px 0 5px rgba(0,0,0,0.05); display: flex; flex-direction: column; }
-        .sidebar-header { padding: 20px; background-color: var(--azul-distelsa); color: white; text-align: center; }
-        .sidebar-menu { list-style: none; padding: 0; margin: 0; }
-        .sidebar-menu li { padding: 15px 20px; border-bottom: 1px solid #eee; cursor: pointer; color: #555; font-weight: 500; display: flex; align-items: center; gap: 10px; transition: 0.2s;}
-        .sidebar-menu li:hover, .sidebar-menu li.active { background-color: #f0f4f8; color: var(--azul-distelsa); border-left: 4px solid var(--azul-distelsa); }
-        
-        .main-content { flex: 1; padding: 30px; overflow-y: auto; }
-        .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 2px solid #eee; }
-        .user-info { font-size: 14px; color: #666; display: flex; align-items: center; gap: 15px; }
+        /* HEADER */
+        header { 
+            background: var(--blanco); padding: 10px 30px; display: flex; 
+            justify-content: space-between; align-items: center; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100;
+        }
+        .logo-area { display: flex; align-items: center; gap: 10px; color: var(--azul-oscuro); font-weight: bold; font-size: 22px; }
+        .user-info-top { text-align: right; font-size: 13px; }
+        .btn-salir { background: var(--rojo-distelsa); color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; }
 
-        /* ==========================================
-           MODAL (POP-UP DE PERMISOS)
-           ========================================== */
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 9999; align-items: center; justify-content: center; }
-        .modal-content { background: white; padding: 25px; border-radius: 12px; width: 350px; position: relative; }
-        .switch-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding: 8px; border-bottom: 1px solid #f0f0f0; }
-        .switch { position: relative; display: inline-block; width: 40px; height: 20px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; inset: 0; background-color: #ccc; transition: .4s; border-radius: 20px; }
-        .switch input:checked + .slider { background-color: var(--rojo-distelsa); }
-        .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
-        .switch input:checked + .slider:before { transform: translateX(20px); }
+        /* LAYOUT */
+        .wrapper { display: flex; min-height: calc(100vh - 65px); }
+        
+        /* SIDEBAR */
+        nav { width: 250px; background: var(--azul-oscuro); color: white; padding-top: 20px; }
+        nav ul { list-style: none; padding: 0; margin: 0; }
+        nav ul li { 
+            padding: 15px 25px; cursor: pointer; display: flex; align-items: center; gap: 12px; 
+            transition: 0.3s; border-bottom: 1px solid rgba(255,255,255,0.1); 
+        }
+        nav ul li:hover, nav ul li.active { background: rgba(255,255,255,0.1); border-left: 5px solid white; }
+
+        /* CONTENIDO */
+        main { flex: 1; padding: 30px; }
+        .card { background: white; border-radius: 10px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        h3 { color: var(--azul-oscuro); margin-top: 0; border-bottom: 2px solid var(--azul-claro); padding-bottom: 10px; }
+
+        /* FORMULARIOS Y TABLAS */
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        input, select, textarea { width: 100%; padding: 10px; border: 1px solid var(--gris-borde); border-radius: 5px; box-sizing: border-box; }
+        .btn { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        .btn-blue { background: var(--azul-oscuro); color: white; }
+        .btn-green { background: #28a745; color: white; }
+        .btn-red { background: var(--rojo-distelsa); color: white; }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th { background: var(--azul-oscuro); color: white; padding: 12px; text-align: left; }
+        td { padding: 12px; border-bottom: 1px solid var(--gris-borde); font-size: 14px; }
+
+        /* MODAL */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 1000; align-items: center; justify-content: center; }
+        .modal-content { background: white; padding: 30px; border-radius: 10px; width: 400px; }
+        .switch-row { display: flex; justify-content: space-between; margin-bottom: 15px; align-items: center; }
+
+        /* LOGIN */
+        #login-page { height: 100vh; display: flex; align-items: center; justify-content: center; background: var(--azul-oscuro); }
+        .login-box { background: white; padding: 40px; border-radius: 12px; width: 350px; text-align: center; }
     </style>
 </head>
 <body>
 
-    <div id="login-screen">
+    <div id="login-page">
         <div class="login-box">
-            <h2><i class="fas fa-headset"></i> Call Center ST</h2>
-            <p style="color: #666; margin-bottom: 20px;">Ingresa tus credenciales</p>
-            <input type="text" id="login-user" placeholder="Usuario">
-            <input type="password" id="login-pass" placeholder="Contraseña">
-            <button class="btn-action bg-blue" id="btnLogin" onclick="iniciarSesion()" style="width: 100%; justify-content: center;">Ingresar al Sistema</button>
-            <p id="login-msg" style="color: var(--rojo-distelsa); font-size: 14px; margin-top: 15px;"></p>
+            <h2 style="color:var(--azul-oscuro)">Call Center ST</h2>
+            <input type="text" id="l-user" placeholder="Usuario" style="margin-bottom:15px">
+            <input type="password" id="l-pass" placeholder="Contraseña" style="margin-bottom:15px">
+            <button class="btn btn-blue" style="width:100%" onclick="login()">Entrar</button>
+            <p id="l-msg" style="color:red; margin-top:10px"></p>
         </div>
     </div>
 
-    <div id="app-container" class="hidden">
-        
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <i class="fas fa-headset fa-2x"></i>
-                <h3 style="margin: 10px 0 0 0;">Call Center ST</h3>
+    <div id="main-app" class="hidden">
+        <header>
+            <div class="logo-area"><i class="fas fa-headset"></i> Gestión de Cobro</div>
+            <div style="display:flex; align-items:center; gap:20px">
+                <div class="user-info-top">
+                    <strong id="user-name">Administrador</strong><br>
+                    <span id="user-campana" style="color:var(--rojo-distelsa)">Campaña: General</span>
+                </div>
+                <button class="btn-salir" onclick="location.reload()"><i class="fas fa-sign-out-alt"></i> Salir</button>
             </div>
-            <ul class="sidebar-menu">
-                <li id="menu-admin" onclick="verSeccion('sec-admin')"><i class="fas fa-users-cog"></i> 1. Usuarios / Admin</li>
-                <li id="menu-gestion" onclick="verSeccion('sec-gestion')"><i class="fas fa-file-invoice-dollar"></i> 4. Gestión de Cobro</li>
-                <li id="menu-seguimiento" onclick="verSeccion('sec-seguimiento')"><i class="fas fa-tasks"></i> 5. Seguimientos</li>
-                <li onclick="cerrarSesion()" style="color: var(--rojo-distelsa); margin-top: auto;"><i class="fas fa-sign-out-alt"></i> Salir</li>
-            </ul>
-        </aside>
+        </header>
 
-        <main class="main-content">
-            <div class="topbar">
-                <h2 style="margin: 0; color: var(--azul-distelsa);" id="titulo-seccion">Bienvenido</h2>
-                <div class="user-info">
-                    <span id="ui-nombre"><i class="fas fa-user"></i> Agente</span>
-                    <span class="badge bg-blue" id="ui-rol">Rol</span>
-                </div>
-            </div>
+        <div class="wrapper">
+            <nav>
+                <ul id="main-menu">
+                    <li id="m-admin" onclick="showSec('sec-admin')"><i class="fas fa-users"></i> 1. Usuarios</li>
+                    <li id="m-gestion" onclick="showSec('sec-gestion')"><i class="fas fa-file-invoice-dollar"></i> 4. Gestión de Cobro</li>
+                    <li id="m-seguimiento" onclick="showSec('sec-seguimiento')"><i class="fas fa-history"></i> 5. Seguimientos</li>
+                </ul>
+            </nav>
 
-            <section id="sec-admin" class="card hidden">
-                <h3><i class="fas fa-shield-alt"></i> Panel de Administración</h3>
-                
-                <div class="section-box">
-                    <h4>A. Crear Nuevo Usuario</h4>
-                    <div class="grid-3">
-                        <input type="text" id="admin-user" placeholder="Usuario (ej. jperez)">
-                        <input type="text" id="admin-nombre" placeholder="Nombre Completo">
-                        <input type="password" id="admin-pass" placeholder="Contraseña">
-                        <select id="admin-rol">
-                            <option value="Agente">Agente</option>
-                            <option value="Líder">Líder</option>
-                            <option value="Administrador">Administrador</option>
-                        </select>
-                        <input type="text" id="admin-campana" placeholder="Campaña" value="Call Center ST">
-                        <input type="text" id="admin-firma" placeholder="Firma (ej. Atentamente, Juan)">
-                        <button class="btn-action bg-blue" onclick="crearUsuario(this)"><i class="fas fa-save"></i> Guardar Usuario</button>
+            <main>
+                <section id="sec-admin" class="hidden">
+                    <div class="card">
+                        <h3>Administración de Usuarios y Firma</h3>
+                        <div class="grid">
+                            <input type="text" id="u-user" placeholder="Usuario">
+                            <input type="text" id="u-nombre" placeholder="Nombre">
+                            <input type="password" id="u-pass" placeholder="Password">
+                            <select id="u-rol">
+                                <option value="Agente">Agente</option>
+                                <option value="Administrador">Administrador</option>
+                            </select>
+                            <input type="text" id="u-firma" placeholder="Firma (Ej: Atentamente, Juan)">
+                            <button class="btn btn-blue" onclick="crearUser()">Crear Usuario</button>
+                        </div>
+                        <table>
+                            <thead><tr><th>Usuario</th><th>Nombre</th><th>Rol</th><th>Firma</th></tr></thead>
+                            <tbody id="t-users-body"></tbody>
+                        </table>
                     </div>
-                    
-                    <table style="margin-top:20px;">
-                        <thead><tr><th>ID</th><th>Usuario</th><th>Nombre</th><th>Rol</th><th>Firma</th><th>En Línea</th></tr></thead>
-                        <tbody id="tabla-usuarios-body"><tr><td colspan="6" style="text-align:center;">Cargando...</td></tr></tbody>
-                    </table>
-                </div>
 
-                <div class="section-box">
-                    <h4>B. Permisos por Rol</h4>
-                    <table>
-                        <thead><tr><th>Rol</th><th>Permisos Activos</th><th>Configurar</th></tr></thead>
-                        <tbody id="tabla-roles-body"><tr><td colspan="3" style="text-align:center;">Cargando...</td></tr></tbody>
-                    </table>
-                </div>
-            </section>
-
-            <section id="sec-gestion" class="card hidden">
-                <div class="section-box">
-                    <h4>1. Detalle del Servicio</h4>
-                    <div class="grid-3">
-                        <select id="s-tipo"><option value="Presupuesto">Presupuesto</option><option value="Reparacion">Reparación</option></select>
-                        <input type="text" id="s-det" placeholder="Falla / Detalle">
-                        <input type="text" id="s-prod" placeholder="Producto">
-                        <input type="text" id="s-marca" placeholder="Marca">
-                        <input type="text" id="s-modelo" placeholder="Modelo">
-                        <input type="number" id="s-pre" placeholder="Precio Q." step="0.01">
-                        <button class="btn-action bg-green" onclick="agregarServicio()"><i class="fas fa-plus"></i> Agregar a la lista</button>
+                    <div class="card">
+                        <h3>Configuración de Permisos por Rol</h3>
+                        <table>
+                            <thead><tr><th>Rol</th><th>Permisos Activos</th><th>Acción</th></tr></thead>
+                            <tbody id="t-roles-body"></tbody>
+                        </table>
                     </div>
-                    <table id="tabla-servicios">
-                        <thead><tr><th>Tipo</th><th>Detalle</th><th>Producto/Marca/Mod</th><th>Precio</th><th>Acción</th></tr></thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
+                </section>
 
-                <div class="grid-2">
-                    <div class="section-box">
-                        <h4>2. Datos de Contacto</h4>
-                        <input type="text" id="c-nit" placeholder="NIT Cliente" style="margin-bottom: 10px;">
-                        <input type="text" id="c-nombre" placeholder="Nombre Completo" style="margin-bottom: 10px;">
-                        <input type="text" id="c-tel" placeholder="Teléfonos" style="margin-bottom: 10px;">
-                        <input type="email" id="c-correo" placeholder="Correo Electrónico" style="margin-bottom: 10px;">
-                        <textarea id="c-dir" placeholder="Dirección Exacta" rows="2"></textarea>
+                <section id="sec-gestion" class="hidden">
+                    <div class="card">
+                        <h3>1. Detalle del Servicio</h3>
+                        <div class="grid">
+                            <select id="gs-tipo"><option>Presupuesto</option><option>Reparación</option></select>
+                            <input type="text" id="gs-det" placeholder="Falla / Detalle">
+                            <input type="text" id="gs-prod" placeholder="Producto">
+                            <input type="text" id="gs-marca" placeholder="Marca">
+                            <input type="text" id="gs-mod" placeholder="Modelo">
+                            <input type="number" id="gs-pre" placeholder="Precio Q.">
+                            <button class="btn btn-green" onclick="addServicio()">+ Agregar a la lista</button>
+                        </div>
+                        <table id="t-servicios">
+                            <thead><tr><th>Tipo</th><th>Detalle</th><th>Producto/Marca</th><th>Precio</th><th>X</th></tr></thead>
+                            <tbody></tbody>
+                        </table>
                     </div>
-                    <div class="section-box">
-                        <h4>3. Datos de Facturación</h4>
-                        <input type="text" id="f-nit" placeholder="NIT a Facturar" style="margin-bottom: 10px;">
-                        <input type="text" id="f-nombre" placeholder="Nombre a Facturar" style="margin-bottom: 10px;">
-                        <input type="email" id="f-correo" placeholder="Correo para Factura" style="margin-bottom: 10px;">
-                        <input type="text" id="f-visalink" placeholder="Link de Visa (Opcional)" style="margin-bottom: 10px;">
-                        <textarea id="obs-general" placeholder="Observaciones Generales" rows="2"></textarea>
+
+                    <div class="grid">
+                        <div class="card">
+                            <h3>2. Datos de Contacto</h3>
+                            <input type="text" id="gc-nit" placeholder="NIT Cliente" style="margin-bottom:10px">
+                            <input type="text" id="gc-nom" placeholder="Nombre Completo" style="margin-bottom:10px">
+                            <input type="text" id="gc-tel" placeholder="Teléfonos" style="margin-bottom:10px">
+                            <input type="text" id="gc-mail" placeholder="Correo">
+                        </div>
+                        <div class="card">
+                            <h3>3. Facturación y Otros</h3>
+                            <input type="text" id="gf-nit" placeholder="NIT Factura" style="margin-bottom:10px">
+                            <input type="text" id="gf-nom" placeholder="Nombre Factura" style="margin-bottom:10px">
+                            <input type="text" id="gf-visa" placeholder="Visa Link" style="margin-bottom:10px">
+                            <textarea id="gf-obs" placeholder="Observaciones generales"></textarea>
+                        </div>
                     </div>
-                </div>
+                    <button class="btn btn-blue" style="float:right" onclick="guardarTicket()">Guardar Gestión</button>
+                </section>
 
-                <div style="text-align: right; border-top: 1px solid #eee; padding-top: 20px;">
-                    <button class="btn-action bg-blue" id="btnGuardarTicket" onclick="guardarTicket(this)"><i class="fas fa-save"></i> Solo Guardar Ticket</button>
-                </div>
-            </section>
-
-            <section id="sec-seguimiento" class="card hidden">
-                <h3><i class="fas fa-tasks"></i> Bandeja de Seguimientos</h3>
-                <p>En construcción... (Siguiente módulo)</p>
-            </section>
-
-        </main>
+                <section id="sec-seguimiento" class="hidden">
+                    <div class="card">
+                        <h3>Bandeja de Seguimientos Pendientes</h3>
+                        <table>
+                            <thead><tr><th>Ticket</th><th>Cliente</th><th>Fecha</th><th>Estado</th><th>Acción</th></tr></thead>
+                            <tbody id="t-seguimientos"></tbody>
+                        </table>
+                    </div>
+                </section>
+            </main>
+        </div>
     </div>
 
     <div id="modalRoles" class="modal">
         <div class="modal-content">
-            <h3 id="modalRolNombre" style="margin-top:0; color:var(--azul-distelsa);">Permisos</h3>
-            <div class="switch-row"><span>Ver Panel Admin</span><label class="switch"><input type="checkbox" id="p-usuarios"><span class="slider"></span></label></div>
-            <div class="switch-row"><span>Gestión de Cobro</span><label class="switch"><input type="checkbox" id="p-gestion"><span class="slider"></span></label></div>
-            <div class="switch-row"><span>Seguimientos</span><label class="switch"><input type="checkbox" id="p-seguimiento"><span class="slider"></span></label></div>
-            <div style="display:flex; gap:10px; margin-top:20px;">
-                <button class="btn-action bg-gray" style="flex:1; justify-content:center;" onclick="document.getElementById('modalRoles').style.display='none'">Cancelar</button>
-                <button class="btn-action bg-blue" style="flex:1; justify-content:center;" onclick="guardarPermisos()">Guardar</button>
+            <h3 id="role-title">Permisos</h3>
+            <div class="switch-row"><span>Admin Usuarios</span><input type="checkbox" id="p-1"></div>
+            <div class="switch-row"><span>Gestión de Cobro</span><input type="checkbox" id="p-4"></div>
+            <div class="switch-row"><span>Seguimientos</span><input type="checkbox" id="p-5"></div>
+            <div style="display:flex; gap:10px">
+                <button class="btn btn-red" style="flex:1" onclick="document.getElementById('modalRoles').style.display='none'">Cerrar</button>
+                <button class="btn btn-blue" style="flex:1" onclick="savePermisos()">Guardar</button>
             </div>
         </div>
     </div>
 
     <script>
-        // === LA URL DE TU BACKEND ===
-        const API_URL = 'https://script.google.com/macros/s/AKfycbzkbOrLmD-7108wUn48ZmUHJA_Fy5KgGk8KBtt144h7zdzeDfli9U1XkD8ACxoq3yB4/exec';
+        const API = 'https://script.google.com/macros/s/AKfycbzkbOrLmD-7108wUn48ZmUHJA_Fy5KgGk8KBtt144h7zdzeDfli9U1XkD8ACxoq3yB4/exec';
+        let userActual = { nombre: "", rol: "", firma: "", permisos: {} };
+        let listaServicios = [];
+        let rolEdit = "";
 
-        // VARIABLES GLOBALES DE SESIÓN
-        let currentUser = "";
-        let currentRol = "";
-        let currentFirma = "";
-        let currentPermisos = {};
-        let listaServiciosTemp = [];
-        let rolEditando = "";
-
-        // --- 1. LOGIN Y PERMISOS ---
-        async function iniciarSesion() {
-            const u = document.getElementById('login-user').value;
-            const p = document.getElementById('login-pass').value;
-            const btn = document.getElementById('btnLogin');
-            const msg = document.getElementById('login-msg');
-
-            if(!u || !p) return msg.innerText = "Ingresa usuario y contraseña.";
-            
-            btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Validando...';
-            msg.innerText = "";
-
-            try {
-                let res = await fetch(API_URL, {
-                    method: 'POST', body: JSON.stringify({ action: 'login', usuario: u, password: p })
-                }).then(r => r.json());
-
-                if(res.success) {
-                    // Guardar datos en memoria
-                    currentUser = res.usuario;
-                    currentRol = res.rol;
-                    currentFirma = res.firma;
-                    currentPermisos = res.permisos || { usuarios:"NO", gestion:"SI", seguimiento:"SI" };
-
-                    // Actualizar UI
-                    document.getElementById('ui-nombre').innerHTML = `<i class="fas fa-user"></i> ${currentUser}`;
-                    document.getElementById('ui-rol').innerText = currentRol;
-                    
-                    // Aplicar Permisos Visuales (Ocultar menús)
-                    document.getElementById('menu-admin').style.display = currentPermisos.usuarios === "SI" ? "flex" : "none";
-                    document.getElementById('menu-gestion').style.display = currentPermisos.gestion === "SI" ? "flex" : "none";
-                    document.getElementById('menu-seguimiento').style.display = currentPermisos.seguimiento === "SI" ? "flex" : "none";
-
-                    // Cambiar de pantalla
-                    document.getElementById('login-screen').classList.add('hidden');
-                    document.getElementById('app-container').classList.remove('hidden');
-
-                    // Redirigir a la primera pantalla permitida
-                    if(currentPermisos.gestion === "SI") verSeccion('sec-gestion');
-                    else if(currentPermisos.seguimiento === "SI") verSeccion('sec-seguimiento');
-                    else if(currentPermisos.usuarios === "SI") verSeccion('sec-admin');
-
-                } else {
-                    msg.innerText = res.message;
-                }
-            } catch (e) {
-                msg.innerText = "Error de conexión. Intenta de nuevo.";
-            }
-            btn.disabled = false; btn.innerHTML = 'Ingresar al Sistema';
-        }
-
-        function cerrarSesion() { location.reload(); }
-
-        function verSeccion(id) {
-            document.querySelectorAll('section.card').forEach(s => s.classList.add('hidden'));
-            document.querySelectorAll('.sidebar-menu li').forEach(li => li.classList.remove('active'));
-            
+        // --- NAVEGACIÓN ---
+        function showSec(id) {
+            document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
+            document.querySelectorAll('nav li').forEach(l => l.classList.remove('active'));
             document.getElementById(id).classList.remove('hidden');
+            if(id === 'sec-admin') { cargarUsers(); cargarRoles(); }
+        }
+
+        // --- LOGIN ---
+        async function login() {
+            const u = document.getElementById('l-user').value;
+            const p = document.getElementById('l-pass').value;
+            const res = await fetch(API, { method:'POST', body: JSON.stringify({action:'login', usuario:u, password:p}) }).then(r=>r.json());
             
-            // Lógicas específicas al abrir secciones
-            if(id === 'sec-admin') {
-                document.getElementById('titulo-seccion').innerText = "Panel de Administración";
-                document.getElementById('menu-admin').classList.add('active');
-                cargarUsuarios();
-                cargarRoles();
-            } else if (id === 'sec-gestion') {
-                document.getElementById('titulo-seccion').innerText = "Gestión de Cobro";
-                document.getElementById('menu-gestion').classList.add('active');
-            } else if (id === 'sec-seguimiento') {
-                document.getElementById('titulo-seccion').innerText = "Bandeja de Seguimientos";
-                document.getElementById('menu-seguimiento').classList.add('active');
+            if(res.success) {
+                userActual = { nombre: res.usuario, rol: res.rol, firma: res.firma, permisos: res.permisos };
+                document.getElementById('user-name').innerText = res.usuario;
+                document.getElementById('user-campana').innerText = "Rol: " + res.rol;
+                
+                // Aplicar permisos al menú
+                document.getElementById('m-admin').style.display = res.permisos.usuarios === "SI" ? "flex" : "none";
+                document.getElementById('m-gestion').style.display = res.permisos.gestion === "SI" ? "flex" : "none";
+                document.getElementById('m-seguimiento').style.display = res.permisos.seguimiento === "SI" ? "flex" : "none";
+
+                document.getElementById('login-page').classList.add('hidden');
+                document.getElementById('main-app').classList.remove('hidden');
+                showSec(res.permisos.gestion === "SI" ? 'sec-gestion' : 'sec-admin');
+            } else {
+                document.getElementById('l-msg').innerText = res.message;
             }
         }
 
-        // --- 2. LÓGICA DE ADMINISTRACIÓN (USUARIOS Y ROLES) ---
-        async function cargarUsuarios() {
-            const tbody = document.getElementById('tabla-usuarios-body');
-            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Cargando...</td></tr>';
-            try {
-                let res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'obtenerUsuarios' }) }).then(r=>r.json());
-                if(res.success) {
-                    tbody.innerHTML = res.data.map(u => `
-                        <tr>
-                            <td>${u.id}</td><td>${u.usuario}</td><td>${u.nombre}</td>
-                            <td><span class="badge bg-gray">${u.rol}</span></td>
-                            <td style="font-size:11px; color:#666;">${u.firma || ''}</td>
-                            <td><span class="badge ${u.enLinea==='SI'?'bg-green':'bg-gray'}">${u.enLinea||'NO'}</span></td>
-                        </tr>`).join('');
-                }
-            } catch(e) { tbody.innerHTML = '<tr><td colspan="6" color="red">Error al cargar</td></tr>'; }
+        // --- ADMIN ---
+        async function cargarUsers() {
+            const res = await fetch(API, { method:'POST', body: JSON.stringify({action:'obtenerUsuarios'}) }).then(r=>r.json());
+            document.getElementById('t-users-body').innerHTML = res.data.map(u => `<tr><td>${u.usuario}</td><td>${u.nombre}</td><td>${u.rol}</td><td>${u.firma}</td></tr>`).join('');
         }
 
-        async function crearUsuario(btn) {
-            const d = {
-                usuario: document.getElementById('admin-user').value,
-                nombre: document.getElementById('admin-nombre').value,
-                password: document.getElementById('admin-pass').value,
-                rol: document.getElementById('admin-rol').value,
-                campana: document.getElementById('admin-campana').value,
-                firma: document.getElementById('admin-firma').value
+        async function crearUser() {
+            const d = { 
+                usuario: document.getElementById('u-user').value, 
+                nombre: document.getElementById('u-nombre').value, 
+                password: document.getElementById('u-pass').value,
+                rol: document.getElementById('u-rol').value,
+                firma: document.getElementById('u-firma').value,
+                campana: "Call Center ST"
             };
-            if(!d.usuario || !d.nombre || !d.password) return alert("Llena los campos obligatorios.");
-            
-            btn.innerHTML = 'Guardando...'; btn.disabled = true;
-            try {
-                let res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'guardarUsuario', datos: d }) }).then(r=>r.json());
-                alert(res.message);
-                if(res.success) {
-                    document.getElementById('admin-user').value = ''; document.getElementById('admin-nombre').value = ''; 
-                    document.getElementById('admin-pass').value = ''; document.getElementById('admin-firma').value = '';
-                    cargarUsuarios();
-                }
-            } catch(e) { alert("Error al guardar."); }
-            btn.innerHTML = '<i class="fas fa-save"></i> Guardar Usuario'; btn.disabled = false;
+            const res = await fetch(API, { method:'POST', body: JSON.stringify({action:'guardarUsuario', datos:d}) }).then(r=>r.json());
+            alert(res.message); cargarUsers();
         }
 
         async function cargarRoles() {
-            const tbody = document.getElementById('tabla-roles-body');
-            try {
-                let res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'obtenerRoles' }) }).then(r=>r.json());
-                if(res.success) {
-                    tbody.innerHTML = res.data.map(r => `
-                        <tr>
-                            <td><strong>${r[0]}</strong></td>
-                            <td style="font-size:12px;">Admin:${r[1]} | Gestión:${r[2]} | Seg:${r[3]}</td>
-                            <td><button class="btn-action bg-blue" onclick="abrirModalPermisos('${r[0]}','${r[1]}','${r[2]}','${r[3]}')"><i class="fas fa-key"></i></button></td>
-                        </tr>`).join('');
-                }
-            } catch(e) {}
+            const res = await fetch(API, { method:'POST', body: JSON.stringify({action:'obtenerRoles'}) }).then(r=>r.json());
+            document.getElementById('t-roles-body').innerHTML = res.data.map(r => `<tr><td>${r[0]}</td><td>U:${r[1]} G:${r[2]} S:${r[3]}</td><td><button onclick="openPerms('${r[0]}','${r[1]}','${r[2]}','${r[3]}')">🔑</button></td></tr>`).join('');
         }
 
-        function abrirModalPermisos(rol, u, g, s) {
-            rolEditando = rol;
-            document.getElementById('modalRolNombre').innerText = "Permisos: " + rol;
-            document.getElementById('p-usuarios').checked = (u === "SI");
-            document.getElementById('p-gestion').checked = (g === "SI");
-            document.getElementById('p-seguimiento').checked = (s === "SI");
+        function openPerms(r, u, g, s) {
+            rolEdit = r;
+            document.getElementById('p-1').checked = u === "SI";
+            document.getElementById('p-4').checked = g === "SI";
+            document.getElementById('p-5').checked = s === "SI";
             document.getElementById('modalRoles').style.display = 'flex';
         }
 
-        async function guardarPermisos() {
-            const datos = {
-                rol: rolEditando,
-                u: document.getElementById('p-usuarios').checked ? "SI" : "NO",
-                g: document.getElementById('p-gestion').checked ? "SI" : "NO",
-                s: document.getElementById('p-seguimiento').checked ? "SI" : "NO",
-                d: "NO" // Dashboard por defecto
+        async function savePermisos() {
+            const d = { rol: rolEdit, u: document.getElementById('p-1').checked?"SI":"NO", g: document.getElementById('p-4').checked?"SI":"NO", s: document.getElementById('p-5').checked?"SI":"NO" };
+            await fetch(API, { method:'POST', body: JSON.stringify({action:'actualizarPermisos', datos:d}) });
+            document.getElementById('modalRoles').style.display = 'none'; cargarRoles();
+        }
+
+        // --- GESTIÓN ---
+        function addServicio() {
+            const s = { tipo: document.getElementById('gs-tipo').value, det: document.getElementById('gs-det').value, prod: document.getElementById('gs-prod').value, marca: document.getElementById('gs-marca').value, mod: document.getElementById('gs-mod').value, pre: document.getElementById('gs-pre').value };
+            listaServicios.push(s);
+            document.querySelector('#t-servicios tbody').innerHTML += `<tr><td>${s.tipo}</td><td>${s.det}</td><td>${s.prod} ${s.marca}</td><td>Q${s.pre}</td><td>OK</td></tr>`;
+        }
+
+        async function guardarTicket() {
+            const d = { 
+                agente: userActual.nombre, listaServicios: listaServicios, nitCliente: document.getElementById('gc-nit').value, 
+                nombreCliente: document.getElementById('gc-nom').value, telefono: document.getElementById('gc-tel').value,
+                correoCliente: document.getElementById('gc-mail').value, nitFactura: document.getElementById('gf-nit').value,
+                nombreFactura: document.getElementById('gf-nom').value, visaLink: document.getElementById('gf-visa').value,
+                obsGenerales: document.getElementById('gf-obs').value
             };
-            await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'actualizarPermisos', datos: datos }) });
-            document.getElementById('modalRoles').style.display = 'none';
-            cargarRoles();
-            alert("Permisos actualizados. Surtirán efecto en el próximo login.");
-        }
-
-        // --- 3. LÓGICA DE GESTIÓN (FORMULARIO) ---
-        function agregarServicio() {
-            let s = {
-                tipo: document.getElementById('s-tipo').value,
-                det: document.getElementById('s-det').value,
-                prod: document.getElementById('s-prod').value,
-                marca: document.getElementById('s-marca').value,
-                modelo: document.getElementById('s-modelo').value,
-                pre: document.getElementById('s-pre').value || 0
-            };
-            if(!s.det || !s.prod) return alert("Falta el detalle o producto.");
-            listaServiciosTemp.push(s);
-            renderTablaServicios();
-            // Limpiar inputs
-            document.getElementById('s-det').value = ''; document.getElementById('s-prod').value = '';
-            document.getElementById('s-marca').value = ''; document.getElementById('s-modelo').value = ''; document.getElementById('s-pre').value = '';
-        }
-
-        function renderTablaServicios() {
-            const tbody = document.querySelector('#tabla-servicios tbody');
-            tbody.innerHTML = listaServiciosTemp.map((s, idx) => `
-                <tr>
-                    <td>${s.tipo}</td><td>${s.det}</td><td>${s.prod} / ${s.marca}</td><td>Q. ${s.pre}</td>
-                    <td><button class="btn-action bg-red" style="padding:5px;" onclick="quitarServicio(${idx})"><i class="fas fa-trash"></i></button></td>
-                </tr>
-            `).join('');
-        }
-
-        function quitarServicio(idx) {
-            listaServiciosTemp.splice(idx, 1);
-            renderTablaServicios();
-        }
-
-        async function guardarTicket(btn) {
-            if(listaServiciosTemp.length === 0) return alert("Debes agregar al menos un servicio.");
-            
-            const datos = {
-                agente: currentUser,
-                listaServicios: listaServiciosTemp,
-                nitCliente: document.getElementById('c-nit').value,
-                nombreCliente: document.getElementById('c-nombre').value,
-                telefono: document.getElementById('c-tel').value,
-                correoCliente: document.getElementById('c-correo').value,
-                direccion: document.getElementById('c-dir').value,
-                nitFactura: document.getElementById('f-nit').value,
-                nombreFactura: document.getElementById('f-nombre').value,
-                correoFactura: document.getElementById('f-correo').value,
-                visaLink: document.getElementById('f-visalink').value,
-                obsGenerales: document.getElementById('obs-general').value
-            };
-
-            btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
-            
-            try {
-                let res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'guardarGestion', datos: datos }) }).then(r=>r.json());
-                if(res.success) {
-                    alert(res.message);
-                    location.reload(); // Recarga limpia para nuevo ticket
-                } else {
-                    alert("Error: " + res.message);
-                }
-            } catch (e) { alert("Error de conexión."); }
-            btn.disabled = false; btn.innerHTML = '<i class="fas fa-save"></i> Solo Guardar Ticket';
+            const res = await fetch(API, { method:'POST', body: JSON.stringify({action:'guardarGestion', datos:d}) }).then(r=>r.json());
+            alert(res.message); location.reload();
         }
     </script>
 </body>

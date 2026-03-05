@@ -271,6 +271,16 @@
             } catch (error) {
                 alert("Error de conexión.");
                 b.disabled = false; b.innerText = "INICIAR SESIÓN";
+                async function guardarPermisos() {
+    let datos = {
+        rol: rolEditable,
+        u: document.getElementById('p-1').checked ? "SI" : "NO",
+        g: document.getElementById('p-4').checked ? "SI" : "NO",
+        s: document.getElementById('p-5').checked ? "SI" : "NO",
+        d: "NO" // Valor por defecto para Dashboard por ahora
+    };
+    // ... resto del fetch ...
+}
             }
         });
 

@@ -3,346 +3,183 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SISTEMA DE GESTIÓN ST | DISTELSA 2026</title>
+    <title>SISTEMA ST | DISTELSA</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        :root {
-            --rojo-distelsa: #e30613;
-            --azul-distelsa: #003366;
-            --azul-oscuro: #001f3f;
-            --blanco: #ffffff;
-            --gris-claro: #f4f7f6;
-            --gris-texto: #333333;
-            --exito: #28a745;
-            --sidebar-width: 260px;
-            --transition: all 0.3s ease;
-        }
-
-        body {
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            margin: 0;
-            background-color: var(--gris-claro);
-            color: var(--gris-texto);
-            display: flex;
-            min-height: 100vh;
-        }
-
+        :root { --red: #e30613; --blue: #003366; --dark: #001f3f; --light: #f8f9fa; --grey: #6c757d; --shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: #f0f2f5; color: #333; overflow-x: hidden; }
         .hidden { display: none !important; }
 
-        /* --- LOGIN STYLES --- */
-        #login-view {
-            position: fixed;
-            inset: 0;
-            background: linear-gradient(135deg, var(--azul-distelsa) 0%, var(--azul-oscuro) 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
+        /* LOGIN */
+        #view-login { 
+            position: fixed; inset: 0; z-index: 2000;
+            background: linear-gradient(135deg, var(--blue) 0%, var(--dark) 100%);
+            display: flex; align-items: center; justify-content: center;
         }
-
-        .login-container {
-            background: var(--blanco);
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
-            width: 100%;
-            max-width: 400px;
-            text-align: center;
+        .card-login { 
+            background: white; padding: 40px; border-radius: 16px; width: 100%; max-width: 380px; 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3); text-align: center;
         }
-
-        .login-container img { width: 180px; margin-bottom: 20px; }
-        .login-container h2 { color: var(--azul-distelsa); margin-bottom: 25px; font-weight: 800; }
-
-        /* --- LAYOUT PRINCIPAL --- */
-        #app-view { display: flex; width: 100%; }
-
-        header {
-            position: fixed;
-            top: 0;
-            left: var(--sidebar-width);
-            right: 0;
-            height: 70px;
-            background: var(--blanco);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 30px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            z-index: 900;
+        .card-login h2 { color: var(--blue); margin-bottom: 25px; font-weight: 800; }
+        
+        /* LAYOUT */
+        header { 
+            position: fixed; top: 0; left: 260px; right: 0; height: 70px; background: white;
+            display: flex; align-items: center; justify-content: space-between; padding: 0 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05); z-index: 1000;
         }
-
-        .sidebar {
-            width: var(--sidebar-width);
-            background: var(--azul-distelsa);
-            color: var(--blanco);
-            height: 100vh;
-            position: fixed;
-            left: 0;
-            top: 0;
-            padding-top: 20px;
-            transition: var(--transition);
+        .sidebar { 
+            position: fixed; top: 0; left: 0; bottom: 0; width: 260px; background: var(--blue);
+            color: white; padding-top: 20px; z-index: 1100; transition: 0.3s;
         }
-
-        .sidebar-header {
-            padding: 20px;
-            text-align: center;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            margin-bottom: 20px;
+        .nav-item { 
+            padding: 16px 25px; display: flex; align-items: center; gap: 15px; cursor: pointer;
+            border-left: 4px solid transparent; transition: 0.2s; font-weight: 500;
         }
+        .nav-item:hover, .nav-item.active { background: rgba(255,255,255,0.1); border-left-color: var(--red); }
+        .main { margin-left: 260px; margin-top: 70px; padding: 30px; }
 
-        .nav-link {
-            padding: 15px 25px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            cursor: pointer;
-            transition: var(--transition);
-            font-weight: 500;
+        /* UI ELEMENTS */
+        .card { background: white; border-radius: 12px; padding: 25px; box-shadow: var(--shadow); margin-bottom: 25px; border: 1px solid #eee; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 20px; }
+        .input-group label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 6px; color: var(--blue); }
+        input, select, textarea { 
+            width: 100%; padding: 12px; border: 1.5px solid #dde1e5; border-radius: 8px; 
+            font-size: 15px; box-sizing: border-box; transition: 0.3s;
         }
-
-        .nav-link:hover, .nav-link.active {
-            background: var(--rojo-distelsa);
-            padding-left: 35px;
+        input:focus { border-color: var(--red); outline: none; background: #fff; }
+        
+        .btn { 
+            padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: 700;
+            display: inline-flex; align-items: center; gap: 10px; transition: 0.2s;
         }
+        .btn-red { background: var(--red); color: white; }
+        .btn-blue { background: var(--blue); color: white; }
+        .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+        .btn:disabled { background: #ccc; cursor: not-allowed; }
 
-        .main-content {
-            margin-left: var(--sidebar-width);
-            margin-top: 70px;
-            padding: 40px;
-            width: 100%;
-        }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th { background: #f1f4f9; padding: 15px; text-align: left; color: var(--blue); font-size: 14px; }
+        td { padding: 15px; border-bottom: 1px solid #eee; font-size: 14px; }
 
-        /* --- UI COMPONENTS --- */
-        .card {
-            background: var(--blanco);
-            border-radius: 12px;
-            padding: 30px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
-            margin-bottom: 30px;
-        }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 25px;
-        }
-
-        .input-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            font-size: 14px;
-            color: var(--azul-distelsa);
-        }
-
-        input, select, textarea {
-            width: 100%;
-            padding: 12px;
-            border: 1.5px solid #e1e1e1;
-            border-radius: 8px;
-            font-size: 15px;
-            transition: border-color 0.3s;
-        }
-
-        input:focus { border-color: var(--rojo-distelsa); outline: none; }
-
-        .btn {
-            padding: 12px 25px;
-            border: none;
-            border-radius: 8px;
-            font-weight: 700;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            transition: var(--transition);
-        }
-
-        .btn-primary { background: var(--azul-distelsa); color: white; }
-        .btn-danger { background: var(--rojo-distelsa); color: white; }
-        .btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        th {
-            background: #f8f9fa;
-            color: var(--azul-distelsa);
-            padding: 15px;
-            text-align: left;
-            border-bottom: 2px solid #eee;
-        }
-
-        td { padding: 15px; border-bottom: 1px solid #eee; }
-
-        /* Estilo para las notificaciones de estatus */
-        .badge {
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-        .badge-pendiente { background: #fff3cd; color: #856404; }
-        .badge-online { background: #d4edda; color: #155724; }
-
+        .badge { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 800; text-transform: uppercase; }
+        .bg-pending { background: #fff4e5; color: #b76e00; }
+        .bg-online { background: #e6fffa; color: #008673; }
+        
+        /* LOADING SPINNER */
+        .spinner { animation: spin 1s linear infinite; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
-    <div id="login-view">
-        <div class="login-container">
-            <h2 id="loginTitle">INICIAR SESIÓN</h2>
-            <form id="formLogin">
-                <div class="input-group" style="text-align: left;">
-                    <label><i class="fas fa-user"></i> Usuario</label>
-                    <input type="text" id="user" required placeholder="Escribe tu usuario">
+    <div id="view-login">
+        <div class="card-login">
+            <h2 style="margin-bottom:10px;">DISTELSA ST</h2>
+            <p style="color:var(--grey); margin-bottom:30px;">Acceso al Portal de Cobros</p>
+            <form id="form-login">
+                <div class="input-group" style="text-align:left; margin-bottom:15px;">
+                    <label>Usuario</label>
+                    <input type="text" id="log-user" required placeholder="Ingresa tu ID">
                 </div>
-                <div class="input-group" style="text-align: left; margin-top: 20px;">
-                    <label><i class="fas fa-lock"></i> Contraseña</label>
-                    <input type="password" id="pass" required placeholder="••••••••">
+                <div class="input-group" style="text-align:left; margin-bottom:25px;">
+                    <label>Contraseña</label>
+                    <input type="password" id="log-pass" required placeholder="••••••••">
                 </div>
-                <button type="submit" id="btnLogin" class="btn btn-danger" style="width: 100%; margin-top: 30px; justify-content: center;">
-                    ENTRAR AL SISTEMA
+                <button type="submit" id="btn-login" class="btn btn-red" style="width:100%; justify-content:center;">
+                    INICIAR SESIÓN
                 </button>
             </form>
-            <div id="loginMsg" style="margin-top: 20px; color: var(--rojo-distelsa); font-weight: 600;"></div>
+            <div id="login-error" style="margin-top:20px; color:var(--red); font-weight:bold; display:none;"></div>
         </div>
     </div>
 
-    <div id="app-view" class="hidden">
-        
+    <div id="view-app" class="hidden">
         <div class="sidebar">
-            <div class="sidebar-header">
-                <h3>DISTELSA ST</h3>
+            <div style="padding: 20px; text-align:center; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 10px;">
+                <h3 style="margin:0; letter-spacing:1px;">MENÚ ST</h3>
             </div>
-            <nav id="menu-dinamico">
-                </nav>
+            <nav id="sidebar-nav"></nav>
         </div>
 
         <header>
             <div>
-                <span style="color: #888;">Bienvenido,</span>
-                <strong id="userNameDisplay" style="color: var(--azul-distelsa);">Cargando...</strong>
+                <span id="header-welcome" style="color:var(--grey); font-size:14px;">Bienvenido,</span>
+                <strong id="header-name" style="color:var(--blue); display:block; font-size:16px;">Cargando...</strong>
             </div>
-            <div style="display: flex; align-items: center; gap: 20px;">
-                <span id="userRoleBadge" class="badge badge-online">Rol</span>
-                <button onclick="cerrarSesion()" class="btn btn-danger" style="padding: 8px 15px;">
-                    <i class="fas fa-sign-out-alt"></i>
-                </button>
+            <div style="display:flex; align-items:center; gap:15px;">
+                <span id="header-role" class="badge bg-online">Agente</span>
+                <button onclick="cerrarSesion()" class="btn btn-blue" style="padding: 8px 12px;"><i class="fas fa-sign-out-alt"></i></button>
             </div>
         </header>
 
-        <main class="main-content">
+        <main class="main">
             
             <section id="sec-dashboard" class="hidden">
-                <h1 style="color: var(--azul-distelsa);"><i class="fas fa-chart-line"></i> Dashboard de Rendimiento</h1>
-                <div class="form-grid">
+                <h2 style="color:var(--blue); margin-bottom:25px;"><i class="fas fa-chart-pie"></i> Panel de Resumen</h2>
+                <div class="grid">
                     <div class="card">
                         <h3>Estado de Tickets</h3>
-                        <canvas id="chartTickets"></canvas>
+                        <canvas id="chart-tickets" height="200"></canvas>
                     </div>
                     <div class="card">
-                        <h3>Agentes en Línea</h3>
-                        <div id="online-container" style="margin-top: 20px;">
-                            <ul id="lista-online" style="list-style: none; padding: 0;"></ul>
-                        </div>
+                        <h3>Equipo en Línea</h3>
+                        <div id="list-online" style="margin-top:15px;"></div>
                     </div>
                 </div>
             </section>
 
             <section id="sec-gestion" class="hidden">
                 <div class="card">
-                    <h2 style="color: var(--rojo-distelsa); border-bottom: 2px solid #eee; padding-bottom: 10px;">
-                        <i class="fas fa-cash-register"></i> Nueva Gestión de Servicio
+                    <h2 style="color:var(--red); border-bottom:2px solid #f0f0f0; padding-bottom:15px; margin-bottom:25px;">
+                        <i class="fas fa-file-invoice-dollar"></i> Ingreso de Nueva Gestión
                     </h2>
                     
-                    <h3 style="color: var(--azul-distelsa); margin-top: 25px;"><i class="fas fa-user-tag"></i> 1. Información del Cliente</h3>
-                    <div class="form-grid">
-                        <div class="input-group">
-                            <label>NIT Cliente</label>
-                            <input type="text" id="g-nitCli" placeholder="CF o Número de NIT">
-                        </div>
-                        <div class="input-group">
-                            <label>Nombre del Cliente</label>
-                            <input type="text" id="g-nomCli" placeholder="Nombre Completo">
-                        </div>
-                        <div class="input-group">
-                            <label>Teléfono de Contacto</label>
-                            <input type="text" id="g-telCli" placeholder="8888-8888">
-                        </div>
+                    <h3><i class="fas fa-id-card"></i> 1. Datos del Cliente</h3>
+                    <div class="grid">
+                        <div class="input-group"><label>NIT Facturación</label><input type="text" id="g-nit"></div>
+                        <div class="input-group"><label>Nombre Completo</label><input type="text" id="g-nom"></div>
+                        <div class="input-group"><label>Teléfono Movil</label><input type="text" id="g-tel"></div>
                     </div>
-                    <div class="form-grid">
-                        <div class="input-group" style="grid-column: span 2;">
-                            <label>Dirección de Domicilio</label>
-                            <input type="text" id="g-dirCli" placeholder="Dirección completa para visita técnica">
-                        </div>
-                        <div class="input-group">
-                            <label>Correo Electrónico</label>
-                            <input type="email" id="g-corCli" placeholder="cliente@correo.com">
-                        </div>
+                    <div class="grid">
+                        <div class="input-group" style="grid-column: span 2;"><label>Dirección de Servicio</label><input type="text" id="g-dir"></div>
+                        <div class="input-group"><label>Correo (Opcional)</label><input type="email" id="g-email"></div>
                     </div>
 
-                    <h3 style="color: var(--azul-distelsa); margin-top: 25px;"><i class="fas fa-tools"></i> 2. Detalle del Servicio</h3>
-                    <div style="background: #f9f9f9; padding: 20px; border-radius: 10px; border: 1px dashed #ccc;">
-                        <div class="form-grid">
+                    <h3 style="margin-top:40px;"><i class="fas fa-tools"></i> 2. Servicios Solicitados</h3>
+                    <div style="background:#f8f9fa; padding:20px; border-radius:12px; border:1px dashed #ccc;">
+                        <div class="grid">
                             <div class="input-group">
-                                <label>Tipo de Servicio</label>
-                                <select id="s-tipo">
-                                    <option value="Diagnostico">Diagnóstico</option>
+                                <label>Categoría</label>
+                                <select id="s-cat">
                                     <option value="Mantenimiento">Mantenimiento</option>
                                     <option value="Reparacion">Reparación</option>
+                                    <option value="Garantia">Garantía</option>
                                 </select>
                             </div>
-                            <div class="input-group">
-                                <label>Producto / Equipo</label>
-                                <input type="text" id="s-producto" placeholder="Ej: Refrigeradora">
-                            </div>
-                            <div class="input-group">
-                                <label>Precio (Q)</label>
-                                <input type="number" id="s-precio" value="0.00">
-                            </div>
-                            <div class="input-group" style="display: flex; align-items: flex-end;">
-                                <button onclick="agregarServicioALista()" class="btn btn-primary" style="width: 100%;">
-                                    <i class="fas fa-plus-circle"></i> AGREGAR
-                                </button>
+                            <div class="input-group"><label>Descripción Producto</label><input type="text" id="s-prod" placeholder="Ej: Lavadora LG"></div>
+                            <div class="input-group"><label>Precio (Q)</label><input type="number" id="s-precio" value="0"></div>
+                            <div class="input-group" style="display:flex; align-items:flex-end;">
+                                <button onclick="addSrv()" class="btn btn-blue" style="width:100%;"><i class="fas fa-plus"></i> Añadir</button>
                             </div>
                         </div>
-                        <table id="tabla-servicios-temp">
-                            <thead>
-                                <tr>
-                                    <th>Tipo</th>
-                                    <th>Producto</th>
-                                    <th>Precio</th>
-                                    <th>Acción</th>
-                                </tr>
-                            </thead>
-                            <tbody id="body-servicios-temp"></tbody>
+                        <table id="tbl-temp" class="hidden">
+                            <thead><tr><th>Servicio</th><th>Producto</th><th>Precio</th><th></th></tr></thead>
+                            <tbody id="body-temp"></tbody>
                         </table>
                     </div>
 
-                    <h3 style="color: var(--azul-distelsa); margin-top: 25px;"><i class="fas fa-file-invoice"></i> 3. Facturación y Notas</h3>
-                    <div class="form-grid">
-                        <div class="input-group"><label>NIT Factura</label><input type="text" id="g-nitFac"></div>
-                        <div class="input-group"><label>Nombre Factura</label><input type="text" id="g-nomFac"></div>
-                        <div class="input-group"><label>Visa Link / Comprobante</label><input type="text" id="g-visa"></div>
-                    </div>
-                    <div class="input-group">
-                        <label>Observaciones Generales</label>
-                        <textarea id="g-obsGen" rows="3" placeholder="Notas adicionales sobre la gestión..."></textarea>
+                    <h3 style="margin-top:40px;"><i class="fas fa-credit-card"></i> 3. Pago y Cierre</h3>
+                    <div class="grid">
+                        <div class="input-group"><label>VisaNet / Link</label><input type="text" id="g-visa"></div>
+                        <div class="input-group" style="grid-column: span 2;"><label>Observaciones Finales</label><textarea id="g-obs" rows="2"></textarea></div>
                     </div>
 
-                    <div style="margin-top: 30px; display: flex; gap: 20px;">
-                        <button onclick="guardarGestionTotal()" id="btnSaveFinal" class="btn btn-danger" style="flex: 2; justify-content: center; font-size: 18px;">
-                            <i class="fas fa-cloud-upload-alt"></i> GUARDAR GESTIÓN COMPLETA
-                        </button>
-                        <button onclick="limpiarFormulario()" class="btn btn-primary" style="flex: 1; justify-content: center; background: #6c757d;">
-                            <i class="fas fa-broom"></i> LIMPIAR
+                    <div style="margin-top:40px; text-align:right; border-top:1px solid #eee; padding-top:25px;">
+                        <button onclick="enviarFinal()" id="btn-save" class="btn btn-red" style="font-size:16px; padding:15px 40px;">
+                            <i class="fas fa-cloud-upload-alt"></i> REGISTRAR GESTIÓN
                         </button>
                     </div>
                 </div>
@@ -350,139 +187,202 @@
 
             <section id="sec-seguimiento" class="hidden">
                 <div class="card">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <h2><i class="fas fa-list-alt"></i> Historial de Gestiones</h2>
-                        <button onclick="cargarHistorialAPI()" class="btn btn-primary"><i class="fas fa-sync"></i> Refrescar</button>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                        <h2 style="margin:0;"><i class="fas fa-history"></i> Registros Recientes</h2>
+                        <button onclick="fetchHistory()" class="btn btn-blue"><i class="fas fa-sync"></i> Actualizar</button>
                     </div>
-                    <div style="overflow-x: auto;">
-                        <table id="tabla-historial">
-                            <thead>
-                                <tr>
-                                    <th>Ticket</th>
-                                    <th>Fecha</th>
-                                    <th>Cliente</th>
-                                    <th>Agente</th>
-                                    <th>Estatus</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody id="body-historial">
-                                </tbody>
+                    <div style="overflow-x:auto;">
+                        <table>
+                            <thead><tr><th>Ticket ID</th><th>Fecha</th><th>Cliente</th><th>Teléfono</th><th>Estado</th></tr></thead>
+                            <tbody id="body-history"></tbody>
                         </table>
                     </div>
                 </div>
             </section>
-
-            <section id="sec-admin" class="hidden">
-                <div class="card">
-                    <h2><i class="fas fa-user-shield"></i> Gestión de Usuarios y Roles</h2>
-                    <p>Módulo para el control de acceso y monitoreo de actividad.</p>
-                    </div>
-            </section>
-
         </main>
     </div>
 
     <script>
-        const API_URL = 'https://script.google.com/macros/s/AKfycbxu9gWzYoTgeW8OvKooLWO9oXDIs6X42KsS2w4c_teGYryoUgPosASs53yWyJAHLUriog/exec';
-        
-        let SESION_ACTIVA = { usuario: "", nombre: "", rol: "", campana: "" };
-        let SERVICIOS_TEMPORALES = [];
-        let CHART_INSTANCE = null;
+        const API = 'https://script.google.com/macros/s/AKfycbxFRL50G63qbncC_lYMmLmUslsPb6pYXuilv9L1IblF778RcFHA-JmXPsxTLrgnVCWDTA/exec'; // <--- PEGA AQUÍ LA URL
+        let SESSION = null;
+        let SRVS = [];
+        let CHART = null;
 
-        // --- 1. LOGIN ---
-        document.getElementById('formLogin').addEventListener('submit', async (e) => {
+        // --- MANEJO DE LOGIN ---
+        document.getElementById('form-login').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const btn = document.getElementById('btnLogin');
-            const msg = document.getElementById('loginMsg');
+            const btn = document.getElementById('btn-login');
+            const err = document.getElementById('login-error');
             
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> AUTENTICANDO...';
+            btn.innerHTML = '<i class="fas fa-circle-notch spinner"></i> Validando...';
             btn.disabled = true;
+            err.style.display = 'none';
 
             try {
-                const response = await fetch(API_URL, {
+                const r = await fetch(API, {
                     method: 'POST',
                     body: JSON.stringify({
                         action: 'login',
-                        usuario: document.getElementById('user').value,
-                        password: document.getElementById('pass').value
+                        usuario: document.getElementById('log-user').value,
+                        password: document.getElementById('log-pass').value
                     })
                 });
-                const res = await response.json();
+                const res = await r.json();
 
                 if(res.success) {
-                    SESION_ACTIVA = res;
-                    iniciarApp();
+                    SESSION = res;
+                    startApp();
                 } else {
-                    msg.innerText = res.message;
+                    err.innerText = "⚠️ " + res.message;
+                    err.style.display = 'block';
                 }
-            } catch (err) {
-                msg.innerText = "Error de conexión con el servidor.";
+            } catch (e) {
+                err.innerText = "❌ Error de conexión con el servidor.";
+                err.style.display = 'block';
             } finally {
-                btn.innerHTML = 'ENTRAR AL SISTEMA';
+                btn.innerHTML = 'INICIAR SESIÓN';
                 btn.disabled = false;
             }
         });
 
-        function iniciarApp() {
-            document.getElementById('login-view').classList.add('hidden');
-            document.getElementById('app-view').classList.remove('hidden');
-            document.getElementById('userNameDisplay').innerText = SESION_ACTIVA.nombre;
-            document.getElementById('userRoleBadge').innerText = SESION_ACTIVA.rol;
+        function startApp() {
+            document.getElementById('view-login').classList.add('hidden');
+            document.getElementById('view-app').classList.remove('hidden');
+            document.getElementById('header-name').innerText = SESSION.nombre;
+            document.getElementById('header-role').innerText = SESSION.rol;
             
-            construirMenu(SESION_ACTIVA.permisos);
-        }
-
-        function construirMenu(p) {
-            const menu = document.getElementById('menu-dinamico');
-            menu.innerHTML = "";
-            let secciones = [
-                { id: 'sec-dashboard', label: 'Dashboard', icon: 'fa-chart-pie', visible: p.dashboard },
-                { id: 'sec-gestion', label: 'Nueva Gestión', icon: 'fa-cash-register', visible: p.gestion },
-                { id: 'sec-seguimiento', label: 'Historial', icon: 'fa-history', visible: p.seguimiento },
-                { id: 'sec-admin', label: 'Administración', icon: 'fa-user-shield', visible: p.usuarios }
+            // Construir Menú dinámico
+            const nav = document.getElementById('sidebar-nav');
+            const mods = [
+                { id:'sec-dashboard', label:'Dashboard', icon:'fa-chart-pie', ok: SESSION.permisos.dashboard },
+                { id:'sec-gestion', label:'Gestión Cobro', icon:'fa-file-invoice-dollar', ok: SESSION.permisos.gestion },
+                { id:'sec-seguimiento', label:'Historial', icon:'fa-history', ok: SESSION.permisos.seguimiento }
             ];
 
-            let primeraCarga = "";
-            secciones.forEach(s => {
-                if(s.visible === "SI") {
-                    if(!primeraCarga) primeraCarga = s.id;
-                    const div = document.createElement('div');
-                    div.className = 'nav-link';
-                    div.innerHTML = `<i class="fas ${s.icon}"></i> ${s.label}`;
-                    div.onclick = () => navegar(s.id, div);
-                    menu.appendChild(div);
+            nav.innerHTML = "";
+            let first = "";
+            mods.forEach(m => {
+                if(m.ok === "SI") {
+                    if(!first) first = m.id;
+                    const el = document.createElement('div');
+                    el.className = 'nav-item';
+                    el.innerHTML = `<i class="fas ${m.icon}"></i> ${m.label}`;
+                    el.onclick = () => showSec(m.id, el);
+                    nav.appendChild(el);
                 }
             });
-            
-            if(primeraCarga) navegar(primeraCarga, menu.firstChild);
+            if(first) showSec(first, nav.firstChild);
         }
 
-        function navegar(id, elemento) {
+        function showSec(id, el) {
             document.querySelectorAll('main section').forEach(s => s.classList.add('hidden'));
-            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-            
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
             document.getElementById(id).classList.remove('hidden');
-            elemento.classList.add('active');
+            el.classList.add('active');
 
-            if(id === 'sec-dashboard') cargarDashboard();
-            if(id === 'sec-seguimiento') cargarHistorialAPI();
+            if(id === 'sec-dashboard') loadDash();
+            if(id === 'sec-seguimiento') fetchHistory();
         }
 
-        // --- 2. GESTIÓN DE SERVICIOS ---
-        function agregarServicioALista() {
-            const tipo = document.getElementById('s-tipo').value;
-            const prod = document.getElementById('s-producto').value;
-            const prec = document.getElementById('s-precio').value;
+        // --- FORMULARIO LÓGICA ---
+        function addSrv() {
+            const cat = document.getElementById('s-cat').value;
+            const pro = document.getElementById('s-prod').value;
+            const pre = document.getElementById('s-precio').value;
 
-            if(!prod || prec <= 0) return alert("Completa el producto y precio válido.");
+            if(!pro || pre <= 0) return alert("Completa producto y precio");
 
-            SERVICIOS_TEMPORALES.push({ tipo, producto: prod, precio: prec });
-            renderizarTablaTemp();
-            
-            document.getElementById('s-producto').value = "";
-            document.getElementById('s-precio').value = "0.00";
+            SRVS.push({ tipo: cat, producto: pro, precio: pre });
+            renderSrvs();
+            document.getElementById('s-prod').value = "";
+            document.getElementById('s-precio').value = "0";
         }
 
-        function renderizarTablaTemp() {
-            const body = document.getElementById('bod
+        function renderSrvs() {
+            const b = document.getElementById('body-temp');
+            const t = document.getElementById('tbl-temp');
+            if(SRVS.length > 0) t.classList.remove('hidden');
+            b.innerHTML = SRVS.map((s,i) => `
+                <tr>
+                    <td>${s.tipo}</td>
+                    <td>${s.producto}</td>
+                    <td>Q${s.precio}</td>
+                    <td style="text-align:right;"><button onclick="SRVS.splice(${i},1);renderSrvs();" style="color:red;border:none;background:none;cursor:pointer;"><i class="fas fa-times"></i></button></td>
+                </tr>
+            `).join('');
+        }
+
+        async function enviarFinal() {
+            if(SRVS.length === 0) return alert("Agrega al menos un servicio");
+            const btn = document.getElementById('btn-save');
+            btn.disabled = true; btn.innerText = "Procesando...";
+
+            const d = {
+                action: 'guardarGestion',
+                agente: SESSION.nombre,
+                nitCli: document.getElementById('g-nit').value,
+                nomCli: document.getElementById('g-nom').value,
+                telCli: document.getElementById('g-tel').value,
+                dirCli: document.getElementById('g-dir').value,
+                corCli: document.getElementById('g-email').value,
+                visaLink: document.getElementById('g-visa').value,
+                obsGen: document.getElementById('g-obs').value,
+                servicios: SRVS
+            };
+
+            try {
+                const r = await fetch(API, { method:'POST', body: JSON.stringify(d) });
+                const res = await r.json();
+                if(res.success) {
+                    alert("TICKET CREADO: " + res.ticketId);
+                    location.reload();
+                }
+            } catch(e) { alert("Error al guardar"); btn.disabled = false; }
+        }
+
+        // --- DASHBOARD Y DATA ---
+        async function loadDash() {
+            try {
+                const r = await fetch(API, { method:'POST', body: JSON.stringify({ action:'obtenerDashboard' }) });
+                const res = await r.json();
+                
+                document.getElementById('list-online').innerHTML = res.online.map(u => 
+                    `<div style="margin-bottom:8px;"><i class="fas fa-circle" style="color:#25d366; font-size:10px;"></i> ${u}</div>`
+                ).join('');
+
+                if(CHART) CHART.destroy();
+                CHART = new Chart(document.getElementById('chart-tickets'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: Object.keys(res.estatusCount),
+                        datasets: [{ data: Object.values(res.estatusCount), backgroundColor:['#e30613','#003366','#ffcc00'] }]
+                    },
+                    options: { plugins: { legend: { position:'bottom' } } }
+                });
+            } catch(e) {}
+        }
+
+        async function fetchHistory() {
+            const b = document.getElementById('body-history');
+            b.innerHTML = "<tr><td colspan='5'>Cargando datos...</td></tr>";
+            try {
+                const r = await fetch(API, { method:'POST', body: JSON.stringify({ action:'obtenerSeguimientos' }) });
+                const res = await r.json();
+                b.innerHTML = res.datos.map(d => `
+                    <tr>
+                        <td><strong>${d.ticket}</strong></td>
+                        <td>${new Date(d.fecha).toLocaleDateString()}</td>
+                        <td>${d.cliente}</td>
+                        <td>${d.tel}</td>
+                        <td><span class="badge bg-pending">${d.estatus}</span></td>
+                    </tr>
+                `).join('');
+            } catch(e) { b.innerHTML = "<tr><td colspan='5'>Error de red</td></tr>"; }
+        }
+
+        function cerrarSesion() {
+            fetch(API, { method:'POST', body: JSON.stringify({ action:'logout', usuario: SESSION.usuario }) }).finally(() => location.reload());
+        }
+    </script>
+</body>
+</html>

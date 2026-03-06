@@ -3,385 +3,443 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SISTEMA ST | DISTELSA</title>
+    <title>Gestión Call Center ST | Grupo Distelsa</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        :root { --red: #e30613; --blue: #003366; --dark: #001f3f; --light: #f8f9fa; --grey: #6c757d; --shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        :root { --rojo-distelsa: #e30613; --azul-distelsa: #003366; --fondo: #f4f6f9; --sidebar-w: 250px; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; background: var(--fondo); color: #333; overflow-x: hidden; }
+
+        /* --- LOGIN --- */
+        #login-view { position: fixed; inset: 0; background: linear-gradient(135deg, var(--azul-distelsa) 0%, #001f3f 100%); display: flex; justify-content: center; align-items: center; z-index: 2000; }
+        .login-card { background: white; padding: 40px; border-radius: 12px; width: 340px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); text-align: center; }
+        .login-card img { width: 180px; margin-bottom: 20px; }
+        .input-group { text-align: left; margin-bottom: 15px; }
+        .input-group label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 5px; color: var(--azul-distelsa); }
+        .input-group input { width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 14px; transition: border 0.3s; }
+        .error-blink { animation: blink 0.5s 2; border-color: var(--rojo-distelsa) !important; }
+        @keyframes blink { 0%, 100% { background: white; } 50% { background: #ffe6e6; border-color: var(--rojo-distelsa); } }
+        .btn-primary { width: 100%; padding: 12px; background: var(--rojo-distelsa); color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; transition: background 0.3s; font-size: 15px; }
+        .btn-primary:hover { background: #b3000b; }
+        .btn-primary:disabled { background: #999; cursor: not-allowed; }
         
-        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: #f0f2f5; color: #333; overflow-x: hidden; }
+        /* Mensaje de error personalizado para el Login */
+        #login-error { color: var(--rojo-distelsa); font-size: 13px; font-weight: bold; margin-top: 15px; display: none; }
+
+        /* --- ESTRUCTURA --- */
+        #app-view { display: none; }
+        header { position: fixed; top: 0; left: 0; right: 0; height: 60px; background: white; border-bottom: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; z-index: 1000; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .header-title { color: var(--azul-distelsa); font-size: 22px; font-weight: 800; display: flex; align-items: center; gap: 10px; }
+        .user-profile { display: flex; align-items: center; gap: 15px; text-align: right; }
+        .sidebar { position: fixed; top: 60px; left: 0; bottom: 0; width: var(--sidebar-w); background: var(--azul-distelsa); color: white; padding-top: 20px; }
+        .nav-item { padding: 15px 20px; cursor: pointer; display: flex; align-items: center; gap: 12px; transition: 0.2s; font-size: 15px; }
+        .nav-item:hover, .nav-item.active { background: rgba(255,255,255,0.1); border-left: 4px solid var(--rojo-distelsa); }
+        .main-content { margin-left: var(--sidebar-w); margin-top: 60px; padding: 25px; }
+        .card { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 20px; }
+
+        /* --- FORMAS Y TABLAS --- */
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; }
+        .input-group select, .input-group textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
+        .section-box { border: 1px solid #eee; padding: 15px; border-radius: 8px; margin-bottom: 15px; background: #fafafa; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; }
+        th { background: var(--azul-distelsa); color: white; padding: 12px; text-align: left; }
+        td { padding: 12px; border-bottom: 1px solid #eee; }
+        .badge { padding: 5px 10px; border-radius: 4px; font-size: 11px; font-weight: bold; color: white; }
+        .btn-action { padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; color: white; font-weight: bold; display: inline-flex; align-items: center; gap: 6px; transition: 0.2s;}
+        .btn-action:hover { opacity: 0.9; }
+        .bg-blue { background: var(--azul-distelsa); } .bg-red { background: var(--rojo-distelsa); } .bg-green { background: #25d366; } .bg-gray { background: #6c757d; }
         .hidden { display: none !important; }
-
-        /* LOGIN */
-        #view-login { 
-            position: fixed; inset: 0; z-index: 2000;
-            background: linear-gradient(135deg, var(--blue) 0%, var(--dark) 100%);
-            display: flex; align-items: center; justify-content: center;
-        }
-        .card-login { 
-            background: white; padding: 40px; border-radius: 16px; width: 100%; max-width: 380px; 
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3); text-align: center;
-        }
-        .card-login h2 { color: var(--blue); margin-bottom: 25px; font-weight: 800; }
-        
-        /* LAYOUT */
-        header { 
-            position: fixed; top: 0; left: 260px; right: 0; height: 70px; background: white;
-            display: flex; align-items: center; justify-content: space-between; padding: 0 30px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05); z-index: 1000;
-        }
-        .sidebar { 
-            position: fixed; top: 0; left: 0; bottom: 0; width: 260px; background: var(--blue);
-            color: white; padding-top: 20px; z-index: 1100; transition: 0.3s;
-        }
-        .nav-item { 
-            padding: 16px 25px; display: flex; align-items: center; gap: 15px; cursor: pointer;
-            border-left: 4px solid transparent; transition: 0.2s; font-weight: 500;
-        }
-        .nav-item:hover, .nav-item.active { background: rgba(255,255,255,0.1); border-left-color: var(--red); }
-        .main { margin-left: 260px; margin-top: 70px; padding: 30px; }
-
-        /* UI ELEMENTS */
-        .card { background: white; border-radius: 12px; padding: 25px; box-shadow: var(--shadow); margin-bottom: 25px; border: 1px solid #eee; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 20px; }
-        .input-group label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 6px; color: var(--blue); }
-        input, select, textarea { 
-            width: 100%; padding: 12px; border: 1.5px solid #dde1e5; border-radius: 8px; 
-            font-size: 15px; box-sizing: border-box; transition: 0.3s;
-        }
-        input:focus { border-color: var(--red); outline: none; background: #fff; }
-        
-        .btn { 
-            padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: 700;
-            display: inline-flex; align-items: center; gap: 10px; transition: 0.2s;
-        }
-        .btn-red { background: var(--red); color: white; }
-        .btn-blue { background: var(--blue); color: white; }
-        .btn:hover { opacity: 0.9; transform: translateY(-1px); }
-        .btn:disabled { background: #ccc; cursor: not-allowed; }
-
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th { background: #f1f4f9; padding: 15px; text-align: left; color: var(--blue); font-size: 14px; }
-        td { padding: 15px; border-bottom: 1px solid #eee; font-size: 14px; }
-
-        .badge { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 800; text-transform: uppercase; }
-        .bg-pending { background: #fff4e5; color: #b76e00; }
-        .bg-online { background: #e6fffa; color: #008673; }
-        
-        /* LOADING SPINNER */
-        .spinner { animation: spin 1s linear infinite; }
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
-    <div id="view-login">
-        <div class="card-login">
-            <h2 style="margin-bottom:10px;">DISTELSA ST</h2>
-            <p style="color:var(--grey); margin-bottom:30px;">Acceso al Portal de Cobros</p>
-            <form id="form-login">
-                <div class="input-group" style="text-align:left; margin-bottom:15px;">
-                    <label>Usuario</label>
-                    <input type="text" id="log-user" required placeholder="Ingresa tu ID">
+    <div id="login-view">
+        <div class="login-card">
+            <img src="https://www.distelsa.com.gt/media/logo/stores/1/logo_distelsa.png" alt="Distelsa">
+            <h2 style="color: var(--azul-distelsa); margin-top: 0; font-size: 20px;">Gestión de Cobros ST</h2>
+            <form id="loginForm">
+                <div class="input-group"><label>Usuario *</label><input type="text" id="user" placeholder="Su usuario"></div>
+                <div class="input-group"><label>Contraseña *</label><input type="password" id="pass" placeholder="••••••••"></div>
+                <div style="text-align: left; margin-bottom: 20px; font-size: 13px;">
+                    <input type="checkbox" id="keepSession"> <label for="keepSession" style="display:inline; font-weight:normal; color:#555;">Mantener sesión activa</label>
                 </div>
-                <div class="input-group" style="text-align:left; margin-bottom:25px;">
-                    <label>Contraseña</label>
-                    <input type="password" id="log-pass" required placeholder="••••••••">
-                </div>
-                <button type="submit" id="btn-login" class="btn btn-red" style="width:100%; justify-content:center;">
-                    INICIAR SESIÓN
-                </button>
-            </form>
-            <div id="login-error" style="margin-top:20px; color:var(--red); font-weight:bold; display:none;"></div>
+                <button type="submit" id="btnLogin" class="btn-primary">INICIAR SESIÓN</button>
+                <div id="login-error"></div> </form>
         </div>
     </div>
 
-    <div id="view-app" class="hidden">
-        <div class="sidebar">
-            <div style="padding: 20px; text-align:center; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 10px;">
-                <h3 style="margin:0; letter-spacing:1px;">MENÚ ST</h3>
-            </div>
-            <nav id="sidebar-nav"></nav>
-        </div>
-
+    <div id="app-view">
         <header>
-            <div>
-                <span id="header-welcome" style="color:var(--grey); font-size:14px;">Bienvenido,</span>
-                <strong id="header-name" style="color:var(--blue); display:block; font-size:16px;">Cargando...</strong>
-            </div>
-            <div style="display:flex; align-items:center; gap:15px;">
-                <span id="header-role" class="badge bg-online">Agente</span>
-                <button onclick="cerrarSesion()" class="btn btn-blue" style="padding: 8px 12px;"><i class="fas fa-sign-out-alt"></i></button>
+            <div class="header-title"><i class="fas fa-headset"></i> Gestión de Cobro</div>
+            <div class="user-profile">
+                <div>
+                    <strong id="displayUser" style="color: var(--azul-distelsa);">Usuario</strong><br>
+                    <small id="displayCampana" style="color: var(--rojo-distelsa); font-weight:bold;">Campaña: Call Center ST</small>
+                </div>
+                <button onclick="location.reload()" class="btn-action bg-red"><i class="fas fa-sign-out-alt"></i> Salir</button>
             </div>
         </header>
 
-        <main class="main">
-            
-            <section id="sec-dashboard" class="hidden">
-                <h2 style="color:var(--blue); margin-bottom:25px;"><i class="fas fa-chart-pie"></i> Panel de Resumen</h2>
-                <div class="grid">
-                    <div class="card">
-                        <h3>Estado de Tickets</h3>
-                        <canvas id="chart-tickets" height="200"></canvas>
-                    </div>
-                    <div class="card">
-                        <h3>Equipo en Línea</h3>
-                        <div id="list-online" style="margin-top:15px;"></div>
-                    </div>
-                </div>
-            </section>
+        <div class="sidebar">
+            <div class="nav-item active" onclick="verSeccion('sec-admin')"><i class="fas fa-users-cog"></i> 1. Usuarios</div>
+            <div class="nav-item" onclick="verSeccion('sec-gestion')"><i class="fas fa-file-invoice-dollar"></i> 4. Gestión de Cobro</div>
+            <div class="nav-item" onclick="verSeccion('sec-seguimiento')"><i class="fas fa-history"></i> 5. Seguimientos</div>
+        </div>
 
-            <section id="sec-gestion" class="hidden">
-                <div class="card">
-                    <h2 style="color:var(--red); border-bottom:2px solid #f0f0f0; padding-bottom:15px; margin-bottom:25px;">
-                        <i class="fas fa-file-invoice-dollar"></i> Ingreso de Nueva Gestión
-                    </h2>
-                    
-                    <h3><i class="fas fa-id-card"></i> 1. Datos del Cliente</h3>
-                    <div class="grid">
-                        <div class="input-group"><label>NIT Facturación</label><input type="text" id="g-nit"></div>
-                        <div class="input-group"><label>Nombre Completo</label><input type="text" id="g-nom"></div>
-                        <div class="input-group"><label>Teléfono Movil</label><input type="text" id="g-tel"></div>
-                    </div>
-                    <div class="grid">
-                        <div class="input-group" style="grid-column: span 2;"><label>Dirección de Servicio</label><input type="text" id="g-dir"></div>
-                        <div class="input-group"><label>Correo (Opcional)</label><input type="email" id="g-email"></div>
-                    </div>
-
-                    <h3 style="margin-top:40px;"><i class="fas fa-tools"></i> 2. Servicios Solicitados</h3>
-                    <div style="background:#f8f9fa; padding:20px; border-radius:12px; border:1px dashed #ccc;">
-                        <div class="grid">
-                            <div class="input-group">
-                                <label>Categoría</label>
-                                <select id="s-cat">
-                                    <option value="Mantenimiento">Mantenimiento</option>
-                                    <option value="Reparacion">Reparación</option>
-                                    <option value="Garantia">Garantía</option>
-                                </select>
-                            </div>
-                            <div class="input-group"><label>Descripción Producto</label><input type="text" id="s-prod" placeholder="Ej: Lavadora LG"></div>
-                            <div class="input-group"><label>Precio (Q)</label><input type="number" id="s-precio" value="0"></div>
-                            <div class="input-group" style="display:flex; align-items:flex-end;">
-                                <button onclick="addSrv()" class="btn btn-blue" style="width:100%;"><i class="fas fa-plus"></i> Añadir</button>
-                            </div>
+        <div class="main-content">
+            <section id="sec-admin" class="card hidden">
+                <h2><i class="fas fa-users-cog"></i> Administración de Usuarios</h2>
+                <div class="section-box">
+                    <h4 style="margin-top:0;">Crear Nuevo Usuario</h4>
+                    <div class="grid-3">
+                        <div class="input-group"><input type="text" id="admin-user" placeholder="Usuario (ej. jperez) *"></div>
+                        <div class="input-group"><input type="text" id="admin-nombre" placeholder="Nombre Completo *"></div>
+                        <div class="input-group"><input type="password" id="admin-pass" placeholder="Contraseña *"></div>
+                        <div class="input-group">
+                            <select id="admin-rol">
+                                <option value="">Seleccionar Rol *</option>
+                                <option value="Administrador">Administrador</option>
+                                <option value="Líder">Líder</option>
+                                <option value="Agente">Agente</option>
+                            </select>
                         </div>
-                        <table id="tbl-temp" class="hidden">
-                            <thead><tr><th>Servicio</th><th>Producto</th><th>Precio</th><th></th></tr></thead>
-                            <tbody id="body-temp"></tbody>
-                        </table>
+                        <div class="input-group"><input type="text" id="admin-campana" placeholder="Campaña (ej. Call Center ST) *"></div>
+                        <div style="display: flex; align-items: flex-end; margin-bottom: 15px;">
+                            <button class="btn-action bg-blue" id="btnCrearUsuario" onclick="crearUsuario(this)" style="width: 100%; justify-content: center;"><i class="fas fa-user-plus"></i> Guardar Usuario</button>
+                        </div>
                     </div>
+                </div>
 
-                    <h3 style="margin-top:40px;"><i class="fas fa-credit-card"></i> 3. Pago y Cierre</h3>
-                    <div class="grid">
-                        <div class="input-group"><label>VisaNet / Link</label><input type="text" id="g-visa"></div>
-                        <div class="input-group" style="grid-column: span 2;"><label>Observaciones Finales</label><textarea id="g-obs" rows="2"></textarea></div>
+                <div class="section-box">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h4 style="margin-top:0;">Lista de Usuarios</h4>
+                        <button class="btn-action bg-gray" onclick="cargarUsuarios()"><i class="fas fa-sync"></i> Actualizar</button>
                     </div>
-
-                    <div style="margin-top:40px; text-align:right; border-top:1px solid #eee; padding-top:25px;">
-                        <button onclick="enviarFinal()" id="btn-save" class="btn btn-red" style="font-size:16px; padding:15px 40px;">
-                            <i class="fas fa-cloud-upload-alt"></i> REGISTRAR GESTIÓN
-                        </button>
-                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Usuario</th>
+                                <th>Nombre Completo</th>
+                                <th>Rol</th>
+                                <th>Campaña</th>
+                                <th>En Línea</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-usuarios-body">
+                            <tr><td colspan="6" style="text-align:center;">Cargando usuarios...</td></tr>
+                        </tbody>
+                    </table>
                 </div>
             </section>
 
-            <section id="sec-seguimiento" class="hidden">
-                <div class="card">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-                        <h2 style="margin:0;"><i class="fas fa-history"></i> Registros Recientes</h2>
-                        <button onclick="fetchHistory()" class="btn btn-blue"><i class="fas fa-sync"></i> Actualizar</button>
+            <section id="sec-gestion" class="card">
+                <h2>Formulario de Gestión</h2>
+                
+                <div class="section-box">
+                    <h4 style="margin-top:0;">1. Servicio Solicitado</h4>
+                    <div class="grid-3">
+                        <div class="input-group">
+                            <label>Tipo *</label>
+                            <select id="gc-tipo" onchange="manejarTipoServicio()">
+                                <option value="">Seleccionar...</option>
+                                <option value="Diagnostico De Linea Blanca">Diagnóstico De Línea Blanca</option>
+                                <option value="Diagnostico de TV">Diagnóstico de TV</option>
+                                <option value="Mantenimiento">Mantenimiento</option>
+                                <option value="Instalacion">Instalación</option>
+                                <option value="Presupuesto">Presupuesto</option>
+                                <option value="Otro">Otro</option>
+                            </select>
+                        </div>
+                        <div class="input-group"><label id="lbl-detalle">Servicio Solicitado *</label><input type="text" id="gc-detalle"></div>
+                        <div class="input-group"><label>Precio (Q) *</label><input type="number" id="gc-precio" value="0"></div>
                     </div>
-                    <div style="overflow-x:auto;">
-                        <table>
-                            <thead><tr><th>Ticket ID</th><th>Fecha</th><th>Cliente</th><th>Teléfono</th><th>Estado</th></tr></thead>
-                            <tbody id="body-history"></tbody>
-                        </table>
+                    <div class="grid-3">
+                        <div class="input-group"><label>Producto *</label><input type="text" id="gc-producto"></div>
+                        <div class="input-group"><label>Marca *</label><input type="text" id="gc-marca"></div>
+                        <div class="input-group" style="display:flex; gap:10px; align-items:flex-end;">
+                            <div style="flex:1;"><label>Modelo</label><input type="text" id="gc-modelo"></div>
+                            <button class="btn-action bg-blue" onclick="agregarServicio()"><i class="fas fa-plus"></i> Add</button>
+                        </div>
+                    </div>
+                    
+                    <table id="tabla-servicios" class="hidden">
+                        <thead><tr><th>Servicio</th><th>Detalle/Falla</th><th>Prod/Marca</th><th>Precio</th><th>X</th></tr></thead>
+                        <tbody id="lista-servicios"></tbody>
+                    </table>
+                    <h3 id="total-servicios" style="text-align:right; color:var(--azul-distelsa); margin-bottom:0;">Total: Q0.00</h3>
+                </div>
+
+                <div id="sec-contacto" class="section-box">
+                    <h4 style="margin-top:0;">2. Datos de Contacto</h4>
+                    <div class="grid-2">
+                        <div class="input-group"><input type="text" id="gc-nitCli" placeholder="NIT Contacto *"></div>
+                        <div class="input-group"><input type="text" id="gc-nomCli" placeholder="Nombre Contacto *"></div>
+                        <div class="input-group"><input type="text" id="gc-telCli" placeholder="Teléfono *"></div>
+                        <div class="input-group"><input type="text" id="gc-dirCli" placeholder="Dirección *"></div>
+                        <div class="input-group"><input type="email" id="gc-corCli" placeholder="Correo (Opcional)"></div>
+                        <div class="input-group"><textarea id="gc-obsTec" placeholder="Observaciones Técnico (Opcional)" rows="2"></textarea></div>
                     </div>
                 </div>
+
+                <div class="section-box">
+                    <h4 style="margin-top:0;">3. Datos de Facturación</h4>
+                    <div class="grid-3">
+                        <div class="input-group"><input type="text" id="gc-nitFac" placeholder="NIT Facturación *"></div>
+                        <div class="input-group"><input type="text" id="gc-nomFac" placeholder="Nombre Facturación *"></div>
+                        <div class="input-group"><input type="email" id="gc-corFac" placeholder="Correo Electrónico *"></div>
+                    </div>
+                </div>
+
+                <div class="section-box">
+                    <h4 style="margin-top:0;">4. Pagos y Confirmación</h4>
+                    <div style="background:#e9ecef; padding:10px; border-radius:4px; margin-bottom:15px; font-size:14px;"><i class="fas fa-university"></i> <b>Banco Industrial | Monetaria: 0999-666-66 | Distribuidora Electrónica S.A.</b></div>
+                    <div class="input-group"><input type="text" id="gc-visa" placeholder="Visa Link (Opcional)"></div>
+                    <div style="background:#fff3cd; padding:15px; border-radius:4px;">
+                        <label style="font-weight:bold; cursor:pointer;"><input type="checkbox" id="check-datos"> Confirmo que todos los datos están correctos *</label>
+                        <textarea id="gc-obsGen" placeholder="Observaciones Generales" style="width:100%; margin-top:10px; padding:10px; border:1px solid #ccc;"></textarea>
+                    </div>
+                </div>
+
+                <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:20px;">
+                    <button class="btn-action bg-gray" onclick="limpiarGestor()"><i class="fas fa-eraser"></i> Limpiar Pantalla</button>
+                    <button class="btn-action bg-blue" id="btnGuardar1" onclick="enviarGestor('Solo Guardado', this)"><i class="fas fa-save"></i> Solo Guardar</button>
+                    <button class="btn-action bg-red" id="btnGuardar2" onclick="enviarGestor('Correo Enviado', this)"><i class="fas fa-envelope"></i> Enviar Correo</button>
+                    <button class="btn-action bg-green" id="btnGuardar3" onclick="enviarGestor('WhatsApp', this)"><i class="fab fa-whatsapp"></i> WhatsApp</button>
+                </div>
             </section>
-        </main>
+
+            <section id="sec-seguimiento" class="card hidden">
+                <h2>Historial y Seguimientos</h2>
+                <p>En construcción...</p>
+            </section>
+        </div>
     </div>
 
     <script>
-        const API = 'https://script.google.com/macros/s/AKfycbzeYgATcntlTKcuXLRf-eUhMd4Z1WYJn8LYCLAWKVPUCHrU0XgOixN8wnTCx-mF2okP1g/exec'; // <--- PEGA AQUÍ LA URL
-        let SESSION = null;
-        let SRVS = [];
-        let CHART = null;
-
-        // --- MANEJO DE LOGIN ---
-        document.getElementById('form-login').addEventListener('submit', async (e) => {
+        // ======= PEGA AQUÍ TU URL DE LA NUEVA IMPLEMENTACIÓN =======
+        const API_URL = 'https://script.google.com/macros/s/AKfycbzL7IWriuFMlLLuqdZBIcYelqbjK_6sWWhyM5XeDewL_echRYgXePpbljipM62Coo2Q/exec'; 
+        
+        // --- NAVEGACIÓN Y LOGIN ---
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            const btn = document.getElementById('btn-login');
-            const err = document.getElementById('login-error');
+            let u = document.getElementById('user'); let p = document.getElementById('pass'); let b = document.getElementById('btnLogin');
+            let errBox = document.getElementById('login-error');
             
-            btn.innerHTML = '<i class="fas fa-circle-notch spinner"></i> Validando...';
-            btn.disabled = true;
-            err.style.display = 'none';
+            if(!u.value || !p.value) { 
+                if(!u.value) u.classList.add('error-blink'); if(!p.value) p.classList.add('error-blink'); 
+                setTimeout(()=> { u.classList.remove('error-blink'); p.classList.remove('error-blink'); }, 1000); return; 
+            }
+            
+            b.disabled = true; b.innerText = "CONECTANDO...";
+            errBox.style.display = 'none';
 
             try {
-                const r = await fetch(API, {
+                let response = await fetch(API_URL, {
                     method: 'POST',
-                    body: JSON.stringify({
-                        action: 'login',
-                        usuario: document.getElementById('log-user').value,
-                        password: document.getElementById('log-pass').value
-                    })
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ action: 'login', usuario: u.value, password: p.value })
                 });
-                const res = await r.json();
-
-                if(res.success) {
-                    SESSION = res;
-                    startApp();
+                
+                let data = await response.json();
+                if (data.success) {
+                    document.getElementById('login-view').style.display = 'none';
+                    document.getElementById('app-view').style.display = 'block';
+                    document.getElementById('displayUser').innerText = data.nombre.toUpperCase();
+                    document.getElementById('displayCampana').innerText = "Campaña: " + data.campana;
+                    verSeccion('sec-admin'); // Cargar primera sección
                 } else {
-                    err.innerText = "⚠️ " + res.message;
-                    err.style.display = 'block';
+                    errBox.innerText = "⚠️ " + data.message;
+                    errBox.style.display = 'block';
+                    b.disabled = false; b.innerText = "INICIAR SESIÓN";
                 }
-            } catch (e) {
-                err.innerText = "❌ Error de conexión con el servidor.";
-                err.style.display = 'block';
-            } finally {
-                btn.innerHTML = 'INICIAR SESIÓN';
-                btn.disabled = false;
+            } catch (error) {
+                errBox.innerText = "❌ Error de conexión. Verifica la URL de la API.";
+                errBox.style.display = 'block';
+                b.disabled = false; b.innerText = "INICIAR SESIÓN";
             }
         });
 
-        function startApp() {
-            document.getElementById('view-login').classList.add('hidden');
-            document.getElementById('view-app').classList.remove('hidden');
-            document.getElementById('header-name').innerText = SESSION.nombre;
-            document.getElementById('header-role').innerText = SESSION.rol;
-            
-            // Construir Menú dinámico
-            const nav = document.getElementById('sidebar-nav');
-            const mods = [
-                { id:'sec-dashboard', label:'Dashboard', icon:'fa-chart-pie', ok: SESSION.permisos.dashboard },
-                { id:'sec-gestion', label:'Gestión Cobro', icon:'fa-file-invoice-dollar', ok: SESSION.permisos.gestion },
-                { id:'sec-seguimiento', label:'Historial', icon:'fa-history', ok: SESSION.permisos.seguimiento }
-            ];
-
-            nav.innerHTML = "";
-            let first = "";
-            mods.forEach(m => {
-                if(m.ok === "SI") {
-                    if(!first) first = m.id;
-                    const el = document.createElement('div');
-                    el.className = 'nav-item';
-                    el.innerHTML = `<i class="fas ${m.icon}"></i> ${m.label}`;
-                    el.onclick = () => showSec(m.id, el);
-                    nav.appendChild(el);
-                }
-            });
-            if(first) showSec(first, nav.firstChild);
-        }
-
-        function showSec(id, el) {
-            document.querySelectorAll('main section').forEach(s => s.classList.add('hidden'));
-            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+        function verSeccion(id) {
+            document.querySelectorAll('.main-content > section').forEach(s => s.classList.add('hidden'));
             document.getElementById(id).classList.remove('hidden');
-            el.classList.add('active');
-
-            if(id === 'sec-dashboard') loadDash();
-            if(id === 'sec-seguimiento') fetchHistory();
+            document.querySelectorAll('.sidebar .nav-item').forEach(n => n.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            
+            if(id === 'sec-admin') cargarUsuarios();
         }
 
-        // --- FORMULARIO LÓGICA ---
-        function addSrv() {
-            const cat = document.getElementById('s-cat').value;
-            const pro = document.getElementById('s-prod').value;
-            const pre = document.getElementById('s-precio').value;
-
-            if(!pro || pre <= 0) return alert("Completa producto y precio");
-
-            SRVS.push({ tipo: cat, producto: pro, precio: pre });
-            renderSrvs();
-            document.getElementById('s-prod').value = "";
-            document.getElementById('s-precio').value = "0";
+        // --- LÓGICA GESTIÓN DE COBRO ---
+        let servicios = [];
+        
+        function manejarTipoServicio() {
+            let tipo = document.getElementById('gc-tipo').value;
+            let lbl = document.getElementById('lbl-detalle');
+            let precio = document.getElementById('gc-precio');
+            let contContacto = document.getElementById('sec-contacto');
+            
+            if(tipo.includes('Diagnostico')) { lbl.innerText = "Falla Reportada *"; precio.value = 175; precio.readOnly = true; }
+            else { lbl.innerText = "Servicio Solicitado *"; precio.value = 0; precio.readOnly = false; }
+            
+            if(tipo === 'Presupuesto') contContacto.classList.add('hidden');
+            else contContacto.classList.remove('hidden');
         }
 
-        function renderSrvs() {
-            const b = document.getElementById('body-temp');
-            const t = document.getElementById('tbl-temp');
-            if(SRVS.length > 0) t.classList.remove('hidden');
-            b.innerHTML = SRVS.map((s,i) => `
-                <tr>
-                    <td>${s.tipo}</td>
-                    <td>${s.producto}</td>
-                    <td>Q${s.precio}</td>
-                    <td style="text-align:right;"><button onclick="SRVS.splice(${i},1);renderSrvs();" style="color:red;border:none;background:none;cursor:pointer;"><i class="fas fa-times"></i></button></td>
-                </tr>
-            `).join('');
+        function agregarServicio() {
+            let t = document.getElementById('gc-tipo').value;
+            let d = document.getElementById('gc-detalle').value;
+            let p = document.getElementById('gc-producto').value; 
+            let m = document.getElementById('gc-marca').value; 
+            let mod = document.getElementById('gc-modelo').value;
+            let pr = parseFloat(document.getElementById('gc-precio').value) || 0;
+            
+            if(!t || !d || !p || !m) { alert("Complete los campos obligatorios del servicio."); return; }
+            
+            servicios.push({tipo:t, det:d, prod:p, marca:m, modelo: mod, pre:pr});
+            renderTablaServicios();
+            
+            document.getElementById('gc-tipo').value = ""; document.getElementById('gc-detalle').value = "";
+            document.getElementById('gc-producto').value = ""; document.getElementById('gc-marca').value = ""; document.getElementById('gc-modelo').value = "";
+            manejarTipoServicio();
         }
 
-        async function enviarFinal() {
-            if(SRVS.length === 0) return alert("Agrega al menos un servicio");
-            const btn = document.getElementById('btn-save');
-            btn.disabled = true; btn.innerText = "Procesando...";
+        function renderTablaServicios() {
+            let tb = document.getElementById('lista-servicios');
+            let tot = 0;
+            if(servicios.length > 0) document.getElementById('tabla-servicios').classList.remove('hidden');
+            else document.getElementById('tabla-servicios').classList.add('hidden');
+            
+            // Reconstruimos la tabla limpiamente
+            let html = "";
+            servicios.forEach((s, i) => {
+                tot += s.pre;
+                html += `<tr><td>${s.tipo}</td><td>${s.det}</td><td>${s.prod}/${s.marca}</td><td>Q${s.pre.toFixed(2)}</td><td><button style="color:red; border:none; background:none; cursor:pointer;" onclick="servicios.splice(${i},1); renderTablaServicios();"><i class="fas fa-trash"></i></button></td></tr>`;
+            });
+            tb.innerHTML = html;
+            document.getElementById('total-servicios').innerText = `Total: Q${tot.toFixed(2)}`;
+        }
 
-            const d = {
+        function limpiarGestor() {
+            document.querySelectorAll('#sec-gestion input').forEach(i => { if(i.type==='checkbox') i.checked=false; else i.value=''; });
+            document.querySelectorAll('#sec-gestion select, #sec-gestion textarea').forEach(i => i.value='');
+            servicios = []; renderTablaServicios(); manejarTipoServicio();
+        }
+
+        async function enviarGestor(metodo, btnObj) {
+            if(!document.getElementById('check-datos').checked) { alert("Debe confirmar que los datos son correctos."); return; }
+            if(servicios.length === 0) { alert("Debe agregar al menos 1 servicio."); return; }
+            
+            let btnTextoOriginal = btnObj.innerHTML;
+            btnObj.disabled = true;
+            btnObj.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+
+            let payload = {
                 action: 'guardarGestion',
-                agente: SESSION.nombre,
-                nitCli: document.getElementById('g-nit').value,
-                nomCli: document.getElementById('g-nom').value,
-                telCli: document.getElementById('g-tel').value,
-                dirCli: document.getElementById('g-dir').value,
-                corCli: document.getElementById('g-email').value,
-                visaLink: document.getElementById('g-visa').value,
-                obsGen: document.getElementById('g-obs').value,
-                servicios: SRVS
+                datos: {
+                    agente: document.getElementById('displayUser').innerText,
+                    nitCliente: document.getElementById('gc-nitCli').value,
+                    nombreCliente: document.getElementById('gc-nomCli').value,
+                    telefono: document.getElementById('gc-telCli').value,
+                    direccion: document.getElementById('gc-dirCli').value,
+                    correoCliente: document.getElementById('gc-corCli').value,
+                    obsTecnico: document.getElementById('gc-obsTec').value,
+                    nitFactura: document.getElementById('gc-nitFac').value,
+                    nombreFactura: document.getElementById('gc-nomFac').value,
+                    correoFactura: document.getElementById('gc-corFac').value,
+                    visaLink: document.getElementById('gc-visa').value,
+                    obsGenerales: document.getElementById('gc-obsGen').value,
+                    metodoEnvio: metodo,
+                    listaServicios: servicios
+                }
             };
 
             try {
-                const r = await fetch(API, { method:'POST', body: JSON.stringify(d) });
-                const res = await r.json();
-                if(res.success) {
-                    alert("TICKET CREADO: " + res.ticketId);
-                    location.reload();
-                }
-            } catch(e) { alert("Error al guardar"); btn.disabled = false; }
-        }
-
-        // --- DASHBOARD Y DATA ---
-        async function loadDash() {
-            try {
-                const r = await fetch(API, { method:'POST', body: JSON.stringify({ action:'obtenerDashboard' }) });
-                const res = await r.json();
-                
-                document.getElementById('list-online').innerHTML = res.online.map(u => 
-                    `<div style="margin-bottom:8px;"><i class="fas fa-circle" style="color:#25d366; font-size:10px;"></i> ${u}</div>`
-                ).join('');
-
-                if(CHART) CHART.destroy();
-                CHART = new Chart(document.getElementById('chart-tickets'), {
-                    type: 'doughnut',
-                    data: {
-                        labels: Object.keys(res.estatusCount),
-                        datasets: [{ data: Object.values(res.estatusCount), backgroundColor:['#e30613','#003366','#ffcc00'] }]
-                    },
-                    options: { plugins: { legend: { position:'bottom' } } }
+                let response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify(payload)
                 });
-            } catch(e) {}
+                let data = await response.json();
+                
+                if(data.success) {
+                    alert("¡Éxito! " + data.message);
+                    limpiarGestor();
+                } else { alert("Error en el servidor: " + data.message); }
+            } catch(error) {
+                alert("Error de red. Verifique su conexión.");
+            } finally {
+                btnObj.disabled = false;
+                btnObj.innerHTML = btnTextoOriginal;
+            }
         }
 
-        async function fetchHistory() {
-            const b = document.getElementById('body-history');
-            b.innerHTML = "<tr><td colspan='5'>Cargando datos...</td></tr>";
+        // --- LÓGICA DE ADMINISTRACIÓN DE USUARIOS ---
+        async function cargarUsuarios() {
+            const tbody = document.getElementById('tabla-usuarios-body');
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;"><i class="fas fa-spinner fa-spin"></i> Cargando...</td></tr>';
+            
             try {
-                const r = await fetch(API, { method:'POST', body: JSON.stringify({ action:'obtenerSeguimientos' }) });
-                const res = await r.json();
-                b.innerHTML = res.datos.map(d => `
-                    <tr>
-                        <td><strong>${d.ticket}</strong></td>
-                        <td>${new Date(d.fecha).toLocaleDateString()}</td>
-                        <td>${d.cliente}</td>
-                        <td>${d.tel}</td>
-                        <td><span class="badge bg-pending">${d.estatus}</span></td>
-                    </tr>
-                `).join('');
-            } catch(e) { b.innerHTML = "<tr><td colspan='5'>Error de red</td></tr>"; }
+                let response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ action: 'obtenerUsuarios' })
+                });
+                let result = await response.json();
+                
+                if (result.success) {
+                    tbody.innerHTML = '';
+                    result.data.forEach(u => {
+                        let badgeColor = u.enLinea === 'SI' ? 'bg-green' : 'bg-gray';
+                        tbody.innerHTML += `
+                            <tr>
+                                <td><strong>${u.id}</strong></td>
+                                <td>${u.usuario}</td>
+                                <td>${u.nombre}</td>
+                                <td>${u.rol}</td>
+                                <td>${u.campana}</td>
+                                <td><span class="badge ${badgeColor}">${u.enLinea || 'NO'}</span></td>
+                            </tr>
+                        `;
+                    });
+                } else { tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:red;">Error: ${result.message}</td></tr>`; }
+            } catch (error) { tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:red;">Error de conexión.</td></tr>`; }
         }
 
-        function cerrarSesion() {
-            fetch(API, { method:'POST', body: JSON.stringify({ action:'logout', usuario: SESSION.usuario }) }).finally(() => location.reload());
+        async function crearUsuario(btnObj) {
+            let user = document.getElementById('admin-user').value;
+            let nombre = document.getElementById('admin-nombre').value;
+            let pass = document.getElementById('admin-pass').value;
+            let rol = document.getElementById('admin-rol').value;
+            let campana = document.getElementById('admin-campana').value;
+            
+            if(!user || !nombre || !pass || !rol || !campana) { alert("Por favor completa todos los campos."); return; }
+
+            let btnTextoOriginal = btnObj.innerHTML;
+            btnObj.disabled = true;
+            btnObj.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+
+            try {
+                let response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({
+                        action: 'guardarUsuario',
+                        datos: { usuario: user, nombre: nombre, password: pass, rol: rol, campana: campana }
+                    })
+                });
+                let result = await response.json();
+
+                if (result.success) {
+                    alert(result.message);
+                    document.getElementById('admin-user').value = '';
+                    document.getElementById('admin-nombre').value = '';
+                    document.getElementById('admin-pass').value = '';
+                    document.getElementById('admin-rol').value = '';
+                    document.getElementById('admin-campana').value = '';
+                    cargarUsuarios();
+                } else { alert("Error: " + result.message); }
+            } catch (error) { alert("Error de conexión al crear usuario."); } 
+            finally { btnObj.disabled = false; btnObj.innerHTML = btnTextoOriginal; }
         }
     </script>
 </body>

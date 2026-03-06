@@ -17,10 +17,10 @@
         .input-group { text-align: left; margin-bottom: 15px; }
         .input-group label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 5px; color: var(--azul-distelsa); }
         .input-group input, .input-group select, .input-group textarea { width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 14px; transition: border 0.3s; }
-        .error-blink { animation: blink 0.5s 2; border-color: var(--rojo-distelsa) !important; }
-        @keyframes blink { 0%, 100% { background: white; } 50% { background: #ffe6e6; border-color: var(--rojo-distelsa); } }
+        
         .btn-primary { width: 100%; padding: 12px; background: var(--rojo-distelsa); color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; transition: background 0.3s; font-size: 15px; }
         .btn-primary:hover { background: #b3000b; }
+        .btn-primary:disabled { background: #ccc; cursor: not-allowed; }
         #login-error { color: var(--rojo-distelsa); font-size: 13px; font-weight: bold; margin-top: 15px; display: none; }
 
         /* --- ESTRUCTURA --- */
@@ -35,7 +35,7 @@
         .card { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 20px; }
         .section-box { background: #f9f9f9; padding: 15px; border-radius: 8px; border: 1px solid #ddd; margin-bottom: 15px; }
 
-        /* --- TABLAS Y BOTONES --- */
+        /* --- TABLAS Y ELEMENTOS --- */
         table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; }
         th { background: var(--azul-distelsa); color: white; padding: 12px; text-align: left; }
         td { padding: 12px; border-bottom: 1px solid #eee; }
@@ -43,17 +43,8 @@
         .btn-action { padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; color: white; font-weight: bold; display: inline-flex; align-items: center; gap: 6px; transition: 0.2s;}
         .bg-blue { background: var(--azul-distelsa); } .bg-red { background: var(--rojo-distelsa); } .bg-gray { background: #6c757d; } .bg-green { background: #25d366; }
         .hidden { display: none !important; }
-
-        /* --- MODAL DE PERMISOS --- */
-        .modal { display: none; position: fixed; z-index: 3000; inset: 0; background-color: rgba(0,0,0,0.6); align-items: center; justify-content: center; backdrop-filter: blur(2px); }
-        .modal-content { background: white; padding: 30px; border-radius: 12px; width: 420px; box-shadow: 0 10px 40px rgba(0,0,0,0.4); }
-        .permission-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #eee; font-weight: 500; }
-        .permission-item input[type="checkbox"] { width: 20px; height: 20px; cursor: pointer; accent-color: var(--rojo-distelsa); }
-
-        /* --- GRIDS Y LAYOUTS ESPECIFICOS --- */
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
-        .grid-dashboard { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
     </style>
 </head>
 <body>
@@ -63,8 +54,8 @@
             <img src="https://www.distelsa.com.gt/media/logo/stores/1/logo_distelsa.png" alt="Distelsa">
             <h2 style="color: var(--azul-distelsa); margin-top: 0; font-size: 20px;">Gestión de Cobros ST</h2>
             <form id="loginForm">
-                <div class="input-group"><label>Usuario *</label><input type="text" id="user" placeholder="Su usuario"></div>
-                <div class="input-group"><label>Contraseña *</label><input type="password" id="pass" placeholder="••••••••"></div>
+                <div class="input-group"><label>Usuario *</label><input type="text" id="user" required></div>
+                <div class="input-group"><label>Contraseña *</label><input type="password" id="pass" required></div>
                 <button type="submit" id="btnLogin" class="btn-primary">INICIAR SESIÓN</button>
                 <div id="login-error"></div>
             </form>
@@ -77,267 +68,266 @@
             <div class="user-profile">
                 <div style="text-align: right;">
                     <strong id="displayUser" style="color: var(--azul-distelsa);">ADMINISTRADOR</strong><br>
-                    <small id="displayCampana" style="color: var(--rojo-distelsa); font-weight:bold;">Call Center ST</small>
+                    <small id="displayCampana" style="color: var(--rojo-distelsa); font-weight:bold;">Campaña: Call Center ST</small>
                 </div>
-                <button onclick="location.reload()" class="btn-action bg-red"><i class="fas fa-sign-out-alt"></i> Salir</button>
+                <button onclick="cerrarSesion()" class="btn-action bg-red"><i class="fas fa-sign-out-alt"></i> Salir</button>
             </div>
         </header>
 
         <div class="sidebar">
-            <div class="nav-item" onclick="verSeccion('sec-dashboard')"><i class="fas fa-chart-pie"></i> 0. Dashboard</div>
-            <div class="nav-item active" onclick="verSeccion('sec-admin')"><i class="fas fa-users-cog"></i> 1. Usuarios</div>
+            <div class="nav-item active" onclick="verSeccion('sec-dashboard')"><i class="fas fa-chart-pie"></i> 0. Dashboard</div>
+            <div class="nav-item" onclick="verSeccion('sec-admin')"><i class="fas fa-users-cog"></i> 1. Usuarios</div>
             <div class="nav-item" onclick="verSeccion('sec-gestion')"><i class="fas fa-file-invoice-dollar"></i> 2. Gestión de Cobro</div>
             <div class="nav-item" onclick="verSeccion('sec-seguimiento')"><i class="fas fa-history"></i> 3. Seguimientos</div>
-            <div class="nav-item" onclick="verSeccion('sec-reportes')"><i class="fas fa-file-excel"></i> 4. Reportes</div>
         </div>
 
         <div class="main-content">
             
-            <section id="sec-dashboard" class="card hidden">
+            <section id="sec-dashboard" class="card">
                 <h2 style="color: var(--azul-distelsa);"><i class="fas fa-chart-pie"></i> Panel de Control</h2>
-                <button class="btn-action bg-blue" onclick="cargarDashboard()" style="margin-bottom: 15px;"><i class="fas fa-sync"></i> Actualizar Datos</button>
-                
-                <div class="grid-dashboard">
-                    <div class="section-box" style="background: white;">
-                        <h3 style="margin-top:0;">Tickets del Día por Estatus</h3>
-                        <canvas id="chartEstatus" height="100"></canvas>
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px;">
+                    <div class="section-box" style="background: white; min-height: 300px;">
+                        <h3 style="margin-top:0;">Tickets por Estatus</h3>
+                        <canvas id="chartEstatus"></canvas>
                     </div>
-                    
                     <div class="section-box">
-                        <h3 style="margin-top:0; color: var(--azul-distelsa);">
-                            <i class="fas fa-circle" style="color: #25d366; font-size: 14px;"></i> Usuarios en Línea
-                        </h3>
-                        <ul id="lista-online" style="list-style: none; padding: 0; margin: 0; font-size: 15px;">
-                            <li style="padding: 8px 0; border-bottom: 1px solid #eee;">Cargando...</li>
-                        </ul>
+                        <h3 style="margin-top:0; color: var(--azul-distelsa);"><i class="fas fa-circle" style="color: #25d366; font-size: 14px;"></i> En Línea</h3>
+                        <ul id="lista-online" style="list-style: none; padding: 0;"></ul>
                     </div>
                 </div>
             </section>
 
-            <section id="sec-admin" class="card">
+            <section id="sec-admin" class="card hidden">
                 <h2 style="color: var(--azul-distelsa);"><i class="fas fa-users-cog"></i> Administración de Usuarios</h2>
                 <div class="section-box">
-                    <h4 style="margin-top:0;">Crear Nuevo Perfil</h4>
+                    <h4 style="margin-top:0;">Crear Nuevo Usuario</h4>
                     <div class="grid-3">
-                        <div class="input-group"><input type="text" id="admin-user" placeholder="Usuario"></div>
-                        <div class="input-group"><input type="text" id="admin-nombre" placeholder="Nombre Completo"></div>
-                        <div class="input-group"><input type="password" id="admin-pass" placeholder="Contraseña"></div>
-                        <div class="input-group">
-                            <select id="admin-rol">
-                                <option value="Agente">Agente</option>
-                                <option value="Líder">Líder</option>
-                                <option value="Administrador">Administrador</option>
-                            </select>
-                        </div>
-                        <div class="input-group">
-                            <button class="btn-action bg-blue" onclick="crearUsuario(this)" style="width: 100%; justify-content: center; padding: 10px;"><i class="fas fa-plus"></i> Crear Usuario</button>
-                        </div>
+                        <input type="text" id="admin-user" placeholder="Usuario">
+                        <input type="text" id="admin-nombre" placeholder="Nombre Completo">
+                        <input type="password" id="admin-pass" placeholder="Contraseña">
+                        <select id="admin-rol">
+                            <option value="Agente">Agente</option>
+                            <option value="Administrador">Administrador</option>
+                            <option value="Líder">Líder</option>
+                        </select>
+                        <input type="text" id="admin-campana" placeholder="Campaña">
+                        <button class="btn-action bg-blue" onclick="crearUsuario(this)">Guardar Usuario</button>
                     </div>
                 </div>
-
                 <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th><th>Usuario</th><th>Nombre</th><th>Rol</th><th>Campaña</th><th>Permisos</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tabla-usuarios-body">
-                        <tr><td colspan="6" style="text-align: center;">Cargando usuarios...</td></tr>
-                    </tbody>
+                    <thead><tr><th>ID</th><th>Usuario</th><th>Nombre</th><th>Rol</th><th>Campaña</th><th>Online</th></tr></thead>
+                    <tbody id="tabla-usuarios-body"></tbody>
                 </table>
             </section>
 
             <section id="sec-gestion" class="card hidden">
-                <h2 style="color: var(--azul-distelsa);"><i class="fas fa-file-invoice-dollar"></i> Formulario de Gestión de Cobro</h2>
+                <h2 style="color: var(--azul-distelsa);"><i class="fas fa-file-invoice-dollar"></i> Formulario de Gestión</h2>
+                
                 <div class="section-box">
-                    <p>Aquí va tu formulario de ingreso de tickets...</p>
+                    <h4 style="margin-top:0;">1. Servicio Solicitado</h4>
+                    <div class="grid-3">
+                        <div class="input-group">
+                            <label>Tipo *</label>
+                            <select id="gc-tipo" onchange="manejarTipoServicio()">
+                                <option value="">Seleccionar...</option>
+                                <option value="Diagnostico De Linea Blanca">Diagnóstico De Línea Blanca</option>
+                                <option value="Diagnostico de TV">Diagnóstico de TV</option>
+                                <option value="Mantenimiento">Mantenimiento</option>
+                                <option value="Instalacion">Instalación</option>
+                                <option value="Presupuesto">Presupuesto</option>
+                            </select>
+                        </div>
+                        <div class="input-group"><label id="lbl-detalle">Servicio Solicitado *</label><input type="text" id="gc-detalle"></div>
+                        <div class="input-group"><label>Precio (Q) *</label><input type="number" id="gc-precio" value="0"></div>
+                    </div>
+                    <div class="grid-3">
+                        <div class="input-group"><label>Producto *</label><input type="text" id="gc-producto"></div>
+                        <div class="input-group"><label>Marca *</label><input type="text" id="gc-marca"></div>
+                        <div class="input-group" style="display:flex; gap:10px; align-items:flex-end;">
+                            <div style="flex:1;"><label>Modelo</label><input type="text" id="gc-modelo"></div>
+                            <button class="btn-action bg-blue" onclick="agregarServicio()"><i class="fas fa-plus"></i> Add</button>
+                        </div>
+                    </div>
+                    <table id="tabla-servicios" class="hidden">
+                        <thead><tr><th>Servicio</th><th>Detalle</th><th>Marca</th><th>Precio</th><th>X</th></tr></thead>
+                        <tbody id="lista-servicios"></tbody>
+                    </table>
+                    <h3 id="total-servicios" style="text-align:right; color:var(--azul-distelsa);">Total: Q0.00</h3>
+                </div>
+
+                <div id="sec-contacto" class="section-box">
+                    <h4 style="margin-top:0;">2. Datos de Contacto y Facturación</h4>
+                    <div class="grid-2">
+                        <input type="text" id="gc-nitCli" placeholder="NIT Contacto *">
+                        <input type="text" id="gc-nomCli" placeholder="Nombre Contacto *">
+                        <input type="text" id="gc-telCli" placeholder="Teléfono *">
+                        <input type="text" id="gc-dirCli" placeholder="Dirección *">
+                        <input type="email" id="gc-corCli" placeholder="Correo Contacto">
+                        <input type="text" id="gc-nomFac" placeholder="Nombre Facturación *">
+                    </div>
+                </div>
+
+                <div style="display:flex; gap:10px; margin-top:20px;">
+                    <button class="btn-action bg-gray" onclick="limpiarGestor()">Limpiar</button>
+                    <button class="btn-action bg-blue" onclick="enviarGestor('Solo Guardado', this)">Solo Guardar</button>
+                    <button class="btn-action bg-red" onclick="enviarGestor('Correo Enviado', this)">Enviar Correo</button>
+                    <button class="btn-action bg-green" onclick="enviarGestor('WhatsApp', this)">WhatsApp</button>
                 </div>
             </section>
 
             <section id="sec-seguimiento" class="card hidden">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <h2 style="color: var(--azul-distelsa);"><i class="fas fa-history"></i> Historial de Seguimientos</h2>
+                    <h2 style="color: var(--azul-distelsa);"><i class="fas fa-history"></i> Historial</h2>
                     <button class="btn-action bg-blue" onclick="cargarSeguimientos()"><i class="fas fa-sync"></i> Actualizar</button>
                 </div>
-                
-                <div class="section-box">
-                    <div class="input-group" style="margin: 0;">
-                        <input type="text" id="buscador-tickets" placeholder="🔍 Buscar por Ticket, NIT o Cliente..." onkeyup="filtrarTabla('buscador-tickets', 'tabla-seguimientos-body')">
-                    </div>
-                </div>
-
                 <table>
-                    <thead>
-                        <tr>
-                            <th>ID Ticket</th>
-                            <th>Fecha</th>
-                            <th>Cliente</th>
-                            <th>Agente Creador</th>
-                            <th>Estatus</th>
-                            <th>Acción</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tabla-seguimientos-body">
-                        <tr><td colspan="6" style="text-align: center;">Presiona "Actualizar" para cargar el historial.</td></tr>
-                    </tbody>
+                    <thead><tr><th>Ticket</th><th>Fecha</th><th>Cliente</th><th>Agente</th><th>Estatus</th></tr></thead>
+                    <tbody id="tabla-seguimientos-body"></tbody>
                 </table>
             </section>
 
-            <section id="sec-reportes" class="card hidden">
-                <h2 style="color: var(--azul-distelsa);"><i class="fas fa-file-excel"></i> Exportación y Reportes</h2>
-                
-                <div class="section-box">
-                    <h4 style="margin-top: 0;">Filtros de Exportación</h4>
-                    <div class="grid-3">
-                        <div class="input-group">
-                            <label>Fecha Inicio</label>
-                            <input type="date" id="rep-inicio">
-                        </div>
-                        <div class="input-group">
-                            <label>Fecha Fin</label>
-                            <input type="date" id="rep-fin">
-                        </div>
-                        <div class="input-group">
-                            <label>Filtrar por Agente</label>
-                            <select id="rep-agente">
-                                <option value="Todos">Todos los agentes</option>
-                                <option value="Agente1">Agente 1</option>
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <div style="margin-top: 15px; border-top: 1px solid #ddd; padding-top: 15px;">
-                        <button class="btn-action bg-green" onclick="exportarReporte(this)" style="font-size: 15px; padding: 10px 20px;">
-                            <i class="fas fa-file-download"></i> Descargar Reporte en Excel
-                        </button>
-                    </div>
-                </div>
-            </section>
-
-        </div>
-    </div>
-
-    <div id="modal-permisos" class="modal">
-        <div class="modal-content">
-            <h3 style="color: var(--azul-distelsa); margin-top: 0;"><i class="fas fa-key"></i> Configurar Roles y Permisos</h3>
-            <p id="permiso-user-display" style="font-weight: bold; background: #eee; padding: 10px; border-radius: 5px;"></p>
-            <div id="lista-permisos-checks" style="margin: 20px 0;">
-                <div class="permission-item"><span>Ver Panel Administrativo</span> <input type="checkbox" id="p-usuarios"></div>
-                <div class="permission-item"><span>Realizar Cobros / Gestión</span> <input type="checkbox" id="p-gestiones"></div>
-                <div class="permission-item"><span>Ver Historial de Tickets</span> <input type="checkbox" id="p-historial"></div>
-                <div class="permission-item"><span>Acceso a Reportes Excel</span> <input type="checkbox" id="p-reportes"></div>
-            </div>
-            <div style="display: flex; gap: 10px;">
-                <button class="btn-action bg-red" id="btnGuardarPermisos" onclick="guardarPermisos(this)" style="flex:1; justify-content:center;">GUARDAR CAMBIOS</button>
-                <button class="btn-action bg-gray" onclick="cerrarModal()" style="flex:1; justify-content:center;">CANCELAR</button>
-            </div>
         </div>
     </div>
 
     <script>
-        const API_URL = 'TU_URL_DE_APPS_SCRIPT_AQUI'; // Recuerda pegar tu URL
+        const API_URL = 'https://script.google.com/macros/s/AKfycbwJ8MW6w6Phe-ziskmwkgTIt3ZuQCWz-p-yRZp9nzeHqYXoDRh1per5ZiOAKgo7tSF18Q/exec';
+        let currentUser = null;
         let chartInstance = null;
+        let servicios = [];
 
-        // --- SISTEMA DE NAVEGACIÓN ---
-        function verSeccion(id) {
-            // Ocultar todas las secciones
-            document.querySelectorAll('.main-content > section').forEach(s => s.classList.add('hidden'));
-            // Mostrar la seleccionada
-            document.getElementById(id).classList.remove('hidden');
+        // --- LOGIN ---
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btnLogin');
+            const errorDiv = document.getElementById('login-error');
+            btn.disabled = true; btn.innerHTML = "Verificando...";
             
-            // Efecto visual en el menú lateral
-            document.querySelectorAll('.sidebar .nav-item').forEach(n => n.classList.remove('active'));
-            if(event) event.currentTarget.classList.add('active');
+            try {
+                const res = await fetch(API_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        action: 'login',
+                        usuario: document.getElementById('user').value,
+                        password: document.getElementById('pass').value
+                    })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    currentUser = data.usuario;
+                    document.getElementById('displayUser').innerText = data.nombre.toUpperCase();
+                    document.getElementById('displayCampana').innerText = "Campaña: " + data.campana;
+                    document.getElementById('login-view').style.display = 'none';
+                    document.getElementById('app-view').style.display = 'block';
+                    verSeccion('sec-dashboard');
+                } else {
+                    errorDiv.innerText = "⚠️ " + data.message;
+                    errorDiv.style.display = 'block';
+                }
+            } catch (err) { errorDiv.innerText = "Error de conexión."; errorDiv.style.display = 'block'; }
+            finally { btn.disabled = false; btn.innerHTML = 'INICIAR SESIÓN'; }
+        });
 
-            // Disparadores de carga según la sección
+        // --- NAVEGACIÓN ---
+        function verSeccion(id) {
+            document.querySelectorAll('.main-content > section').forEach(s => s.classList.add('hidden'));
+            document.getElementById(id).classList.remove('hidden');
+            document.querySelectorAll('.sidebar .nav-item').forEach(n => {
+                n.classList.remove('active');
+                if(n.getAttribute('onclick').includes(id)) n.classList.add('active');
+            });
             if(id === 'sec-dashboard') cargarDashboard();
             if(id === 'sec-seguimiento') cargarSeguimientos();
             if(id === 'sec-admin') cargarUsuarios();
         }
 
-        // --- LÓGICA DASHBOARD Y USUARIOS EN LÍNEA ---
-        async function cargarDashboard() {
-            // Aquí iría tu fetch(API_URL, { action: 'obtenerDashboard' })
-            // Por ahora, simularemos los datos para que veas cómo funciona
-            
-            // 1. Simulación de Usuarios en Línea
-            const usuariosOnline = ['admin', 'jperez', 'mgarcia'];
-            const ul = document.getElementById('lista-online');
-            ul.innerHTML = usuariosOnline.map(u => `<li style="padding: 8px 0; border-bottom: 1px solid #eee;"><i class="fas fa-user-circle" style="color: var(--azul-distelsa);"></i> ${u}</li>`).join('');
-
-            // 2. Gráfica Chart.js
-            const ctx = document.getElementById('chartEstatus').getContext('2d');
-            if (chartInstance) chartInstance.destroy(); // Evita que las gráficas se sobrepongan
-            
-            chartInstance = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Pendientes', 'Completados', 'Anulados'],
-                    datasets: [{
-                        data: [15, 30, 5],
-                        backgroundColor: ['#f39c12', '#25d366', '#e30613'] // Colores de estatus
-                    }]
-                },
-                options: { responsive: true, maintainAspectRatio: false }
-            });
-        }
-
-        // --- LÓGICA SEGUIMIENTOS ---
-        async function cargarSeguimientos() {
-            const tbody = document.getElementById('tabla-seguimientos-body');
-            tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;"><i class="fas fa-spinner fa-spin"></i> Cargando base de datos...</td></tr>';
-            
-            // Simulación de datos que vendrían de Google Sheets
-            setTimeout(() => {
-                const datosFalsos = [
-                    { tk: 'TK-20260305-12', fecha: '05/03/2026', cli: 'Juan Pérez', ag: 'admin', estatus: 'PENDIENTE' },
-                    { tk: 'TK-20260305-13', fecha: '05/03/2026', cli: 'María García', ag: 'jperez', estatus: 'COMPLETADO' }
-                ];
-                
-                tbody.innerHTML = datosFalsos.map(d => `
-                    <tr>
-                        <td><strong>${d.tk}</strong></td>
-                        <td>${d.fecha}</td>
-                        <td>${d.cli}</td>
-                        <td>${d.ag}</td>
-                        <td><span class="badge" style="background: ${d.estatus === 'PENDIENTE' ? '#f39c12' : '#25d366'};">${d.estatus}</span></td>
-                        <td><button class="btn-action bg-blue"><i class="fas fa-eye"></i> Ver</button></td>
-                    </tr>
-                `).join('');
-            }, 1000);
-        }
-
-        // --- LÓGICA BUSCADOR EN TABLAS ---
-        function filtrarTabla(inputId, tbodyId) {
-            let filter = document.getElementById(inputId).value.toUpperCase();
-            let rows = document.getElementById(tbodyId).getElementsByTagName("tr");
-            for (let i = 0; i < rows.length; i++) {
-                let txtValue = rows[i].textContent || rows[i].innerText;
-                rows[i].style.display = txtValue.toUpperCase().indexOf(filter) > -1 ? "" : "none";
+        // --- LÓGICA DE GESTIÓN (Manejador de campos) ---
+        function manejarTipoServicio() {
+            let tipo = document.getElementById('gc-tipo').value;
+            let lbl = document.getElementById('lbl-detalle');
+            let precio = document.getElementById('gc-precio');
+            if(tipo.includes('Diagnostico')) {
+                lbl.innerText = "Falla Reportada *";
+                precio.value = 175; precio.readOnly = true;
+            } else {
+                lbl.innerText = "Servicio Solicitado *";
+                precio.value = 0; precio.readOnly = false;
             }
         }
 
-        // --- LÓGICA REPORTES ---
-        function exportarReporte(btn) {
-            let original = btn.innerHTML;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generando Excel...';
-            btn.disabled = true;
-            
-            // Simulación de descarga
-            setTimeout(() => {
-                alert("Reporte generado exitosamente. (Función conectada a Apps Script en el backend)");
-                btn.innerHTML = original;
-                btn.disabled = false;
-            }, 2000);
+        function agregarServicio() {
+            let t = document.getElementById('gc-tipo').value;
+            let d = document.getElementById('gc-detalle').value;
+            let p = document.getElementById('gc-producto').value; 
+            let m = document.getElementById('gc-marca').value; 
+            let pr = parseFloat(document.getElementById('gc-precio').value) || 0;
+            if(!t || !d || !p || !m) return alert("Complete los campos.");
+            servicios.push({tipo:t, det:d, prod:p, marca:m, pre:pr});
+            renderTablaServicios();
+            document.getElementById('gc-detalle').value = "";
         }
 
-        // --- LOGIN Y MANEJO DE MODAL EXISTENTES ---
-        // (Aquí debes dejar intactas tus funciones de login, abrirModalPermisos, guardarPermisos, cargarUsuarios, etc.)
-        
-        // Simulación de Login para pruebas visuales en tu PC
-      const API_URL = 'https://script.google.com/macros/s/AKfycbwJ8MW6w6Phe-ziskmwkgTIt3ZuQCWz-p-yRZp9nzeHqYXoDRh1per5ZiOAKgo7tSF18Q/exec';
-        });
+        function renderTablaServicios() {
+            let tb = document.getElementById('lista-servicios');
+            let tot = 0;
+            if(servicios.length > 0) document.getElementById('tabla-servicios').classList.remove('hidden');
+            let html = "";
+            servicios.forEach((s, i) => {
+                tot += s.pre;
+                html += `<tr><td>${s.tipo}</td><td>${s.det}</td><td>${s.marca}</td><td>Q${s.pre.toFixed(2)}</td><td><button onclick="servicios.splice(${i},1); renderTablaServicios();">X</button></td></tr>`;
+            });
+            tb.innerHTML = html;
+            document.getElementById('total-servicios').innerText = `Total: Q${tot.toFixed(2)}`;
+        }
 
+        async function enviarGestor(metodo, btn) {
+            if(servicios.length === 0) return alert("Agregue un servicio.");
+            btn.disabled = true; btn.innerText = "Guardando...";
+            const payload = {
+                action: 'guardarGestion',
+                datos: {
+                    agente: document.getElementById('displayUser').innerText,
+                    nitCliente: document.getElementById('gc-nitCli').value,
+                    nombreCliente: document.getElementById('gc-nomCli').value,
+                    metodoEnvio: metodo,
+                    listaServicios: servicios
+                }
+            };
+            try {
+                const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
+                const data = await res.json();
+                if(data.success) { alert("Guardado con éxito"); limpiarGestor(); }
+            } catch(e) { alert("Error de red"); }
+            finally { btn.disabled = false; btn.innerText = "Guardar"; }
+        }
+
+        function limpiarGestor() {
+            document.querySelectorAll('#sec-gestion input').forEach(i => i.value = '');
+            servicios = []; renderTablaServicios();
+        }
+
+        // --- DASHBOARD REAL ---
+        async function cargarDashboard() {
+            try {
+                const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'obtenerDashboard' }) });
+                const data = await res.json();
+                document.getElementById('lista-online').innerHTML = data.online.map(u => `<li><i class="fas fa-user-circle"></i> ${u}</li>`).join('');
+                const ctx = document.getElementById('chartEstatus').getContext('2d');
+                if (chartInstance) chartInstance.destroy();
+                chartInstance = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Pendientes', 'Completados', 'Anulados'],
+                        datasets: [{ data: [data.estatusCount.Pendientes, data.estatusCount.Completados, data.estatusCount.Anulados], backgroundColor: ['#f39c12', '#25d366', '#e30613'] }]
+                    }
+                });
+            } catch (e) { console.log(e); }
+        }
+
+        // --- CERRAR SESIÓN ---
+        async function cerrarSesion() {
+            if(currentUser) await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'logout', usuario: currentUser }) });
+            location.reload();
+        }
     </script>
 </body>
 </html>

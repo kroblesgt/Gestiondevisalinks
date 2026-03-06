@@ -8,22 +8,34 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root { --rojo-distelsa: #e30613; --azul-distelsa: #003366; --fondo: #f4f6f9; --sidebar-w: 250px; }
-        body { font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; background: var(--fondo); color: #333; }
-        /* Clases base */
+        body { font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; background: var(--fondo); color: #333; overflow-x: hidden; }
+
+        /* --- UTILIDADES Y LAYOUT --- */
         .hidden { display: none !important; }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; }
         .card { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 20px; }
-        .btn-action { padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; color: white; font-weight: bold; }
-        .bg-blue { background: var(--azul-distelsa); } .bg-red { background: var(--rojo-distelsa); }
-        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; }
+        .section-box { border: 1px solid #eee; padding: 15px; border-radius: 8px; margin-bottom: 15px; background: #fafafa; }
+        
+        /* --- FORMULARIOS Y TABLAS --- */
+        .input-group { margin-bottom: 10px; }
+        .input-group label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 5px; color: var(--azul-distelsa); }
+        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-family: inherit; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; background: white; }
         th { background: var(--azul-distelsa); color: white; padding: 12px; text-align: left; }
         td { padding: 12px; border-bottom: 1px solid #eee; }
         
-        /* Layout */
+        /* --- BOTONES --- */
+        .btn-action { padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; color: white; font-weight: bold; display: inline-flex; align-items: center; gap: 6px; transition: 0.2s; }
+        .btn-action:hover { opacity: 0.9; }
+        .btn-action:disabled { background: #999 !important; cursor: not-allowed; }
+        .bg-blue { background: var(--azul-distelsa); } .bg-red { background: var(--rojo-distelsa); } .bg-green { background: #25d366; } .bg-gray { background: #6c757d; }
+
+        /* --- LOGIN --- */
         #login-view { position: fixed; inset: 0; background: linear-gradient(135deg, var(--azul-distelsa) 0%, #001f3f 100%); display: flex; justify-content: center; align-items: center; z-index: 2000; }
-        .login-card { background: white; padding: 40px; border-radius: 12px; width: 340px; text-align: center; }
+        .login-card { background: white; padding: 40px; border-radius: 12px; width: 340px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        
+        /* --- NAVEGACIÓN --- */
         header { position: fixed; top: 0; left: 0; right: 0; height: 60px; background: white; border-bottom: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; z-index: 1000; }
         .sidebar { position: fixed; top: 60px; left: 0; bottom: 0; width: var(--sidebar-w); background: var(--azul-distelsa); color: white; padding-top: 20px; }
         .nav-item { padding: 15px 20px; cursor: pointer; display: flex; align-items: center; gap: 12px; }
@@ -35,21 +47,29 @@
 
     <div id="login-view">
         <div class="login-card">
-            <h2 style="color: var(--azul-distelsa);">Gestión de Cobros ST</h2>
+            <h2 style="color: var(--azul-distelsa); margin-top:0;">Gestión de Cobros ST</h2>
             <form id="loginForm">
-                <input type="text" id="user" placeholder="Usuario" required style="margin-bottom: 15px;">
-                <input type="password" id="pass" placeholder="Contraseña" required style="margin-bottom: 20px;">
-                <button type="submit" id="btnLogin" class="btn-action bg-red" style="width: 100%;">INICIAR SESIÓN</button>
+                <div class="input-group">
+                    <input type="text" id="user" placeholder="Usuario" required>
+                </div>
+                <div class="input-group" style="margin-bottom: 20px;">
+                    <input type="password" id="pass" placeholder="Contraseña" required>
+                </div>
+                <button type="submit" id="btnLogin" class="btn-action bg-red" style="width: 100%; justify-content: center;">INICIAR SESIÓN</button>
             </form>
+            <div id="loginError" style="color: red; margin-top: 15px; font-size: 13px; display: none;"></div>
         </div>
     </div>
 
     <div id="app-view" class="hidden">
         <header>
             <h2 style="color: var(--azul-distelsa); margin:0;"><i class="fas fa-headset"></i> Distelsa ST</h2>
-            <div style="text-align: right;">
-                <strong id="displayUser">Usuario</strong>
-                <button onclick="logout()" class="btn-action bg-red" style="margin-left: 15px; padding: 5px 10px;"><i class="fas fa-power-off"></i></button>
+            <div style="text-align: right; display: flex; align-items: center; gap: 15px;">
+                <div>
+                    <strong id="displayUser" style="color: var(--azul-distelsa);">Usuario</strong><br>
+                    <small id="displayCampana" style="color: var(--rojo-distelsa); font-weight:bold;"></small>
+                </div>
+                <button onclick="logout()" class="btn-action bg-red"><i class="fas fa-power-off"></i> Salir</button>
             </div>
         </header>
 
@@ -60,50 +80,106 @@
             
             <section id="sec-dashboard" class="card hidden">
                 <h2><i class="fas fa-chart-pie"></i> Panel de Control</h2>
+                <button onclick="cargarDashboard()" class="btn-action bg-blue" style="margin-bottom: 15px;"><i class="fas fa-sync"></i> Actualizar Datos</button>
                 <div class="grid-2">
-                    <div><canvas id="chartEstatus"></canvas></div>
-                    <div style="background: #fafafa; padding: 15px; border-radius: 8px;">
-                        <h3>Usuarios en Línea</h3>
-                        <ul id="lista-online" style="list-style: none; padding: 0;"></ul>
+                    <div class="section-box">
+                        <canvas id="chartEstatus"></canvas>
+                    </div>
+                    <div class="section-box">
+                        <h3 style="margin-top:0;">Usuarios en Línea</h3>
+                        <ul id="lista-online" style="list-style: none; padding: 0; font-size: 15px;">
+                            <li style="color: #666;">Cargando usuarios...</li>
+                        </ul>
                     </div>
                 </div>
             </section>
 
             <section id="sec-admin" class="card hidden">
                 <h2><i class="fas fa-users-cog"></i> Administración de Usuarios</h2>
-                <p>Módulo de gestión de usuarios activo.</p>
+                <div class="section-box">
+                    <h4 style="margin-top:0;">Crear Nuevo Usuario</h4>
+                    <div class="grid-3">
+                        <input type="text" id="admin-user" placeholder="Usuario *">
+                        <input type="text" id="admin-nombre" placeholder="Nombre Completo *">
+                        <input type="password" id="admin-pass" placeholder="Contraseña *">
+                        <select id="admin-rol">
+                            <option value="">Seleccionar Rol *</option>
+                            <option value="Administrador">Administrador</option>
+                            <option value="Líder">Líder</option>
+                            <option value="Agente">Agente</option>
+                        </select>
+                        <input type="text" id="admin-campana" placeholder="Campaña *">
+                    </div>
+                    <button class="btn-action bg-blue" style="margin-top: 15px;"><i class="fas fa-user-plus"></i> Guardar Usuario</button>
+                </div>
             </section>
 
             <section id="sec-gestion" class="card hidden">
-                <h2><i class="fas fa-file-invoice-dollar"></i> Nueva Gestión de Cobro</h2>
-                <div class="grid-3" style="margin-bottom: 15px;">
-                    <input type="text" id="gc-nitCli" placeholder="NIT Cliente *">
-                    <input type="text" id="gc-nomCli" placeholder="Nombre Cliente *">
-                    <input type="text" id="gc-telCli" placeholder="Teléfono *">
-                </div>
+                <h2><i class="fas fa-file-invoice-dollar"></i> Formulario de Gestión</h2>
                 
-                <div style="background: #f4f6f9; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-                    <h4>Agregar Servicio</h4>
+                <div class="section-box">
+                    <h4 style="margin-top:0;">1. Servicio Solicitado</h4>
                     <div class="grid-3">
-                        <input type="text" id="gc-producto" placeholder="Producto/Servicio">
-                        <input type="number" id="gc-precio" placeholder="Precio (Q)">
-                        <button onclick="agregarServicio()" class="btn-action bg-blue">Agregar a la lista</button>
+                        <div class="input-group">
+                            <label>Tipo *</label>
+                            <select id="gc-tipo">
+                                <option value="">Seleccionar...</option>
+                                <option value="Diagnostico De Linea Blanca">Diagnóstico De Línea Blanca</option>
+                                <option value="Mantenimiento">Mantenimiento</option>
+                                <option value="Presupuesto">Presupuesto</option>
+                                <option value="Otro">Otro</option>
+                            </select>
+                        </div>
+                        <div class="input-group"><label>Detalle Falla *</label><input type="text" id="gc-detalle"></div>
+                        <div class="input-group"><label>Precio (Q) *</label><input type="number" id="gc-precio" value="0"></div>
+                        <div class="input-group"><label>Producto *</label><input type="text" id="gc-producto"></div>
+                        <div class="input-group"><label>Marca</label><input type="text" id="gc-marca"></div>
+                        <div class="input-group" style="display:flex; gap:10px; align-items:flex-end;">
+                            <div style="flex:1;"><label>Modelo</label><input type="text" id="gc-modelo"></div>
+                            <button class="btn-action bg-blue" onclick="agregarServicio()"><i class="fas fa-plus"></i> Add</button>
+                        </div>
                     </div>
                     <table id="tabla-servicios" class="hidden">
-                        <thead><tr><th>Producto</th><th>Precio</th></tr></thead>
+                        <thead><tr><th>Tipo</th><th>Producto</th><th>Marca</th><th>Precio</th></tr></thead>
                         <tbody id="lista-servicios"></tbody>
                     </table>
                 </div>
 
-                <button id="btnGuardarGestion" onclick="enviarGestion()" class="btn-action bg-red" style="width: 100%;"><i class="fas fa-save"></i> Guardar Ticket</button>
+                <div class="section-box">
+                    <h4 style="margin-top:0;">2. Datos del Cliente</h4>
+                    <div class="grid-3">
+                        <div class="input-group"><input type="text" id="gc-nitCli" placeholder="NIT Cliente *"></div>
+                        <div class="input-group"><input type="text" id="gc-nomCli" placeholder="Nombre Completo *"></div>
+                        <div class="input-group"><input type="text" id="gc-telCli" placeholder="Teléfono *"></div>
+                    </div>
+                    <div class="grid-2" style="margin-top:10px;">
+                        <div class="input-group"><input type="text" id="gc-dirCli" placeholder="Dirección *"></div>
+                        <div class="input-group"><input type="email" id="gc-corCli" placeholder="Correo (Opcional)"></div>
+                    </div>
+                    <textarea id="gc-obsTec" placeholder="Observaciones del Técnico" style="margin-top:10px;" rows="2"></textarea>
+                </div>
+
+                <div class="section-box">
+                    <h4 style="margin-top:0;">3. Datos de Facturación y Pago</h4>
+                    <div class="grid-3">
+                        <div class="input-group"><input type="text" id="gc-nitFac" placeholder="NIT Facturación *"></div>
+                        <div class="input-group"><input type="text" id="gc-nomFac" placeholder="Nombre Facturación *"></div>
+                        <div class="input-group"><input type="text" id="gc-visa" placeholder="Link de VisaNet (Opcional)"></div>
+                    </div>
+                    <textarea id="gc-obsGen" placeholder="Observaciones Generales" style="margin-top:10px;" rows="2"></textarea>
+                </div>
+
+                <button id="btnGuardarGestion" onclick="enviarGestion()" class="btn-action bg-red" style="width: 100%; justify-content: center; font-size: 16px;"><i class="fas fa-save"></i> Guardar Gestión Completa</button>
             </section>
 
             <section id="sec-seguimiento" class="card hidden">
-                <h2><i class="fas fa-history"></i> Historial de Tickets</h2>
+                <h2><i class="fas fa-history"></i> Historial y Seguimientos</h2>
                 <button onclick="cargarSeguimientos()" class="btn-action bg-blue" style="margin-bottom: 15px;"><i class="fas fa-sync"></i> Actualizar Tabla</button>
                 <table>
-                    <thead><tr><th>Ticket ID</th><th>Fecha</th><th>Cliente</th><th>Total</th><th>Estatus</th></tr></thead>
-                    <tbody id="tabla-seguimientos-body"></tbody>
+                    <thead><tr><th>Ticket ID</th><th>Fecha</th><th>Cliente</th><th>Teléfono</th><th>Estatus</th></tr></thead>
+                    <tbody id="tabla-seguimientos-body">
+                        <tr><td colspan="5" style="text-align:center;">Presiona actualizar para cargar datos</td></tr>
+                    </tbody>
                 </table>
             </section>
 
@@ -111,127 +187,245 @@
     </div>
 
     <script>
-        // REEMPLAZA ESTA URL POR LA DE TU NUEVA IMPLEMENTACIÓN DE APPS SCRIPT
-        const API_URL = 'https://script.google.com/macros/s/AKfycbzPU5sKCn5uTlATown4d_imF-bON6T8TiCa2kGM4Sr-chZk2llCCQXrwk-oyu2rojgvWg/exec'; 
+        // ==========================================
+        // CONFIGURACIÓN PRINCIPAL
+        // ==========================================
+        const API_URL = 'URL_DE_TU_APPS_SCRIPT_AQUI'; // ¡CRÍTICO: REEMPLAZAR ESTO!
         let usuarioActual = "";
-        let servicios = [];
+        let serviciosArray = [];
+        let chartInstance = null;
 
-        // 1. SISTEMA DE LOGIN
+        // ==========================================
+        // 1. SISTEMA DE LOGIN Y SESIÓN
+        // ==========================================
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('btnLogin');
-            btn.innerText = "Conectando..."; btn.disabled = true;
+            const errorDiv = document.getElementById('loginError');
+            
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> CONECTANDO...'; 
+            btn.disabled = true;
+            errorDiv.style.display = 'none';
 
             const payload = {
                 action: 'login',
-                usuario: document.getElementById('user').value,
-                password: document.getElementById('pass').value
+                usuario: document.getElementById('user').value.trim(),
+                password: document.getElementById('pass').value.trim()
             };
 
             try {
-                const req = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
+                // El header 'text/plain' evita el bloqueo de CORS en Apps Script
+                const req = await fetch(API_URL, { 
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify(payload) 
+                });
+                
                 const res = await req.json();
 
                 if (res.success) {
                     usuarioActual = res.usuario;
                     document.getElementById('displayUser').innerText = res.nombre;
+                    document.getElementById('displayCampana').innerText = "Campaña: " + res.campana;
+                    
                     document.getElementById('login-view').classList.add('hidden');
                     document.getElementById('app-view').classList.remove('hidden');
+                    
                     construirMenu(res.permisos);
                 } else {
-                    alert(res.message);
+                    errorDiv.innerText = "❌ " + res.message; // Aquí mostrará "Credenciales incorrectas"
+                    errorDiv.style.display = 'block';
                 }
             } catch (err) {
-                alert("Error de red.");
+                console.error(err);
+                errorDiv.innerText = "❌ Error de conexión. Revisa que la API_URL sea correcta y tengas internet.";
+                errorDiv.style.display = 'block';
             } finally {
-                btn.innerText = "INICIAR SESIÓN"; btn.disabled = false;
+                btn.innerHTML = 'INICIAR SESIÓN'; 
+                btn.disabled = false;
             }
         });
 
-        // 2. CONSTRUIR MENÚ DINÁMICO
+        function logout() {
+            // Intenta desconectar en backend y luego recarga
+            fetch(API_URL, { 
+                method: 'POST', 
+                headers: { 'Content-Type': 'text/plain' },
+                body: JSON.stringify({ action: 'logout', usuario: usuarioActual }) 
+            }).finally(() => {
+                location.reload();
+            });
+        }
+
+        // ==========================================
+        // 2. NAVEGACIÓN Y PERMISOS (RBAC)
+        // ==========================================
         function construirMenu(permisos) {
             const menu = document.getElementById('menu-lateral');
             menu.innerHTML = "";
-            let primeraSeccion = "";
+            let primera = "";
 
             if (permisos.dashboard === "SI") {
                 menu.innerHTML += `<div class="nav-item" onclick="verSeccion('sec-dashboard')"><i class="fas fa-chart-pie"></i> Dashboard</div>`;
-                primeraSeccion = primeraSeccion || 'sec-dashboard';
+                primera = primera || 'sec-dashboard';
             }
             if (permisos.usuarios === "SI") {
                 menu.innerHTML += `<div class="nav-item" onclick="verSeccion('sec-admin')"><i class="fas fa-users-cog"></i> Usuarios</div>`;
-                primeraSeccion = primeraSeccion || 'sec-admin';
+                primera = primera || 'sec-admin';
             }
             if (permisos.gestion === "SI") {
-                menu.innerHTML += `<div class="nav-item" onclick="verSeccion('sec-gestion')"><i class="fas fa-file-invoice-dollar"></i> Gestión</div>`;
-                primeraSeccion = primeraSeccion || 'sec-gestion';
+                menu.innerHTML += `<div class="nav-item" onclick="verSeccion('sec-gestion')"><i class="fas fa-file-invoice-dollar"></i> Gestión de Cobro</div>`;
+                primera = primera || 'sec-gestion';
             }
             if (permisos.seguimiento === "SI") {
                 menu.innerHTML += `<div class="nav-item" onclick="verSeccion('sec-seguimiento')"><i class="fas fa-history"></i> Seguimiento</div>`;
-                primeraSeccion = primeraSeccion || 'sec-seguimiento';
+                primera = primera || 'sec-seguimiento';
             }
 
-            if (primeraSeccion) verSeccion(primeraSeccion);
+            if (primera) verSeccion(primera);
         }
 
-        // 3. CONTROL DE VISTAS
         function verSeccion(id) {
             document.querySelectorAll('.main-content > section').forEach(s => s.classList.add('hidden'));
             document.getElementById(id).classList.remove('hidden');
-            if(id === 'sec-seguimiento') cargarSeguimientos();
+            
+            // Efecto visual en menú
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            const clicked = Array.from(document.querySelectorAll('.nav-item')).find(n => n.getAttribute('onclick').includes(id));
+            if(clicked) clicked.classList.add('active');
+
+            // Cargas automáticas
             if(id === 'sec-dashboard') cargarDashboard();
+            if(id === 'sec-seguimiento') cargarSeguimientos();
         }
 
-        // 4. GESTIÓN DE COBRO (Lógica)
+        // ==========================================
+        // 3. GESTIÓN DE COBROS (LÓGICA)
+        // ==========================================
         function agregarServicio() {
+            const tipo = document.getElementById('gc-tipo').value;
+            const det = document.getElementById('gc-detalle').value;
             const prod = document.getElementById('gc-producto').value;
-            const precio = document.getElementById('gc-precio').value;
-            if(!prod || !precio) return alert("Llena producto y precio.");
+            const mar = document.getElementById('gc-marca').value;
+            const mod = document.getElementById('gc-modelo').value;
+            const pre = document.getElementById('gc-precio').value;
+
+            if(!tipo || !prod || pre === "") return alert("Llena Tipo, Producto y Precio como mínimo.");
             
-            servicios.push({ producto: prod, precio: precio });
+            serviciosArray.push({ tipo, detalle: det, producto: prod, marca: mar, modelo: mod, precio: pre });
+            
             document.getElementById('tabla-servicios').classList.remove('hidden');
-            document.getElementById('lista-servicios').innerHTML += `<tr><td>${prod}</td><td>Q${precio}</td></tr>`;
+            document.getElementById('lista-servicios').innerHTML += `<tr><td>${tipo}</td><td>${prod}</td><td>${mar}</td><td>Q${pre}</td></tr>`;
             
-            document.getElementById('gc-producto').value = "";
-            document.getElementById('gc-precio').value = "";
+            // Limpiar inputs parciales
+            document.getElementById('gc-producto').value = ""; document.getElementById('gc-marca').value = "";
+            document.getElementById('gc-modelo').value = ""; document.getElementById('gc-precio').value = "0";
         }
 
         async function enviarGestion() {
-            if(servicios.length === 0) return alert("Agrega al menos un servicio.");
+            if(serviciosArray.length === 0) return alert("Agrega al menos un servicio con el botón '+ Add'.");
             
             const btn = document.getElementById('btnGuardarGestion');
-            btn.innerText = "Guardando..."; btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...'; 
+            btn.disabled = true;
 
             const payload = {
                 action: 'guardarGestion',
-                agente: usuarioActual,
-                nit: document.getElementById('gc-nitCli').value,
-                nombre: document.getElementById('gc-nomCli').value,
-                telefono: document.getElementById('gc-telCli').value,
-                servicios: servicios
+                agente: document.getElementById('displayUser').innerText,
+                nitCli: document.getElementById('gc-nitCli').value,
+                nomCli: document.getElementById('gc-nomCli').value,
+                telCli: document.getElementById('gc-telCli').value,
+                dirCli: document.getElementById('gc-dirCli').value,
+                corCli: document.getElementById('gc-corCli').value,
+                obsTec: document.getElementById('gc-obsTec').value,
+                nitFac: document.getElementById('gc-nitFac').value,
+                nomFac: document.getElementById('gc-nomFac').value,
+                visaLink: document.getElementById('gc-visa').value,
+                obsGen: document.getElementById('gc-obsGen').value,
+                servicios: serviciosArray
             };
 
-            fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) })
-                .then(res => res.json())
-                .then(data => {
-                    alert("Ticket guardado: " + data.ticketId);
-                    // Limpiar formulario aquí
-                    servicios = [];
+            try {
+                const req = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(payload) });
+                const res = await req.json();
+
+                if(res.success) {
+                    alert("✅ Gestión guardada exitosamente. Ticket: " + res.ticketId);
+                    // Limpiar todo
+                    serviciosArray = [];
                     document.getElementById('lista-servicios').innerHTML = "";
-                })
-                .catch(() => alert("Error al guardar."))
-                .finally(() => { btn.innerText = "Guardar Ticket"; btn.disabled = false; });
+                    document.querySelectorAll('#sec-gestion input, #sec-gestion textarea').forEach(i => i.value = '');
+                    document.getElementById('tabla-servicios').classList.add('hidden');
+                } else {
+                    alert("❌ Error: " + res.message);
+                }
+            } catch (err) {
+                alert("❌ Error al enviar datos.");
+            } finally {
+                btn.innerHTML = '<i class="fas fa-save"></i> Guardar Gestión Completa'; 
+                btn.disabled = false;
+            }
         }
 
-        // 5. CERRAR SESIÓN
-        function logout() {
-            fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'logout', usuario: usuarioActual }) });
-            location.reload();
+        // ==========================================
+        // 4. MÓDULOS DE LECTURA (Dashboard y Seguimiento)
+        // ==========================================
+        async function cargarDashboard() {
+            const btn = document.querySelector('#sec-dashboard .btn-action');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Cargando...';
+            
+            try {
+                const req = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify({ action: 'obtenerDashboard' }) });
+                const res = await req.json();
+
+                if (res.success) {
+                    // Actualizar Lista Online
+                    const ul = document.getElementById('lista-online');
+                    ul.innerHTML = res.online.map(u => `<li><i class="fas fa-circle" style="color:#25d366; font-size:10px; margin-right:5px;"></i> ${u}</li>`).join('');
+                    if(res.online.length === 0) ul.innerHTML = "<li>Nadie en línea.</li>";
+
+                    // Actualizar Gráfica
+                    if(chartInstance) chartInstance.destroy();
+                    const ctx = document.getElementById('chartEstatus').getContext('2d');
+                    chartInstance = new Chart(ctx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: Object.keys(res.estatusCount),
+                            datasets: [{
+                                data: Object.values(res.estatusCount),
+                                backgroundColor: ['#003366', '#e30613', '#25d366', '#f39c12']
+                            }]
+                        },
+                        options: { responsive: true, plugins: { legend: { position: 'bottom' }, title: {display: true, text: 'Tickets por Estatus'} } }
+                    });
+                }
+            } catch(e) { console.error(e); }
+            finally { btn.innerHTML = '<i class="fas fa-sync"></i> Actualizar Datos'; }
         }
 
-        // Funciones dummy para cargar datos (se conectarán al backend después)
-        function cargarSeguimientos() { /* Lógica fetch para traer Gestiones */ }
-        function cargarDashboard() { /* Lógica fetch para traer datos y renderizar Chart.js */ }
+        async function cargarSeguimientos() {
+            const tbody = document.getElementById('tabla-seguimientos-body');
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;"><i class="fas fa-spinner fa-spin"></i> Cargando registros...</td></tr>';
+            
+            try {
+                const req = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify({ action: 'obtenerSeguimientos' }) });
+                const res = await req.json();
+
+                if(res.success && res.datos.length > 0) {
+                    tbody.innerHTML = res.datos.map(d => `<tr>
+                        <td><strong>${d.ticket}</strong></td>
+                        <td>${new Date(d.fecha).toLocaleDateString()}</td>
+                        <td>${d.cliente}</td>
+                        <td>${d.telefono}</td>
+                        <td><span style="background:var(--azul-distelsa); color:white; padding:3px 8px; border-radius:12px; font-size:12px;">${d.estatus}</span></td>
+                    </tr>`).join('');
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No hay tickets registrados.</td></tr>';
+                }
+            } catch(e) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:red;">Error de conexión.</td></tr>';
+            }
+        }
     </script>
 </body>
 </html>

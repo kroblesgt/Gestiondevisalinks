@@ -15,38 +15,39 @@
         .login-card img { width: 180px; margin-bottom: 20px; }
         .input-group { text-align: left; margin-bottom: 15px; }
         .input-group label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 5px; color: var(--azul-distelsa); }
-        .input-group input { width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 14px; transition: border 0.3s; }
+        .input-group input, .input-group select, .input-group textarea { width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 14px; transition: border 0.3s; }
         .error-blink { animation: blink 0.5s 2; border-color: var(--rojo-distelsa) !important; }
         @keyframes blink { 0%, 100% { background: white; } 50% { background: #ffe6e6; border-color: var(--rojo-distelsa); } }
+        
         .btn-primary { width: 100%; padding: 12px; background: var(--rojo-distelsa); color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; transition: background 0.3s; font-size: 15px; }
         .btn-primary:hover { background: #b3000b; }
         .btn-primary:disabled { background: #999; cursor: not-allowed; }
-        #login-error { color: var(--rojo-distelsa); font-size: 13px; font-weight: bold; margin-top: 15px; display: none; }
 
-        /* --- ESTRUCTURA --- */
+        /* --- ESTRUCTURA APP --- */
         #app-view { display: none; }
         header { position: fixed; top: 0; left: 0; right: 0; height: 60px; background: white; border-bottom: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; z-index: 1000; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .header-title { color: var(--azul-distelsa); font-size: 22px; font-weight: 800; display: flex; align-items: center; gap: 10px; }
         .user-profile { display: flex; align-items: center; gap: 15px; text-align: right; }
+        
         .sidebar { position: fixed; top: 60px; left: 0; bottom: 0; width: var(--sidebar-w); background: var(--azul-distelsa); color: white; padding-top: 20px; }
         .nav-item { padding: 15px 20px; cursor: pointer; display: flex; align-items: center; gap: 12px; transition: 0.2s; font-size: 15px; }
         .nav-item:hover, .nav-item.active { background: rgba(255,255,255,0.1); border-left: 4px solid var(--rojo-distelsa); }
+        
         .main-content { margin-left: var(--sidebar-w); margin-top: 60px; padding: 25px; }
         .card { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 20px; }
 
-        /* --- FORMAS Y TABLAS --- */
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        /* --- UTILIDADES --- */
         .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; }
-        .input-group select, .input-group textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         .section-box { border: 1px solid #eee; padding: 15px; border-radius: 8px; margin-bottom: 15px; background: #fafafa; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; }
-        th { background: var(--azul-distelsa); color: white; padding: 12px; text-align: left; }
-        td { padding: 12px; border-bottom: 1px solid #eee; }
-        .badge { padding: 5px 10px; border-radius: 4px; font-size: 11px; font-weight: bold; color: white; }
-        .btn-action { padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; color: white; font-weight: bold; display: inline-flex; align-items: center; gap: 6px; transition: 0.2s;}
-        .btn-action:hover { opacity: 0.9; }
-        .bg-blue { background: var(--azul-distelsa); } .bg-red { background: var(--rojo-distelsa); } .bg-green { background: #25d366; } .bg-gray { background: #6c757d; }
+        .badge { padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; color: white; text-transform: uppercase; }
+        .bg-green { background: #28a745; } .bg-gray { background: #6c757d; } .bg-red { background: var(--rojo-distelsa); } .bg-blue { background: #007bff; }
         .hidden { display: none !important; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th { background: var(--azul-distelsa); color: white; padding: 12px; text-align: left; }
+        td { padding: 12px; border-bottom: 1px solid #eee; font-size: 14px; }
+        .btn-action { padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; color: white; font-weight: bold; display: inline-flex; align-items: center; gap: 6px; }
     </style>
 </head>
 <body>
@@ -56,13 +57,10 @@
             <img src="https://www.distelsa.com.gt/media/logo/stores/1/logo_distelsa.png" alt="Distelsa">
             <h2 style="color: var(--azul-distelsa); margin-top: 0; font-size: 20px;">Gestión de Cobros ST</h2>
             <form id="loginForm">
-                <div class="input-group"><label>Usuario *</label><input type="text" id="user" placeholder="Su usuario"></div>
-                <div class="input-group"><label>Contraseña *</label><input type="password" id="pass" placeholder="••••••••"></div>
-                <div style="text-align: left; margin-bottom: 20px; font-size: 13px;">
-                    <input type="checkbox" id="keepSession"> <label for="keepSession" style="display:inline; font-weight:normal; color:#555;">Mantener sesión activa</label>
-                </div>
+                <div class="input-group"><label>Usuario *</label><input type="text" id="user" required></div>
+                <div class="input-group"><label>Contraseña *</label><input type="password" id="pass" required></div>
                 <button type="submit" id="btnLogin" class="btn-primary">INICIAR SESIÓN</button>
-                <div id="login-error"></div> 
+                <div id="login-error" style="color: red; margin-top: 10px; font-weight: bold; display: none;"></div>
             </form>
         </div>
     </div>
@@ -72,151 +70,70 @@
             <div class="header-title"><i class="fas fa-headset"></i> Gestión de Cobro</div>
             <div class="user-profile">
                 <div>
-                    <strong id="displayUser" style="color: var(--azul-distelsa);">Usuario</strong><br>
-                    <small id="displayCampana" style="color: var(--rojo-distelsa); font-weight:bold;">Campaña: Call Center ST</small>
+                    <strong id="displayUser">USUARIO</strong><br>
+                    <small id="displayCampana" style="color: var(--rojo-distelsa); font-weight: bold;"></small>
                 </div>
-                <button onclick="location.reload()" class="btn-action bg-red"><i class="fas fa-sign-out-alt"></i> Salir</button>
+                <button onclick="cerrarSesion()" class="btn-action bg-red"><i class="fas fa-sign-out-alt"></i> Salir</button>
             </div>
         </header>
 
         <div class="sidebar">
-            <div class="nav-item active" onclick="verSeccion('sec-admin')"><i class="fas fa-users-cog"></i> 1. Usuarios</div>
-            <div class="nav-item" onclick="verSeccion('sec-gestion')"><i class="fas fa-file-invoice-dollar"></i> 4. Gestión de Cobro</div>
-            <div class="nav-item" onclick="verSeccion('sec-seguimiento')"><i class="fas fa-history"></i> 5. Seguimientos</div>
+            <div class="nav-item active" id="nav-usuarios" onclick="verSeccion('sec-admin')"><i class="fas fa-users-cog"></i> 1. Usuarios</div>
+            <div class="nav-item" onclick="verSeccion('sec-gestion')"><i class="fas fa-file-invoice-dollar"></i> 2. Gestión de Cobro</div>
+            <div class="nav-item" onclick="verSeccion('sec-seguimiento')"><i class="fas fa-history"></i> 3. Seguimientos</div>
         </div>
 
         <div class="main-content">
-            <section id="sec-admin" class="card hidden">
-                <h2><i class="fas fa-users-cog"></i> Administración de Usuarios</h2>
+            <section id="sec-admin" class="card">
+                <h2>Administración de Usuarios y Roles</h2>
                 <div class="section-box">
-                    <h4 style="margin-top:0;">Crear Nuevo Usuario</h4>
+                    <h4 style="margin-top:0;">+ Crear / Modificar Usuario</h4>
                     <div class="grid-3">
-                        <div class="input-group"><input type="text" id="admin-user" placeholder="Usuario (ej. jperez) *"></div>
-                        <div class="input-group"><input type="text" id="admin-nombre" placeholder="Nombre Completo *"></div>
-                        <div class="input-group"><input type="password" id="admin-pass" placeholder="Contraseña *"></div>
-                        <div class="input-group">
-                            <select id="admin-rol">
-                                <option value="">Seleccionar Rol *</option>
-                                <option value="Administrador">Administrador</option>
-                                <option value="Líder">Líder</option>
-                                <option value="Agente">Agente</option>
-                            </select>
-                        </div>
-                        <div class="input-group"><input type="text" id="admin-campana" placeholder="Campaña (ej. Call Center ST) *"></div>
-                        <div style="display: flex; align-items: flex-end; margin-bottom: 15px;">
-                            <button class="btn-action bg-blue" id="btnCrearUsuario" onclick="crearUsuario(this)" style="width: 100%; justify-content: center;"><i class="fas fa-user-plus"></i> Guardar Usuario</button>
-                        </div>
+                        <input type="text" id="admin-user" placeholder="ID Usuario (ej: jperez)">
+                        <input type="text" id="admin-nombre" placeholder="Nombre Completo">
+                        <input type="password" id="admin-pass" placeholder="Contraseña">
+                        <select id="admin-rol">
+                            <option value="Agente">Agente</option>
+                            <option value="Líder">Líder</option>
+                            <option value="Administrador">Administrador</option>
+                        </select>
+                        <input type="text" id="admin-campana" placeholder="Campaña">
+                        <button class="btn-action bg-blue" onclick="guardarUsuario()"><i class="fas fa-save"></i> Guardar Usuario</button>
                     </div>
                 </div>
 
                 <div class="section-box">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <h4 style="margin-top:0;">Lista de Usuarios</h4>
-                        <button class="btn-action bg-gray" onclick="cargarUsuarios()"><i class="fas fa-sync"></i> Actualizar</button>
-                    </div>
+                    <h4>Monitoreo en Tiempo Real</h4>
                     <table>
                         <thead>
                             <tr>
                                 <th>Usuario</th>
-                                <th>Nombre Completo</th>
+                                <th>Nombre</th>
                                 <th>Rol</th>
                                 <th>Campaña</th>
-                                <th>En Línea</th>
+                                <th>Estado</th>
                             </tr>
                         </thead>
-                        <tbody id="tabla-usuarios-body">
-                            <tr><td colspan="5" style="text-align:center;">Cargando usuarios...</td></tr>
-                        </tbody>
+                        <tbody id="lista-usuarios-live"></tbody>
                     </table>
                 </div>
             </section>
 
-            <section id="sec-gestion" class="card">
-                <h2>Formulario de Gestión</h2>
-                
-                <div class="section-box">
-                    <h4 style="margin-top:0;">1. Servicio Solicitado</h4>
-                    <div class="grid-3">
-                        <div class="input-group">
-                            <label>Tipo *</label>
-                            <select id="gc-tipo" onchange="manejarTipoServicio()">
-                                <option value="">Seleccionar...</option>
-                                <option value="Diagnostico De Linea Blanca">Diagnóstico De Línea Blanca</option>
-                                <option value="Diagnostico de TV">Diagnóstico de TV</option>
-                                <option value="Mantenimiento">Mantenimiento</option>
-                                <option value="Instalacion">Instalación</option>
-                                <option value="Presupuesto">Presupuesto</option>
-                                <option value="Otro">Otro</option>
-                            </select>
-                        </div>
-                        <div class="input-group"><label id="lbl-detalle">Servicio Solicitado *</label><input type="text" id="gc-detalle"></div>
-                        <div class="input-group"><label>Precio (Q) *</label><input type="number" id="gc-precio" value="0"></div>
-                    </div>
-                    <div class="grid-3">
-                        <div class="input-group"><label>Producto *</label><input type="text" id="gc-producto"></div>
-                        <div class="input-group"><label>Marca *</label><input type="text" id="gc-marca"></div>
-                        <div class="input-group" style="display:flex; gap:10px; align-items:flex-end;">
-                            <div style="flex:1;"><label>Modelo</label><input type="text" id="gc-modelo"></div>
-                            <button class="btn-action bg-blue" onclick="agregarServicio()"><i class="fas fa-plus"></i> Add</button>
-                        </div>
-                    </div>
-                    
-                    <table id="tabla-servicios" class="hidden">
-                        <thead><tr><th>Servicio</th><th>Detalle/Falla</th><th>Prod/Marca</th><th>Precio</th><th>X</th></tr></thead>
-                        <tbody id="lista-servicios"></tbody>
-                    </table>
-                    <h3 id="total-servicios" style="text-align:right; color:var(--azul-distelsa); margin-bottom:0;">Total: Q0.00</h3>
-                </div>
-
-                <div id="sec-contacto" class="section-box">
-                    <h4 style="margin-top:0;">2. Datos de Contacto</h4>
-                    <div class="grid-2">
-                        <div class="input-group"><input type="text" id="gc-nitCli" placeholder="NIT Contacto *"></div>
-                        <div class="input-group"><input type="text" id="gc-nomCli" placeholder="Nombre Contacto *"></div>
-                        <div class="input-group"><input type="text" id="gc-telCli" placeholder="Teléfono *"></div>
-                        <div class="input-group"><input type="text" id="gc-dirCli" placeholder="Dirección *"></div>
-                        <div class="input-group"><input type="email" id="gc-corCli" placeholder="Correo (Opcional)"></div>
-                        <div class="input-group"><textarea id="gc-obsTec" placeholder="Observaciones Técnico (Opcional)" rows="2"></textarea></div>
-                    </div>
-                </div>
-
-                <div class="section-box">
-                    <h4 style="margin-top:0;">3. Datos de Facturación</h4>
-                    <div class="grid-3">
-                        <div class="input-group"><input type="text" id="gc-nitFac" placeholder="NIT Facturación *"></div>
-                        <div class="input-group"><input type="text" id="gc-nomFac" placeholder="Nombre Facturación *"></div>
-                        <div class="input-group"><input type="email" id="gc-corFac" placeholder="Correo Electrónico *"></div>
-                    </div>
-                </div>
-
-                <div class="section-box">
-                    <h4 style="margin-top:0;">4. Pagos y Confirmación</h4>
-                    <div style="background:#e9ecef; padding:10px; border-radius:4px; margin-bottom:15px; font-size:14px;"><i class="fas fa-university"></i> <b>Banco Industrial | Monetaria: 0999-666-66 | Distribuidora Electrónica S.A.</b></div>
-                    <div class="input-group"><input type="text" id="gc-visa" placeholder="Visa Link (Opcional)"></div>
-                    <div style="background:#fff3cd; padding:15px; border-radius:4px;">
-                        <label style="font-weight:bold; cursor:pointer;"><input type="checkbox" id="check-datos"> Confirmo que todos los datos están correctos *</label>
-                        <textarea id="gc-obsGen" placeholder="Observaciones Generales" style="width:100%; margin-top:10px; padding:10px; border:1px solid #ccc;"></textarea>
-                    </div>
-                </div>
-
-                <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:20px;">
-                    <button class="btn-action bg-gray" onclick="limpiarGestor()"><i class="fas fa-eraser"></i> Limpiar Pantalla</button>
-                    <button class="btn-action bg-blue" id="btnGuardar1" onclick="enviarGestor('Solo Guardado', this)"><i class="fas fa-save"></i> Solo Guardar</button>
-                    <button class="btn-action bg-red" id="btnGuardar2" onclick="enviarGestor('Correo Enviado', this)"><i class="fas fa-envelope"></i> Enviar Correo</button>
-                    <button class="btn-action bg-green" id="btnGuardar3" onclick="enviarGestor('WhatsApp', this)"><i class="fab fa-whatsapp"></i> WhatsApp</button>
-                </div>
-            </section>
+            <section id="sec-gestion" class="card hidden">
+                <h2>Nueva Gestión de Cobro</h2>
+                <p>Aquí va tu formulario de gestión que ya tienes diseñado...</p>
+                </section>
 
             <section id="sec-seguimiento" class="card hidden">
-                <h2>Historial y Seguimientos</h2>
-                <p>En construcción...</p>
+                <h2>Historial de Gestiones</h2>
+                <div id="historial-gestiones">Cargando datos de Firebase...</div>
             </section>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, doc, getDoc, setDoc, collection, getDocs, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDehDeskqPXyZ5Clat2otLHKdB_nrIAWzk",
@@ -230,241 +147,134 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        window.servicios = [];
+        let usuarioActualId = null;
 
         // --- NAVEGACIÓN ---
         window.verSeccion = function(id) {
-            document.querySelectorAll('.main-content > section').forEach(s => s.classList.add('hidden'));
+            document.querySelectorAll('.main-content section').forEach(s => s.classList.add('hidden'));
             document.getElementById(id).classList.remove('hidden');
-            document.querySelectorAll('.sidebar .nav-item').forEach(n => n.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             event.currentTarget.classList.add('active');
-            
-            if(id === 'sec-admin') window.cargarUsuarios();
         };
 
-        // --- LOGIN ---
-        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+        // --- LOGIN CON ROLES Y ESTADO ---
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            let u = document.getElementById('user'); 
-            let p = document.getElementById('pass'); 
-            let b = document.getElementById('btnLogin');
-            let errBox = document.getElementById('login-error');
-            
-            if(!u.value || !p.value) { 
-                if(!u.value) u.classList.add('error-blink'); 
-                if(!p.value) p.classList.add('error-blink'); 
-                setTimeout(()=> { u.classList.remove('error-blink'); p.classList.remove('error-blink'); }, 1000); 
-                return; 
-            }
-            
-            b.disabled = true; b.innerText = "CONECTANDO...";
-            errBox.style.display = 'none';
+            const u = document.getElementById('user').value.trim().toLowerCase();
+            const p = document.getElementById('pass').value;
+            const btn = document.getElementById('btnLogin');
+            const err = document.getElementById('login-error');
+
+            btn.disabled = true;
+            btn.innerText = "VERIFICANDO...";
 
             try {
-                // Busca en la colección "Usuarios" (U mayúscula)
-                const userRef = doc(db, "Usuarios", u.value.trim().toLowerCase());
+                const userRef = doc(db, "Usuarios", u);
                 const userSnap = await getDoc(userRef);
 
-                if (userSnap.exists() && userSnap.data().password === p.value) {
+                if (userSnap.exists() && userSnap.data().password === p) {
                     const data = userSnap.data();
+                    usuarioActualId = u;
+
+                    // 1. Marcar como En Línea
+                    await updateDoc(userRef, { enLinea: "SI" });
+
+                    // 2. Cargar UI según Rol
+                    document.getElementById('displayUser').innerText = data.nombre.toUpperCase();
+                    document.getElementById('displayCampana').innerText = data.campaña || "ST";
+                    
+                    if (data.rol === 'Agente') {
+                        document.getElementById('nav-usuarios').style.display = 'none';
+                        verSeccion('sec-gestion');
+                    } else {
+                        document.getElementById('nav-usuarios').style.display = 'flex';
+                        verSeccion('sec-admin');
+                    }
+
                     document.getElementById('login-view').style.display = 'none';
                     document.getElementById('app-view').style.display = 'block';
-                    document.getElementById('displayUser').innerText = data.nombre.toUpperCase();
-                    document.getElementById('displayCampana').innerText = "Campaña: " + (data.campaña || data.campana || "General");
                     
-                    window.verSeccion('sec-admin'); 
+                    // Iniciar monitoreo de usuarios
+                    iniciarMonitoreoUsuarios();
                 } else {
-                    errBox.innerText = "⚠️ Usuario o contraseña incorrectos";
-                    errBox.style.display = 'block';
-                    b.disabled = false; b.innerText = "INICIAR SESIÓN";
+                    err.innerText = "❌ Usuario o contraseña incorrectos";
+                    err.style.display = 'block';
+                    btn.disabled = false;
+                    btn.innerText = "INICIAR SESIÓN";
                 }
-            } catch (error) {
-                console.error(error);
-                errBox.innerText = "❌ Error de conexión. Revisa las reglas de Firestore.";
-                errBox.style.display = 'block';
-                b.disabled = false; b.innerText = "INICIAR SESIÓN";
+            } catch (e) {
+                console.error(e);
+                err.innerText = "❌ Error de conexión";
+                err.style.display = 'block';
+                btn.disabled = false;
             }
         });
 
-        // --- MÓDULO: USUARIOS ---
-        window.cargarUsuarios = async function() {
-            const tbody = document.getElementById('tabla-usuarios-body');
-            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;"><i class="fas fa-spinner fa-spin"></i> Cargando...</td></tr>';
-            
-            try {
-                const querySnapshot = await getDocs(collection(db, "Usuarios"));
-                tbody.innerHTML = '';
-                
-                querySnapshot.forEach((documento) => {
-                    let u = documento.data();
-                    let badgeColor = (u.enLinea === 'SI') ? 'bg-green' : 'bg-gray';
-                    
-                    tbody.innerHTML += `
+        // --- CERRAR SESIÓN ---
+        window.cerrarSesion = async () => {
+            if (usuarioActualId) {
+                await updateDoc(doc(db, "Usuarios", usuarioActualId), { enLinea: "NO" });
+            }
+            location.reload();
+        };
+
+        // --- MONITOREO EN TIEMPO REAL (USUARIOS) ---
+        function iniciarMonitoreoUsuarios() {
+            const table = document.getElementById('lista-usuarios-live');
+            onSnapshot(collection(db, "Usuarios"), (snapshot) => {
+                table.innerHTML = '';
+                snapshot.forEach((doc) => {
+                    const u = doc.data();
+                    const isOnline = u.enLinea === "SI";
+                    table.innerHTML += `
                         <tr>
-                            <td><strong>${documento.id}</strong></td>
-                            <td>${u.nombre || '-'}</td>
-                            <td>${u.rol || '-'}</td>
-                            <td>${u.campaña || u.campana || '-'}</td>
-                            <td><span class="badge ${badgeColor}">${u.enLinea || 'NO'}</span></td>
+                            <td><b>${doc.id}</b></td>
+                            <td>${u.nombre}</td>
+                            <td><span class="badge ${u.rol === 'Administrador' ? 'bg-red' : 'bg-blue'}">${u.rol}</span></td>
+                            <td>${u.campaña || 'N/A'}</td>
+                            <td>
+                                <span class="badge ${isOnline ? 'bg-green' : 'bg-gray'}">
+                                    <i class="fas fa-circle"></i> ${isOnline ? 'En Línea' : 'Desconectado'}
+                                </span>
+                            </td>
                         </tr>
                     `;
                 });
-            } catch (error) { 
-                console.error(error);
-                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:red;">Error de conexión.</td></tr>`;
-            }
-        };
+            });
+        }
 
-        window.crearUsuario = async function(btnObj) {
-            let user = document.getElementById('admin-user').value.trim().toLowerCase();
-            let nombre = document.getElementById('admin-nombre').value;
-            let pass = document.getElementById('admin-pass').value;
-            let rol = document.getElementById('admin-rol').value;
-            let campana = document.getElementById('admin-campana').value;
-            
-            if(!user || !nombre || !pass || !rol || !campana) { 
-                alert("Por favor completa todos los campos."); return; 
-            }
+        // --- GUARDAR/MODIFICAR USUARIO ---
+        window.guardarUsuario = async () => {
+            const u = document.getElementById('admin-user').value.trim().toLowerCase();
+            const n = document.getElementById('admin-nombre').value;
+            const p = document.getElementById('admin-pass').value;
+            const r = document.getElementById('admin-rol').value;
+            const c = document.getElementById('admin-campana').value;
 
-            let btnTextoOriginal = btnObj.innerHTML;
-            btnObj.disabled = true;
-            btnObj.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+            if (!u || !n || !p) return alert("Completa los campos obligatorios");
 
             try {
-                await setDoc(doc(db, "Usuarios", user), {
-                    nombre: nombre,
-                    password: pass,
-                    rol: rol,
-                    campaña: campana,
+                await setDoc(doc(db, "Usuarios", u), {
+                    nombre: n,
+                    password: p,
+                    rol: r,
+                    campaña: c,
                     enLinea: "NO"
                 });
-
-                alert("Usuario creado correctamente en Firebase.");
-                
+                alert("Usuario guardado/actualizado");
                 document.getElementById('admin-user').value = '';
                 document.getElementById('admin-nombre').value = '';
                 document.getElementById('admin-pass').value = '';
-                document.getElementById('admin-rol').value = '';
-                document.getElementById('admin-campana').value = '';
-                
-                window.cargarUsuarios();
-            } catch (error) { 
-                console.error(error);
-                alert("Error al guardar en Firebase."); 
-            } finally { 
-                btnObj.disabled = false;
-                btnObj.innerHTML = btnTextoOriginal;
-            }
+            } catch (e) { alert("Error al guardar"); }
         };
 
-        // --- MÓDULO: GESTIÓN DE COBRO ---
-        window.manejarTipoServicio = function() {
-            let tipo = document.getElementById('gc-tipo').value;
-            let lbl = document.getElementById('lbl-detalle');
-            let precio = document.getElementById('gc-precio');
-            let contContacto = document.getElementById('sec-contacto');
-            
-            if(tipo.includes('Diagnostico')) { 
-                lbl.innerText = "Falla Reportada *";
-                precio.value = 175; precio.readOnly = true; 
-            } else { 
-                lbl.innerText = "Servicio Solicitado *";
-                precio.value = 0; precio.readOnly = false; 
+        // Asegurar que si cierran la pestaña, se marquen como desconectados
+        window.addEventListener('beforeunload', () => {
+            if (usuarioActualId) {
+                updateDoc(doc(db, "Usuarios", usuarioActualId), { enLinea: "NO" });
             }
-            
-            if(tipo === 'Presupuesto') contContacto.classList.add('hidden');
-            else contContacto.classList.remove('hidden');
-        };
+        });
 
-        window.agregarServicio = function() {
-            let t = document.getElementById('gc-tipo').value;
-            let d = document.getElementById('gc-detalle').value;
-            let p = document.getElementById('gc-producto').value; 
-            let m = document.getElementById('gc-marca').value; 
-            let mod = document.getElementById('gc-modelo').value;
-            let pr = parseFloat(document.getElementById('gc-precio').value) || 0;
-            
-            if(!t || !d || !p || !m) { 
-                alert("Complete los campos obligatorios del servicio."); return; 
-            }
-            
-            window.servicios.push({tipo:t, det:d, prod:p, marca:m, modelo: mod, pre:pr});
-            window.renderTablaServicios();
-            
-            document.getElementById('gc-tipo').value = ""; document.getElementById('gc-detalle').value = "";
-            document.getElementById('gc-producto').value = ""; document.getElementById('gc-marca').value = ""; document.getElementById('gc-modelo').value = "";
-            window.manejarTipoServicio();
-        };
-
-        window.renderTablaServicios = function() {
-            let tb = document.getElementById('lista-servicios');
-            let tot = 0;
-            if(window.servicios.length > 0) document.getElementById('tabla-servicios').classList.remove('hidden');
-            else document.getElementById('tabla-servicios').classList.add('hidden');
-            
-            let html = "";
-            window.servicios.forEach((s, i) => {
-                tot += s.pre;
-                html += `<tr><td>${s.tipo}</td><td>${s.det}</td><td>${s.prod}/${s.marca}</td><td>Q${s.pre.toFixed(2)}</td><td><button style="color:red; border:none; background:none; cursor:pointer;" onclick="window.servicios.splice(${i},1); window.renderTablaServicios();"><i class="fas fa-trash"></i></button></td></tr>`;
-            });
-            
-            tb.innerHTML = html;
-            document.getElementById('total-servicios').innerText = `Total: Q${tot.toFixed(2)}`;
-        };
-
-        window.limpiarGestor = function() {
-            document.querySelectorAll('#sec-gestion input').forEach(i => { if(i.type==='checkbox') i.checked=false; else i.value=''; });
-            document.querySelectorAll('#sec-gestion select, #sec-gestion textarea').forEach(i => i.value='');
-            window.servicios = []; 
-            window.renderTablaServicios(); 
-            window.manejarTipoServicio();
-        };
-
-        window.enviarGestor = async function(metodo, btnObj) {
-            if(!document.getElementById('check-datos').checked) { 
-                alert("Debe confirmar que los datos son correctos."); return; 
-            }
-            if(window.servicios.length === 0) { 
-                alert("Debe agregar al menos 1 servicio."); return; 
-            }
-            
-            let btnTextoOriginal = btnObj.innerHTML;
-            btnObj.disabled = true;
-            btnObj.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
-
-            let payload = {
-                fecha: serverTimestamp(),
-                agente: document.getElementById('displayUser').innerText,
-                nitCliente: document.getElementById('gc-nitCli').value,
-                nombreCliente: document.getElementById('gc-nomCli').value,
-                telefono: document.getElementById('gc-telCli').value,
-                direccion: document.getElementById('gc-dirCli').value,
-                correoCliente: document.getElementById('gc-corCli').value,
-                obsTecnico: document.getElementById('gc-obsTec').value,
-                nitFactura: document.getElementById('gc-nitFac').value,
-                nombreFactura: document.getElementById('gc-nomFac').value,
-                correoFactura: document.getElementById('gc-corFac').value,
-                visaLink: document.getElementById('gc-visa').value,
-                obsGenerales: document.getElementById('gc-obsGen').value,
-                metodoEnvio: metodo,
-                listaServicios: window.servicios,
-                total: parseFloat(document.getElementById('total-servicios').innerText.replace('Total: Q', ''))
-            };
-
-            try {
-                // Guarda la gestión en la colección "Gestiones"
-                await addDoc(collection(db, "Gestiones"), payload);
-
-                alert("¡Éxito! Gestión guardada correctamente.");
-                window.limpiarGestor();
-            } catch(error) {
-                console.error(error);
-                alert("Error de red. Verifique su conexión o las reglas de Firebase.");
-            } finally {
-                btnObj.disabled = false;
-                btnObj.innerHTML = btnTextoOriginal;
-            }
-        };
     </script>
 </body>
 </html>

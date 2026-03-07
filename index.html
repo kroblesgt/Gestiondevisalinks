@@ -3,116 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Gestión de Cobros ST</title>
+    <title>Portal de Gestión de Cobros - Distelsa</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
             --azul-dark: #001f3f;
             --rojo-distelsa: #e30613;
-            --gris-fondo: #f8f9fa;
-            --sidebar-width: 260px;
+            --gris-fondo: #f4f7f6;
+            --sidebar-width: 250px;
         }
 
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background: var(--gris-fondo); overflow-x: hidden; }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--gris-fondo); display: flex; flex-direction: column; height: 100vh; }
 
         /* VISTA LOGIN */
         #login-view {
-            height: 100vh; display: flex; justify-content: center; align-items: center;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(135deg, var(--azul-dark) 0%, #004080 100%);
+            display: flex; justify-content: center; align-items: center; z-index: 1000;
         }
         .login-card {
-            background: white; padding: 40px; border-radius: 15px; width: 380px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3); text-align: center;
+            background: white; padding: 40px; border-radius: 12px; width: 350px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2); text-align: center;
         }
 
-        /* VISTA PRINCIPAL (ESCRITORIO) */
-        #main-app { display: none; height: 100vh; }
+        /* DISEÑO PRINCIPAL WEB */
+        #main-app { display: none; flex-direction: row; height: 100vh; width: 100%; }
         
         .sidebar {
             width: var(--sidebar-width); background: var(--azul-dark); color: white;
-            height: 100vh; position: fixed; left: 0; top: 0; padding-top: 20px;
+            display: flex; flex-direction: column; padding: 20px 0;
+        }
+        .sidebar h3 { text-align: center; font-size: 1.2rem; margin-bottom: 30px; border-bottom: 1px solid #1a3a5a; padding-bottom: 15px; }
+        .sidebar-nav p { padding: 12px 25px; margin: 5px 0; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 10px; }
+        .sidebar-nav p:hover { background: #003366; }
+
+        .main-content { flex-grow: 1; padding: 30px; overflow-y: auto; }
+        .header { 
+            background: white; padding: 15px 30px; display: flex; justify-content: space-between; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05); border-radius: 8px; margin-bottom: 25px;
         }
 
-        .main-content {
-            margin-left: var(--sidebar-width); padding: 30px; width: calc(100% - var(--sidebar-width));
+        /* ESTILOS DE TABLAS Y CARDS */
+        .card { background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background: #fafafa; color: #555; font-weight: 600; }
+
+        .btn-primary { 
+            background: var(--rojo-distelsa); color: white; border: none; padding: 12px; 
+            border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; transition: 0.3s;
         }
-
-        .header {
-            background: white; padding: 15px 30px; display: flex; justify-content: space-between;
-            align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 20px;
-        }
-
-        /* TABLAS Y FORMULARIOS */
-        .card { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
-        th { background: #f1f1f1; color: #333; }
-
-        .btn-primary { background: var(--rojo-distelsa); color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; transition: 0.3s; }
-        .btn-primary:hover { background: #b30510; }
-        .input-group { margin-bottom: 15px; text-align: left; }
-        input, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+        .btn-primary:hover { background: #b30510; transform: translateY(-1px); }
+        
+        .input-group { margin-bottom: 20px; text-align: left; }
+        .input-group label { display: block; margin-bottom: 5px; font-size: 0.9rem; color: #666; }
+        input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
+        
+        #login-msg { font-size: 13px; margin-top: 15px; min-height: 20px; }
     </style>
 </head>
 <body>
 
     <div id="login-view">
         <div class="login-card">
-            <img src="https://www.distelsa.com.gt/media/logo/stores/1/logo_distelsa.png" width="180" style="margin-bottom: 20px;">
-            <h2 style="color: var(--azul-dark)">Portal Administrativo</h2>
+            <img src="https://www.distelsa.com.gt/media/logo/stores/1/logo_distelsa.png" width="160" style="margin-bottom: 20px;">
+            <h2 style="color: var(--azul-dark); margin-top: 0;">Sistema de Cobro</h2>
             <div class="input-group">
-                <input type="text" id="user" placeholder="Usuario">
+                <input type="text" id="user" placeholder="Nombre de usuario" autocomplete="username">
             </div>
             <div class="input-group">
-                <input type="password" id="pass" placeholder="Contraseña">
+                <input type="password" id="pass" placeholder="Contraseña" autocomplete="current-password">
             </div>
-            <button class="btn-primary" id="btn-login" onclick="login()" style="width: 100%; font-weight: bold;">ACCEDER AL SISTEMA</button>
-            <p id="login-msg" style="color: red; margin-top: 15px; font-size: 14px;"></p>
+            <button class="btn-primary" onclick="login()">INGRESAR AL PORTAL</button>
+            <p id="login-msg" style="color: #e30613;"></p>
         </div>
     </div>
 
     <div id="main-app">
         <div class="sidebar">
-            <div style="text-align: center; margin-bottom: 30px;">
-                <h3 style="color: white; letter-spacing: 1px;">COBROS ST</h3>
-            </div>
-            <div style="padding: 10px 20px;">
-                <p><i class="fas fa-chart-line"></i> Dashboard</p>
-                <p><i class="fas fa-users"></i> Usuarios</p>
-                <p><i class="fas fa-file-invoice-dollar"></i> Nueva Gestión</p>
-                <p><i class="fas fa-history"></i> Histórico</p>
-                <hr style="border: 0.5px solid #2d4a6b;">
-                <p onclick="location.reload()" style="cursor: pointer; color: #ff9b9b;"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</p>
+            <h3>DISTELSA ST</h3>
+            <div class="sidebar-nav">
+                <p><i class="fas fa-home"></i> Dashboard</p>
+                <p><i class="fas fa-plus-circle"></i> Nueva Gestión</p>
+                <p><i class="fas fa-users"></i> Equipo</p>
+                <p onclick="location.reload()" style="color: #ff9b9b; margin-top: 50px;"><i class="fas fa-sign-out-alt"></i> Salir</p>
             </div>
         </div>
 
         <div class="main-content">
             <div class="header">
-                <div id="userInfo">
-                    <span style="color: #666;">Bienvenido,</span> <strong id="displayUser">---</strong>
-                </div>
-                <div id="campanaInfo">
-                    <span class="badge" id="displayCampana" style="background: #e9ecef; padding: 5px 10px; border-radius: 4px;">---</span>
-                </div>
+                <div>Bienvenido: <strong id="displayUser">---</strong></div>
+                <div>Campaña: <strong id="displayCampana">---</strong></div>
             </div>
 
             <div class="card">
-                <h3>Resumen de Usuarios en Sistema</h3>
-                <div id="tabla-contenedor">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Nombre</th>
-                                <th>Usuario</th>
-                                <th>Rol</th>
-                                <th>Campaña</th>
-                                <th>Estado</th>
-                            </tr>
-                        </thead>
-                        <tbody id="lista-usuarios">
-                            </tbody>
-                    </table>
-                </div>
+                <h3>Resumen de Personal</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Usuario</th>
+                            <th>Rol</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="lista-usuarios">
+                        </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -121,78 +118,75 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, doc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // TUS CREDENCIALES DE FIREBASE
         const firebaseConfig = {
             apiKey: "AIzaSyDehDeskqPXyZ5Clat2otLHKdB_nrIAWzk",
             authDomain: "gestiondecobrosst.firebaseapp.com",
             projectId: "gestiondecobrosst",
             storageBucket: "gestiondecobrosst.firebasestorage.app",
             messagingSenderId: "754092362751",
-            appId: "1:754092362751:web:e658400641ffc6d8dab5ca",
-            measurementId: "G-QS8CNF5NK6"
+            appId: "1:754092362751:web:e658400641ffc6d8dab5ca"
         };
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // --- FUNCIÓN LOGIN ---
         window.login = async function() {
-            const u = document.getElementById('user').value.toLowerCase();
-            const p = document.getElementById('pass').value;
+            const uInput = document.getElementById('user').value.trim().toLowerCase();
+            const pInput = document.getElementById('pass').value.trim();
             const msg = document.getElementById('login-msg');
-            const btn = document.getElementById('btn-login');
 
-            if(!u || !p) return;
+            if(!uInput || !pInput) {
+                msg.innerText = "⚠️ Ingrese credenciales";
+                return;
+            }
 
-            btn.disabled = true;
-            btn.innerText = "VERIFICANDO...";
+            msg.style.color = "#004080";
+            msg.innerText = "Verificando conexión...";
 
             try {
-                const userRef = doc(db, "usuarios", u);
+                // Buscamos en "Usuarios" (U mayúscula)
+                const userRef = doc(db, "Usuarios", uInput);
                 const userSnap = await getDoc(userRef);
 
-                if (userSnap.exists() && userSnap.data().password === p) {
+                if (userSnap.exists()) {
                     const data = userSnap.data();
-                    document.getElementById('login-view').style.display = 'none';
-                    document.getElementById('main-app').style.display = 'block';
-                    document.getElementById('displayUser').innerText = data.nombre;
-                    document.getElementById('displayCampana').innerText = data.campana;
-                    
-                    cargarUsuarios(); // Carga la tabla automáticamente al entrar
+                    if (data.password === pInput) {
+                        document.getElementById('login-view').style.display = 'none';
+                        document.getElementById('main-app').style.display = 'flex';
+                        document.getElementById('displayUser').innerText = data.nombre;
+                        document.getElementById('displayCampana').innerText = data.campana;
+                        cargarEquipo();
+                    } else {
+                        msg.style.color = "red";
+                        msg.innerText = "❌ Contraseña incorrecta";
+                    }
                 } else {
-                    msg.innerText = "Usuario o contraseña incorrectos";
-                    btn.disabled = false;
-                    btn.innerText = "ACCEDER AL SISTEMA";
+                    msg.style.color = "red";
+                    msg.innerText = "❌ El usuario no existe";
                 }
-            } catch (error) {
-                console.error(error);
-                msg.innerText = "Error de conexión con la base de datos";
-                btn.disabled = false;
+            } catch (e) {
+                console.error(e);
+                msg.style.color = "red";
+                msg.innerText = "❌ Error: " + e.code;
             }
         };
 
-        // --- CARGAR TABLA DESDE FIREBASE ---
-        async function cargarUsuarios() {
+        async function cargarEquipo() {
             const tbody = document.getElementById('lista-usuarios');
-            tbody.innerHTML = "Cargando datos...";
-
             try {
-                const querySnapshot = await getDocs(collection(db, "usuarios"));
+                const querySnapshot = await getDocs(collection(db, "Usuarios"));
                 tbody.innerHTML = "";
-                
                 querySnapshot.forEach((doc) => {
                     const d = doc.data();
-                    const row = `<tr>
+                    tbody.innerHTML += `<tr>
                         <td>${d.nombre}</td>
-                        <td>${d.usuario || doc.id}</td>
+                        <td>${doc.id}</td>
                         <td>${d.rol}</td>
-                        <td>${d.campana}</td>
-                        <td><span style="color: green">● En línea</span></td>
+                        <td><span style="color:green">● Conectado</span></td>
                     </tr>`;
-                    tbody.innerHTML += row;
                 });
-            } catch (e) {
-                console.error("Error al cargar tabla:", e);
+            } catch (err) {
+                console.error(err);
             }
         }
     </script>

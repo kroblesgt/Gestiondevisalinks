@@ -18,35 +18,28 @@
         .input-group input, .input-group select, .input-group textarea { width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 14px; transition: border 0.3s; }
         .error-blink { animation: blink 0.5s 2; border-color: var(--rojo-distelsa) !important; }
         @keyframes blink { 0%, 100% { background: white; } 50% { background: #ffe6e6; border-color: var(--rojo-distelsa); } }
-        
         .btn-primary { width: 100%; padding: 12px; background: var(--rojo-distelsa); color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; transition: background 0.3s; font-size: 15px; }
         .btn-primary:hover { background: #b3000b; }
-        .btn-primary:disabled { background: #999; cursor: not-allowed; }
+        #login-error { color: var(--rojo-distelsa); font-size: 13px; font-weight: bold; margin-top: 15px; display: none; }
 
-        /* --- ESTRUCTURA APP --- */
+        /* --- ESTRUCTURA --- */
         #app-view { display: none; }
         header { position: fixed; top: 0; left: 0; right: 0; height: 60px; background: white; border-bottom: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; z-index: 1000; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .header-title { color: var(--azul-distelsa); font-size: 22px; font-weight: 800; display: flex; align-items: center; gap: 10px; }
         .user-profile { display: flex; align-items: center; gap: 15px; text-align: right; }
-        
         .sidebar { position: fixed; top: 60px; left: 0; bottom: 0; width: var(--sidebar-w); background: var(--azul-distelsa); color: white; padding-top: 20px; }
         .nav-item { padding: 15px 20px; cursor: pointer; display: flex; align-items: center; gap: 12px; transition: 0.2s; font-size: 15px; }
         .nav-item:hover, .nav-item.active { background: rgba(255,255,255,0.1); border-left: 4px solid var(--rojo-distelsa); }
-        
         .main-content { margin-left: var(--sidebar-w); margin-top: 60px; padding: 25px; }
         .card { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 20px; }
 
-        /* --- UTILIDADES --- */
-        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .section-box { border: 1px solid #eee; padding: 15px; border-radius: 8px; margin-bottom: 15px; background: #fafafa; }
-        .badge { padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; color: white; text-transform: uppercase; }
-        .bg-green { background: #28a745; } .bg-gray { background: #6c757d; } .bg-red { background: var(--rojo-distelsa); } .bg-blue { background: #007bff; }
-        .hidden { display: none !important; }
-        
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        /* --- TABLAS Y BADGES --- */
+        .badge { padding: 5px 10px; border-radius: 4px; font-size: 11px; font-weight: bold; color: white; display: inline-flex; align-items: center; gap: 5px; }
+        .bg-green { background: #25d366; } .bg-gray { background: #6c757d; } .bg-red { background: var(--rojo-distelsa); } .bg-blue { background: #007bff; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; }
         th { background: var(--azul-distelsa); color: white; padding: 12px; text-align: left; }
-        td { padding: 12px; border-bottom: 1px solid #eee; font-size: 14px; }
+        td { padding: 12px; border-bottom: 1px solid #eee; }
+        .hidden { display: none !important; }
         .btn-action { padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; color: white; font-weight: bold; display: inline-flex; align-items: center; gap: 6px; }
     </style>
 </head>
@@ -57,10 +50,10 @@
             <img src="https://www.distelsa.com.gt/media/logo/stores/1/logo_distelsa.png" alt="Distelsa">
             <h2 style="color: var(--azul-distelsa); margin-top: 0; font-size: 20px;">Gestión de Cobros ST</h2>
             <form id="loginForm">
-                <div class="input-group"><label>Usuario *</label><input type="text" id="user" required></div>
-                <div class="input-group"><label>Contraseña *</label><input type="password" id="pass" required></div>
+                <div class="input-group"><label>Usuario *</label><input type="text" id="user" placeholder="Usuario" required></div>
+                <div class="input-group"><label>Contraseña *</label><input type="password" id="pass" placeholder="••••••••" required></div>
                 <button type="submit" id="btnLogin" class="btn-primary">INICIAR SESIÓN</button>
-                <div id="login-error" style="color: red; margin-top: 10px; font-weight: bold; display: none;"></div>
+                <div id="login-error"></div> 
             </form>
         </div>
     </div>
@@ -70,8 +63,8 @@
             <div class="header-title"><i class="fas fa-headset"></i> Gestión de Cobro</div>
             <div class="user-profile">
                 <div>
-                    <strong id="displayUser">USUARIO</strong><br>
-                    <small id="displayCampana" style="color: var(--rojo-distelsa); font-weight: bold;"></small>
+                    <strong id="displayUser">Cargando...</strong><br>
+                    <small id="displayCampana" style="color: var(--rojo-distelsa); font-weight:bold;"></small>
                 </div>
                 <button onclick="cerrarSesion()" class="btn-action bg-red"><i class="fas fa-sign-out-alt"></i> Salir</button>
             </div>
@@ -85,11 +78,11 @@
 
         <div class="main-content">
             <section id="sec-admin" class="card">
-                <h2>Administración de Usuarios y Roles</h2>
+                <h2>Administración de Usuarios</h2>
                 <div class="section-box">
-                    <h4 style="margin-top:0;">+ Crear / Modificar Usuario</h4>
-                    <div class="grid-3">
-                        <input type="text" id="admin-user" placeholder="ID Usuario (ej: jperez)">
+                    <h4 style="margin-top:0;">Crear Nuevo Usuario</h4>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px;">
+                        <input type="text" id="admin-user" placeholder="ID (ej: krobles)">
                         <input type="text" id="admin-nombre" placeholder="Nombre Completo">
                         <input type="password" id="admin-pass" placeholder="Contraseña">
                         <select id="admin-rol">
@@ -98,19 +91,17 @@
                             <option value="Administrador">Administrador</option>
                         </select>
                         <input type="text" id="admin-campana" placeholder="Campaña">
-                        <button class="btn-action bg-blue" onclick="guardarUsuario()"><i class="fas fa-save"></i> Guardar Usuario</button>
+                        <button class="btn-action bg-blue" onclick="guardarUsuario()"><i class="fas fa-user-plus"></i> Guardar</button>
                     </div>
                 </div>
-
                 <div class="section-box">
-                    <h4>Monitoreo en Tiempo Real</h4>
+                    <h4>Usuarios en Tiempo Real</h4>
                     <table>
                         <thead>
                             <tr>
                                 <th>Usuario</th>
                                 <th>Nombre</th>
                                 <th>Rol</th>
-                                <th>Campaña</th>
                                 <th>Estado</th>
                             </tr>
                         </thead>
@@ -120,20 +111,20 @@
             </section>
 
             <section id="sec-gestion" class="card hidden">
-                <h2>Nueva Gestión de Cobro</h2>
-                <p>Aquí va tu formulario de gestión que ya tienes diseñado...</p>
-                </section>
+                <h2>Formulario de Gestión</h2>
+                <p>Aquí puedes pegar el contenido de tu formulario original (NIT, Servicios, etc.)</p>
+            </section>
 
             <section id="sec-seguimiento" class="card hidden">
-                <h2>Historial de Gestiones</h2>
-                <div id="historial-gestiones">Cargando datos de Firebase...</div>
+                <h2>Seguimientos</h2>
+                <div id="historial-gestiones">Cargando gestiones de Firebase...</div>
             </section>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDehDeskqPXyZ5Clat2otLHKdB_nrIAWzk",
@@ -146,18 +137,17 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-
-        let usuarioActualId = null;
+        let idSesion = null;
 
         // --- NAVEGACIÓN ---
         window.verSeccion = function(id) {
             document.querySelectorAll('.main-content section').forEach(s => s.classList.add('hidden'));
             document.getElementById(id).classList.remove('hidden');
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            event.currentTarget.classList.add('active');
+            if(event) event.currentTarget.classList.add('active');
         };
 
-        // --- LOGIN CON ROLES Y ESTADO ---
+        // --- LOGIN CON ROLES ---
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const u = document.getElementById('user').value.trim().toLowerCase();
@@ -166,7 +156,7 @@
             const err = document.getElementById('login-error');
 
             btn.disabled = true;
-            btn.innerText = "VERIFICANDO...";
+            btn.innerText = "CONECTANDO...";
 
             try {
                 const userRef = doc(db, "Usuarios", u);
@@ -174,16 +164,16 @@
 
                 if (userSnap.exists() && userSnap.data().password === p) {
                     const data = userSnap.data();
-                    usuarioActualId = u;
+                    idSesion = u;
 
-                    // 1. Marcar como En Línea
+                    // Marcar EN LÍNEA
                     await updateDoc(userRef, { enLinea: "SI" });
 
-                    // 2. Cargar UI según Rol
+                    // Configurar Interfaz según ROL
                     document.getElementById('displayUser').innerText = data.nombre.toUpperCase();
-                    document.getElementById('displayCampana').innerText = data.campaña || "ST";
+                    document.getElementById('displayCampana').innerText = "Campaña: " + (data.campaña || data.campana || "ST");
                     
-                    if (data.rol === 'Agente') {
+                    if(data.rol === 'Agente') {
                         document.getElementById('nav-usuarios').style.display = 'none';
                         verSeccion('sec-gestion');
                     } else {
@@ -193,48 +183,45 @@
 
                     document.getElementById('login-view').style.display = 'none';
                     document.getElementById('app-view').style.display = 'block';
-                    
-                    // Iniciar monitoreo de usuarios
-                    iniciarMonitoreoUsuarios();
+                    escucharUsuarios();
                 } else {
-                    err.innerText = "❌ Usuario o contraseña incorrectos";
+                    err.innerText = "⚠️ Credenciales incorrectas";
                     err.style.display = 'block';
                     btn.disabled = false;
                     btn.innerText = "INICIAR SESIÓN";
                 }
-            } catch (e) {
-                console.error(e);
-                err.innerText = "❌ Error de conexión";
+            } catch (error) {
+                console.error(error);
+                err.innerText = "❌ Error de conexión con Firebase";
                 err.style.display = 'block';
                 btn.disabled = false;
             }
         });
 
-        // --- CERRAR SESIÓN ---
+        // --- SALIDA ---
         window.cerrarSesion = async () => {
-            if (usuarioActualId) {
-                await updateDoc(doc(db, "Usuarios", usuarioActualId), { enLinea: "NO" });
+            if(idSesion) {
+                await updateDoc(doc(db, "Usuarios", idSesion), { enLinea: "NO" });
             }
             location.reload();
         };
 
         // --- MONITOREO EN TIEMPO REAL (USUARIOS) ---
-        function iniciarMonitoreoUsuarios() {
-            const table = document.getElementById('lista-usuarios-live');
+        function escucharUsuarios() {
             onSnapshot(collection(db, "Usuarios"), (snapshot) => {
-                table.innerHTML = '';
+                const tbody = document.getElementById('lista-usuarios-live');
+                tbody.innerHTML = '';
                 snapshot.forEach((doc) => {
                     const u = doc.data();
-                    const isOnline = u.enLinea === "SI";
-                    table.innerHTML += `
+                    const online = u.enLinea === "SI";
+                    tbody.innerHTML += `
                         <tr>
-                            <td><b>${doc.id}</b></td>
+                            <td><strong>${doc.id}</strong></td>
                             <td>${u.nombre}</td>
                             <td><span class="badge ${u.rol === 'Administrador' ? 'bg-red' : 'bg-blue'}">${u.rol}</span></td>
-                            <td>${u.campaña || 'N/A'}</td>
                             <td>
-                                <span class="badge ${isOnline ? 'bg-green' : 'bg-gray'}">
-                                    <i class="fas fa-circle"></i> ${isOnline ? 'En Línea' : 'Desconectado'}
+                                <span class="badge ${online ? 'bg-green' : 'bg-gray'}">
+                                    <i class="fas fa-circle"></i> ${online ? 'En Línea' : 'Desconectado'}
                                 </span>
                             </td>
                         </tr>
@@ -243,7 +230,7 @@
             });
         }
 
-        // --- GUARDAR/MODIFICAR USUARIO ---
+        // --- GUARDAR USUARIO (SOLO ADMIN/LÍDER) ---
         window.guardarUsuario = async () => {
             const u = document.getElementById('admin-user').value.trim().toLowerCase();
             const n = document.getElementById('admin-nombre').value;
@@ -251,30 +238,23 @@
             const r = document.getElementById('admin-rol').value;
             const c = document.getElementById('admin-campana').value;
 
-            if (!u || !n || !p) return alert("Completa los campos obligatorios");
+            if(!u || !n || !p) return alert("Faltan datos");
 
             try {
                 await setDoc(doc(db, "Usuarios", u), {
-                    nombre: n,
-                    password: p,
-                    rol: r,
-                    campaña: c,
-                    enLinea: "NO"
+                    nombre: n, password: p, rol: r, campaña: c, enLinea: "NO"
                 });
-                alert("Usuario guardado/actualizado");
+                alert("Usuario actualizado con éxito");
                 document.getElementById('admin-user').value = '';
                 document.getElementById('admin-nombre').value = '';
                 document.getElementById('admin-pass').value = '';
-            } catch (e) { alert("Error al guardar"); }
+            } catch (e) { alert("Error al guardar en Firebase"); }
         };
 
-        // Asegurar que si cierran la pestaña, se marquen como desconectados
+        // Desconectar si cierran la pestaña
         window.addEventListener('beforeunload', () => {
-            if (usuarioActualId) {
-                updateDoc(doc(db, "Usuarios", usuarioActualId), { enLinea: "NO" });
-            }
+            if(idSesion) updateDoc(doc(db, "Usuarios", idSesion), { enLinea: "NO" });
         });
-
     </script>
 </body>
 </html>

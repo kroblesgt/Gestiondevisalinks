@@ -5,126 +5,188 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión Call Center ST | Grupo Distelsa</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         :root { --rojo-distelsa: #e30613; --azul-distelsa: #003366; --fondo: #f4f6f9; --sidebar-w: 250px; }
         body { font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; background: var(--fondo); color: #333; overflow-x: hidden; }
 
-        /* --- LOGIN --- */
+        /* POP-UP */
+        #popup-msg { position: fixed; top: 20px; right: 20px; padding: 15px 25px; border-radius: 8px; color: white; font-weight: bold; z-index: 3000; display: none; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+
+        /* LOGIN */
         #login-view { position: fixed; inset: 0; background: linear-gradient(135deg, var(--azul-distelsa) 0%, #001f3f 100%); display: flex; justify-content: center; align-items: center; z-index: 2000; }
-        .login-card { background: white; padding: 40px; border-radius: 12px; width: 340px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); text-align: center; }
-        .login-card img { width: 180px; margin-bottom: 20px; }
+        .login-card { background: white; padding: 40px; border-radius: 12px; width: 340px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
         .input-group { text-align: left; margin-bottom: 15px; }
         .input-group label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 5px; color: var(--azul-distelsa); }
-        .input-group input, .input-group select, .input-group textarea { width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 14px; transition: border 0.3s; }
-        .error-blink { animation: blink 0.5s 2; border-color: var(--rojo-distelsa) !important; }
-        @keyframes blink { 0%, 100% { background: white; } 50% { background: #ffe6e6; border-color: var(--rojo-distelsa); } }
-        .btn-primary { width: 100%; padding: 12px; background: var(--rojo-distelsa); color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; transition: background 0.3s; font-size: 15px; }
-        .btn-primary:hover { background: #b3000b; }
-        #login-error { color: var(--rojo-distelsa); font-size: 13px; font-weight: bold; margin-top: 15px; display: none; }
-
-        /* --- ESTRUCTURA --- */
+        .input-group input, .input-group select, .input-group textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
+        
+        /* ESTRUCTURA */
         #app-view { display: none; }
-        header { position: fixed; top: 0; left: 0; right: 0; height: 60px; background: white; border-bottom: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; z-index: 1000; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .header-title { color: var(--azul-distelsa); font-size: 22px; font-weight: 800; display: flex; align-items: center; gap: 10px; }
-        .user-profile { display: flex; align-items: center; gap: 15px; text-align: right; }
+        header { position: fixed; top: 0; left: 0; right: 0; height: 60px; background: white; border-bottom: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; z-index: 1000; }
         .sidebar { position: fixed; top: 60px; left: 0; bottom: 0; width: var(--sidebar-w); background: var(--azul-distelsa); color: white; padding-top: 20px; }
-        .nav-item { padding: 15px 20px; cursor: pointer; display: flex; align-items: center; gap: 12px; transition: 0.2s; font-size: 15px; }
+        .nav-item { padding: 15px 20px; cursor: pointer; display: none; align-items: center; gap: 12px; transition: 0.2s; }
         .nav-item:hover, .nav-item.active { background: rgba(255,255,255,0.1); border-left: 4px solid var(--rojo-distelsa); }
         .main-content { margin-left: var(--sidebar-w); margin-top: 60px; padding: 25px; }
         .card { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 20px; }
 
-        /* --- TABLAS Y BADGES --- */
-        .badge { padding: 5px 10px; border-radius: 4px; font-size: 11px; font-weight: bold; color: white; display: inline-flex; align-items: center; gap: 5px; }
-        .bg-green { background: #25d366; } .bg-gray { background: #6c757d; } .bg-red { background: var(--rojo-distelsa); } .bg-blue { background: #007bff; }
+        /* TABLAS Y BOTONES */
         table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; }
         th { background: var(--azul-distelsa); color: white; padding: 12px; text-align: left; }
         td { padding: 12px; border-bottom: 1px solid #eee; }
+        .badge { padding: 5px 10px; border-radius: 4px; font-size: 11px; font-weight: bold; color: white; }
+        .bg-green { background: #25d366; } .bg-red { background: var(--rojo-distelsa); } .bg-blue { background: #007bff; } .bg-gray { background: #6c757d; }
         .hidden { display: none !important; }
-        .btn-action { padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; color: white; font-weight: bold; display: inline-flex; align-items: center; gap: 6px; }
+        .btn-action { padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; color: white; font-weight: bold; display: inline-flex; align-items: center; gap: 6px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
     </style>
 </head>
 <body>
 
+    <div id="popup-msg"></div>
+
     <div id="login-view">
         <div class="login-card">
-            <img src="https://www.distelsa.com.gt/media/logo/stores/1/logo_distelsa.png" alt="Distelsa">
-            <h2 style="color: var(--azul-distelsa); margin-top: 0; font-size: 20px;">Gestión de Cobros ST</h2>
+            <img src="https://www.distelsa.com.gt/media/logo/stores/1/logo_distelsa.png" style="width:180px; margin-bottom:20px;">
             <form id="loginForm">
-                <div class="input-group"><label>Usuario *</label><input type="text" id="user" placeholder="Usuario" required></div>
-                <div class="input-group"><label>Contraseña *</label><input type="password" id="pass" placeholder="••••••••" required></div>
-                <button type="submit" id="btnLogin" class="btn-primary">INICIAR SESIÓN</button>
-                <div id="login-error"></div> 
+                <div class="input-group"><label>Usuario</label><input type="text" id="user" required></div>
+                <div class="input-group"><label>Contraseña</label><input type="password" id="pass" required></div>
+                <button type="submit" id="btnLogin" class="btn-action bg-red" style="width: 100%; justify-content: center;">INICIAR SESIÓN</button>
             </form>
         </div>
     </div>
 
     <div id="app-view">
         <header>
-            <div class="header-title"><i class="fas fa-headset"></i> Gestión de Cobro</div>
-            <div class="user-profile">
-                <div>
-                    <strong id="displayUser">Cargando...</strong><br>
-                    <small id="displayCampana" style="color: var(--rojo-distelsa); font-weight:bold;"></small>
-                </div>
+            <div style="font-size: 20px; font-weight: 800; color: var(--azul-distelsa);"><i class="fas fa-headset"></i> Portal Distelsa ST</div>
+            <div style="text-align: right; display: flex; align-items: center; gap: 15px;">
+                <div><strong id="displayUser"></strong><br><small id="displayRol" style="color: var(--rojo-distelsa); font-weight: bold;"></small></div>
                 <button onclick="cerrarSesion()" class="btn-action bg-red"><i class="fas fa-sign-out-alt"></i> Salir</button>
             </div>
         </header>
 
         <div class="sidebar">
-            <div class="nav-item active" id="nav-usuarios" onclick="verSeccion('sec-admin')"><i class="fas fa-users-cog"></i> 1. Usuarios</div>
-            <div class="nav-item" onclick="verSeccion('sec-gestion')"><i class="fas fa-file-invoice-dollar"></i> 2. Gestión de Cobro</div>
-            <div class="nav-item" onclick="verSeccion('sec-seguimiento')"><i class="fas fa-history"></i> 3. Seguimientos</div>
+            <div class="nav-item" data-id="0" onclick="verSeccion('sec-roles')"><i class="fas fa-user-shield"></i> 0. Editor Roles</div>
+            <div class="nav-item" data-id="0.1" onclick="verSeccion('sec-campanas')"><i class="fas fa-bullhorn"></i> 0.1 Campañas</div>
+            <div class="nav-item" data-id="1" onclick="verSeccion('sec-admin')"><i class="fas fa-users-cog"></i> 1. Usuarios</div>
+            <div class="nav-item" data-id="2" onclick="verSeccion('sec-gestion')"><i class="fas fa-file-invoice-dollar"></i> 2. Gestión</div>
+            <div class="nav-item" data-id="3" onclick="verSeccion('sec-seguimiento')"><i class="fas fa-history"></i> 3. Seguimientos</div>
         </div>
 
         <div class="main-content">
-            <section id="sec-admin" class="card">
-                <h2>Administración de Usuarios</h2>
-                <div class="section-box">
-                    <h4 style="margin-top:0;">Crear Nuevo Usuario</h4>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px;">
-                        <input type="text" id="admin-user" placeholder="ID (ej: krobles)">
-                        <input type="text" id="admin-nombre" placeholder="Nombre Completo">
-                        <input type="password" id="admin-pass" placeholder="Contraseña">
-                        <select id="admin-rol">
-                            <option value="Agente">Agente</option>
-                            <option value="Líder">Líder</option>
-                            <option value="Administrador">Administrador</option>
-                        </select>
-                        <input type="text" id="admin-campana" placeholder="Campaña">
-                        <button class="btn-action bg-blue" onclick="guardarUsuario()"><i class="fas fa-user-plus"></i> Guardar</button>
+            
+            <section id="sec-roles" class="card hidden">
+                <h2>Control Dinámico de Accesos</h2>
+                <p>Aquí configuras qué módulos puede ver cada rol en el sistema.</p>
+                <table>
+                    <thead><tr><th>Rol en Firebase</th><th>Permisos Activos (IDs de Menú)</th><th>Acción</th></tr></thead>
+                    <tbody id="tabla-roles"></tbody>
+                </table>
+            </section>
+
+            <section id="sec-campanas" class="card hidden">
+                <h2>Administrador de Campañas</h2>
+                <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                    <input type="text" id="nueva-campana" placeholder="Nombre de nueva campaña" style="padding:10px; width: 300px; border: 1px solid #ccc; border-radius: 5px;">
+                    <button class="btn-action bg-blue" onclick="crearCampana()"><i class="fas fa-plus"></i> Agregar</button>
+                </div>
+                <table>
+                    <thead><tr><th>Nombre de la Campaña</th><th>Acción</th></tr></thead>
+                    <tbody id="tabla-campanas"></tbody>
+                </table>
+            </section>
+
+            <section id="sec-admin" class="card hidden">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                    <h2>Administración de Personal</h2>
+                    <button class="btn-action bg-green" onclick="exportarExcel()"><i class="fas fa-file-excel"></i> Exportar a Excel</button>
+                </div>
+                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #eee;">
+                    <div class="grid-3">
+                        <div class="input-group"><input type="text" id="admin-user" placeholder="Usuario ID"></div>
+                        <div class="input-group"><input type="text" id="admin-nombre" placeholder="Nombre Completo"></div>
+                        <div class="input-group"><input type="password" id="admin-pass" placeholder="Contraseña"></div>
+                        <div class="input-group">
+                            <select id="admin-rol">
+                                <option value="Agente">Agente</option>
+                                <option value="Líder">Líder</option>
+                                <option value="Administrador">Administrador</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <select id="admin-campana" title="Campañas dinámicas"></select>
+                        </div>
+                        <button class="btn-action bg-blue" onclick="guardarUsuario()" style="height: 40px;"><i class="fas fa-save"></i> Guardar</button>
                     </div>
                 </div>
-                <div class="section-box">
-                    <h4>Usuarios en Tiempo Real</h4>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Usuario</th>
-                                <th>Nombre</th>
-                                <th>Rol</th>
-                                <th>Estado</th>
-                            </tr>
-                        </thead>
-                        <tbody id="lista-usuarios-live"></tbody>
-                    </table>
-                </div>
+                <table>
+                    <thead><tr><th>Usuario</th><th>Nombre</th><th>Rol</th><th>Campaña</th><th>Estado</th></tr></thead>
+                    <tbody id="lista-usuarios"></tbody>
+                </table>
             </section>
 
             <section id="sec-gestion" class="card hidden">
-                <h2>Formulario de Gestión</h2>
-                <p>Aquí puedes pegar el contenido de tu formulario original (NIT, Servicios, etc.)</p>
+                <h2>Formulario de Gestión de Cobro</h2>
+                <div style="border: 1px solid #eee; padding: 15px; border-radius: 8px; margin-bottom: 15px; background: #fafafa;">
+                    <h4>Servicio Solicitado</h4>
+                    <div class="grid-3">
+                        <div class="input-group">
+                            <label>Tipo *</label>
+                            <select id="gc-tipo" onchange="manejarTipoServicio()">
+                                <option value="">Seleccionar...</option>
+                                <option value="Diagnóstico">Diagnóstico</option>
+                                <option value="Mantenimiento">Mantenimiento</option>
+                                <option value="Instalación">Instalación</option>
+                                <option value="Otro">Otro</option>
+                            </select>
+                        </div>
+                        <div class="input-group"><label id="lbl-detalle">Servicio Solicitado *</label><input type="text" id="gc-detalle"></div>
+                        <div class="input-group"><label>Precio (Q) *</label><input type="number" id="gc-precio" value="0"></div>
+                        <div class="input-group"><label>Producto *</label><input type="text" id="gc-producto"></div>
+                        <div class="input-group"><label>Marca *</label><input type="text" id="gc-marca"></div>
+                        <div class="input-group" style="display:flex; gap:10px; align-items:flex-end;">
+                            <div style="flex:1;"><label>Modelo</label><input type="text" id="gc-modelo"></div>
+                            <button class="btn-action bg-blue" onclick="agregarServicio()"><i class="fas fa-plus"></i> Add</button>
+                        </div>
+                    </div>
+                    <table id="tabla-servicios" class="hidden">
+                        <thead><tr><th>Servicio</th><th>Detalle</th><th>Prod/Marca</th><th>Precio</th><th>X</th></tr></thead>
+                        <tbody id="lista-servicios"></tbody>
+                    </table>
+                </div>
+
+                <div class="grid-2">
+                    <div style="border: 1px solid #eee; padding: 15px; border-radius: 8px;">
+                        <h4>Datos Cliente</h4>
+                        <div class="input-group"><input type="text" id="gc-nitCli" placeholder="NIT"></div>
+                        <div class="input-group"><input type="text" id="gc-nomCli" placeholder="Nombre"></div>
+                        <div class="input-group"><input type="text" id="gc-telCli" placeholder="Teléfono"></div>
+                        <div class="input-group"><input type="text" id="gc-dirCli" placeholder="Dirección"></div>
+                    </div>
+                    <div style="border: 1px solid #eee; padding: 15px; border-radius: 8px;">
+                        <h4>Finalizar</h4>
+                        <div class="input-group"><input type="text" id="gc-nitFac" placeholder="NIT Facturación"></div>
+                        <div class="input-group"><input type="text" id="gc-visa" placeholder="Visa Link (Opcional)"></div>
+                        <label><input type="checkbox" id="check-datos"> Datos correctos</label>
+                        <button class="btn-action bg-green" onclick="enviarGestor()" style="width: 100%; margin-top: 15px;"><i class="fas fa-save"></i> Guardar Gestión</button>
+                    </div>
+                </div>
             </section>
 
             <section id="sec-seguimiento" class="card hidden">
-                <h2>Seguimientos</h2>
-                <div id="historial-gestiones">Cargando gestiones de Firebase...</div>
+                <h2>Historial de Gestiones</h2>
+                <table>
+                    <thead><tr><th>Fecha</th><th>Agente</th><th>Cliente (NIT)</th><th>Teléfono</th><th>Total</th></tr></thead>
+                    <tbody id="lista-seguimientos"></tbody>
+                </table>
             </section>
+
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, onSnapshot, addDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDehDeskqPXyZ5Clat2otLHKdB_nrIAWzk",
@@ -137,124 +199,135 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        let idSesion = null;
+        
+        let currentUser = null;
+        let exportData = [];
+        window.servicios = []; // Array para el formulario 2
+
+        // --- SISTEMA POP-UP ---
+        window.lanzarPopUp = (msg, color = '#28a745') => {
+            const p = document.getElementById('popup-msg');
+            p.innerText = msg; p.style.backgroundColor = color; p.style.display = 'block';
+            setTimeout(() => p.style.display = 'none', 3000);
+        };
 
         // --- NAVEGACIÓN ---
-        window.verSeccion = function(id) {
-            document.querySelectorAll('.main-content section').forEach(s => s.classList.add('hidden'));
+        window.verSeccion = (id) => {
+            document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
             document.getElementById(id).classList.remove('hidden');
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             if(event) event.currentTarget.classList.add('active');
         };
 
-        // --- LOGIN CON ROLES ---
+        // --- LOGIN Y CONTROL DE PERMISOS ABAC ---
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const u = document.getElementById('user').value.trim().toLowerCase();
             const p = document.getElementById('pass').value;
             const btn = document.getElementById('btnLogin');
-            const err = document.getElementById('login-error');
-
-            btn.disabled = true;
-            btn.innerText = "CONECTANDO...";
+            btn.disabled = true; btn.innerText = "VERIFICANDO...";
 
             try {
-                const userRef = doc(db, "Usuarios", u);
-                const userSnap = await getDoc(userRef);
-
+                const userSnap = await getDoc(doc(db, "Usuarios", u));
                 if (userSnap.exists() && userSnap.data().password === p) {
-                    const data = userSnap.data();
-                    idSesion = u;
+                    const userData = userSnap.data();
+                    currentUser = u;
 
-                    // Marcar EN LÍNEA
-                    await updateDoc(userRef, { enLinea: "SI" });
+                    // Leer la colección ROLES para saber qué mostrar
+                    const rolSnap = await getDoc(doc(db, "Roles", userData.rol));
+                    if (rolSnap.exists()) {
+                        const permisos = rolSnap.data().permisos; // ["0", "0.1", "1", "2"]
+                        configurarMenu(permisos);
 
-                    // Configurar Interfaz según ROL
-                    document.getElementById('displayUser').innerText = data.nombre.toUpperCase();
-                    document.getElementById('displayCampana').innerText = "Campaña: " + (data.campaña || data.campana || "ST");
-                    
-                    if(data.rol === 'Agente') {
-                        document.getElementById('nav-usuarios').style.display = 'none';
-                        verSeccion('sec-gestion');
-                    } else {
-                        document.getElementById('nav-usuarios').style.display = 'flex';
-                        verSeccion('sec-admin');
-                    }
+                        document.getElementById('displayUser').innerText = userData.nombre;
+                        document.getElementById('displayRol').innerText = userData.rol;
+                        document.getElementById('login-view').style.display = 'none';
+                        document.getElementById('app-view').style.display = 'block';
 
-                    document.getElementById('login-view').style.display = 'none';
-                    document.getElementById('app-view').style.display = 'block';
-                    escucharUsuarios();
-                } else {
-                    err.innerText = "⚠️ Credenciales incorrectas";
-                    err.style.display = 'block';
-                    btn.disabled = false;
-                    btn.innerText = "INICIAR SESIÓN";
-                }
-            } catch (error) {
-                console.error(error);
-                err.innerText = "❌ Error de conexión con Firebase";
-                err.style.display = 'block';
-                btn.disabled = false;
-            }
+                        await updateDoc(doc(db, "Usuarios", u), { enLinea: "SI" });
+                        lanzarPopUp("¡Bienvenido!");
+                        
+                        // Inicializar Listeners Reales
+                        escucharUsuarios();
+                        escucharCampanas();
+                        escucharRoles();
+                        escucharSeguimientos();
+                    } else { lanzarPopUp("Rol sin configurar en Firebase", "#e30613"); }
+                } else { lanzarPopUp("Datos incorrectos", "#e30613"); }
+            } catch (err) { console.error(err); lanzarPopUp("Error Firebase", "#e30613"); }
+            btn.disabled = false; btn.innerText = "INICIAR SESIÓN";
         });
 
-        // --- SALIDA ---
-        window.cerrarSesion = async () => {
-            if(idSesion) {
-                await updateDoc(doc(db, "Usuarios", idSesion), { enLinea: "NO" });
-            }
-            location.reload();
-        };
+        function configurarMenu(permisos) {
+            const itemsMenu = document.querySelectorAll('.nav-item');
+            let primero = null;
+            itemsMenu.forEach(item => {
+                const idMenu = item.getAttribute('data-id');
+                if (permisos.includes(idMenu)) {
+                    item.style.display = 'flex';
+                    if (!primero) primero = item;
+                } else { item.style.display = 'none'; }
+            });
+            if (primero) primero.click();
+        }
 
-        // --- MONITOREO EN TIEMPO REAL (USUARIOS) ---
-        function escucharUsuarios() {
-            onSnapshot(collection(db, "Usuarios"), (snapshot) => {
-                const tbody = document.getElementById('lista-usuarios-live');
-                tbody.innerHTML = '';
-                snapshot.forEach((doc) => {
-                    const u = doc.data();
-                    const online = u.enLinea === "SI";
-                    tbody.innerHTML += `
-                        <tr>
-                            <td><strong>${doc.id}</strong></td>
-                            <td>${u.nombre}</td>
-                            <td><span class="badge ${u.rol === 'Administrador' ? 'bg-red' : 'bg-blue'}">${u.rol}</span></td>
-                            <td>
-                                <span class="badge ${online ? 'bg-green' : 'bg-gray'}">
-                                    <i class="fas fa-circle"></i> ${online ? 'En Línea' : 'Desconectado'}
-                                </span>
-                            </td>
-                        </tr>
-                    `;
+        // --- MÓDULO 0: EDITOR DE ROLES ---
+        function escucharRoles() {
+            onSnapshot(collection(db, "Roles"), (snap) => {
+                const tb = document.getElementById('tabla-roles');
+                tb.innerHTML = '';
+                snap.forEach(doc => {
+                    const permisosStr = doc.data().permisos.join(", ");
+                    tb.innerHTML += `<tr>
+                        <td><b>${doc.id}</b></td>
+                        <td><input type="text" id="perm_${doc.id}" value="${permisosStr}" style="width:100%; padding:5px;"></td>
+                        <td><button class="btn-action bg-blue" onclick="actualizarRol('${doc.id}')"><i class="fas fa-save"></i></button></td>
+                    </tr>`;
                 });
             });
         }
-
-        // --- GUARDAR USUARIO (SOLO ADMIN/LÍDER) ---
-        window.guardarUsuario = async () => {
-            const u = document.getElementById('admin-user').value.trim().toLowerCase();
-            const n = document.getElementById('admin-nombre').value;
-            const p = document.getElementById('admin-pass').value;
-            const r = document.getElementById('admin-rol').value;
-            const c = document.getElementById('admin-campana').value;
-
-            if(!u || !n || !p) return alert("Faltan datos");
-
-            try {
-                await setDoc(doc(db, "Usuarios", u), {
-                    nombre: n, password: p, rol: r, campaña: c, enLinea: "NO"
-                });
-                alert("Usuario actualizado con éxito");
-                document.getElementById('admin-user').value = '';
-                document.getElementById('admin-nombre').value = '';
-                document.getElementById('admin-pass').value = '';
-            } catch (e) { alert("Error al guardar en Firebase"); }
+        window.actualizarRol = async (rolId) => {
+            const arr = document.getElementById(`perm_${rolId}`).value.split(",").map(i => i.trim());
+            await updateDoc(doc(db, "Roles", rolId), { permisos: arr });
+            lanzarPopUp(`Permisos de ${rolId} actualizados`);
         };
 
-        // Desconectar si cierran la pestaña
-        window.addEventListener('beforeunload', () => {
-            if(idSesion) updateDoc(doc(db, "Usuarios", idSesion), { enLinea: "NO" });
-        });
-    </script>
-</body>
-</html>
+        // --- MÓDULO 0.1: CAMPAÑAS DINÁMICAS ---
+        function escucharCampanas() {
+            onSnapshot(collection(db, "Campañas"), (snap) => {
+                const tb = document.getElementById('tabla-campanas');
+                const sel = document.getElementById('admin-campana');
+                tb.innerHTML = ''; sel.innerHTML = '';
+                snap.forEach(doc => {
+                    const nom = doc.data().nombre || doc.id;
+                    // Llenar tabla
+                    tb.innerHTML += `<tr><td>${nom}</td><td><button class="btn-action bg-red" onclick="borrarCampana('${doc.id}')"><i class="fas fa-trash"></i></button></td></tr>`;
+                    // Llenar selector de la opción 1
+                    sel.innerHTML += `<option value="${nom}">${nom}</option>`;
+                });
+            });
+        }
+        window.crearCampana = async () => {
+            const nom = document.getElementById('nueva-campana').value.trim();
+            if(!nom) return;
+            await setDoc(doc(db, "Campañas", nom), { nombre: nom });
+            document.getElementById('nueva-campana').value = '';
+            lanzarPopUp("Campaña añadida");
+        };
+        window.borrarCampana = async (id) => {
+            await deleteDoc(doc(db, "Campañas", id));
+            lanzarPopUp("Campaña eliminada", "#e30613");
+        };
+
+        // --- MÓDULO 1: USUARIOS ---
+        function escucharUsuarios() {
+            onSnapshot(collection(db, "Usuarios"), (snap) => {
+                const tb = document.getElementById('lista-usuarios');
+                tb.innerHTML = ''; exportData = [];
+                snap.forEach(doc => {
+                    const u = doc.data();
+                    exportData.push({ID: doc.id, Nombre: u.nombre, Rol: u.rol, Campaña: u.campaña, Estado: u.enLinea});
+                    const on = u.enLinea === "SI";
+                    tb.innerHTML += `<tr>
+                        <td>${doc.id}</td><td>${u.nombre}</td>
+            

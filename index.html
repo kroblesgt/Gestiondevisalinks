@@ -5,12 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión Call Center ST | Grupo Distelsa</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         :root { --rojo-distelsa: #e30613; --azul-distelsa: #003366; --fondo: #f4f6f9; --sidebar-w: 250px; }
         body { font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; background: var(--fondo); color: #333; overflow-x: hidden; }
 
-        /* --- POP-UP --- */
+        /* --- MENSAJES --- */
         #popup-msg { position: fixed; top: 20px; right: 20px; padding: 15px 25px; border-radius: 8px; color: white; font-weight: bold; z-index: 3000; display: none; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
 
         /* --- LOGIN --- */
@@ -18,10 +17,10 @@
         .login-card { background: white; padding: 40px; border-radius: 12px; width: 340px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
         .input-group { text-align: left; margin-bottom: 15px; position: relative; }
         .input-group label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 5px; color: var(--azul-distelsa); }
-        .input-group input, .input-group select, .input-group textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
+        .input-group input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
         .toggle-password { position: absolute; right: 12px; top: 32px; cursor: pointer; color: #666; font-size: 16px; }
 
-        /* --- ESTRUCTURA --- */
+        /* --- APP ESTRUCTURA --- */
         #app-view { display: none; }
         header { position: fixed; top: 0; left: 0; right: 0; height: 60px; background: white; border-bottom: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; z-index: 1000; }
         .sidebar { position: fixed; top: 60px; left: 0; bottom: 0; width: var(--sidebar-w); background: var(--azul-distelsa); color: white; padding-top: 20px; }
@@ -29,17 +28,9 @@
         .nav-item:hover, .nav-item.active { background: rgba(255,255,255,0.1); border-left: 4px solid var(--rojo-distelsa); }
         .main-content { margin-left: var(--sidebar-w); margin-top: 60px; padding: 25px; }
         .card { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 20px; }
-
-        /* --- TABLAS Y BOTONES --- */
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; }
-        th { background: var(--azul-distelsa); color: white; padding: 12px; text-align: left; }
-        td { padding: 12px; border-bottom: 1px solid #eee; }
-        .badge { padding: 5px 10px; border-radius: 4px; font-size: 11px; font-weight: bold; color: white; }
-        .bg-green { background: #25d366; } .bg-red { background: var(--rojo-distelsa); } .bg-blue { background: #007bff; } .bg-gray { background: #6c757d; } .bg-warning {background: #ffc107; color: black;}
-        .hidden { display: none !important; }
         .btn-action { padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; color: white; font-weight: bold; display: inline-flex; align-items: center; gap: 6px; }
-        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .bg-red { background: var(--rojo-distelsa); } .bg-blue { background: var(--azul-distelsa); } .bg-green { background: #25d366; }
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
@@ -52,19 +43,19 @@
             <form id="loginForm">
                 <div class="input-group">
                     <label>Usuario</label>
-                    <input type="text" id="user" required autocomplete="username">
+                    <input type="text" id="user" required placeholder="admin">
                 </div>
                 <div class="input-group">
                     <label>Contraseña</label>
-                    <input type="password" id="pass" required autocomplete="current-password" style="padding-right: 40px;">
+                    <input type="password" id="pass" required placeholder="••••••">
                     <i class="fas fa-eye toggle-password" id="btnEye"></i>
                 </div>
                 <div style="text-align: left; margin-bottom: 20px; font-size: 13px;">
-                    <label style="display:inline; font-weight:normal; color:#555; cursor:pointer;">
+                    <label style="cursor:pointer; color:#555;">
                         <input type="checkbox" id="keepSession"> Mantener sesión activa
                     </label>
                 </div>
-                <button type="submit" id="btnLogin" class="btn-action bg-red" style="width: 100%; justify-content: center;">INICIAR SESIÓN</button>
+                <button type="submit" id="btnLogin" class="btn-action bg-red" style="width:100%; justify-content:center;">INICIAR SESIÓN</button>
             </form>
         </div>
     </div>
@@ -73,7 +64,7 @@
         <header>
             <div style="font-size: 20px; font-weight: 800; color: var(--azul-distelsa);"><i class="fas fa-headset"></i> Portal Distelsa ST</div>
             <div style="text-align: right; display: flex; align-items: center; gap: 15px;">
-                <div><strong id="displayUser"></strong><br><small id="displayRol" style="color: var(--rojo-distelsa); font-weight: bold;"></small></div>
+                <div><strong id="displayUser"></strong><br><small id="displayCampana" style="color: var(--rojo-distelsa); font-weight: bold;"></small></div>
                 <button onclick="cerrarSesion()" class="btn-action bg-red"><i class="fas fa-sign-out-alt"></i> Salir</button>
             </div>
         </header>
@@ -87,120 +78,19 @@
         </div>
 
         <div class="main-content">
-            
-            <section id="sec-roles" class="card hidden">
-                <h2>Control Dinámico de Accesos</h2>
-                <p>Aquí configuras qué módulos puede ver cada rol en el sistema.</p>
-                <table>
-                    <thead><tr><th>Rol en Firebase</th><th>Permisos Activos (IDs de Menú)</th><th>Acción</th></tr></thead>
-                    <tbody id="tabla-roles"></tbody>
-                </table>
-            </section>
-
-            <section id="sec-campanas" class="card hidden">
-                <h2>Administrador de Campañas</h2>
-                <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-                    <input type="text" id="nueva-campana" placeholder="Nombre de nueva campaña" style="padding:10px; width: 300px; border: 1px solid #ccc; border-radius: 5px;">
-                    <button class="btn-action bg-blue" onclick="crearCampana()"><i class="fas fa-plus"></i> Agregar</button>
-                </div>
-                <table>
-                    <thead><tr><th>Nombre de la Campaña</th><th>Acción</th></tr></thead>
-                    <tbody id="tabla-campanas"></tbody>
-                </table>
-            </section>
-
-            <section id="sec-admin" class="card hidden">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
-                    <h2>Administración de Personal</h2>
-                    <button class="btn-action bg-green" onclick="exportarExcel()"><i class="fas fa-file-excel"></i> Exportar a Excel</button>
-                </div>
-                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #eee;">
-                    <div class="grid-3">
-                        <div class="input-group"><input type="text" id="admin-user" placeholder="Usuario ID"></div>
-                        <div class="input-group"><input type="text" id="admin-nombre" placeholder="Nombre Completo"></div>
-                        <div class="input-group"><input type="password" id="admin-pass" placeholder="Contraseña"></div>
-                        <div class="input-group">
-                            <select id="admin-rol">
-                                <option value="Agente">Agente</option>
-                                <option value="Líder">Líder</option>
-                                <option value="Administrador">Administrador</option>
-                            </select>
-                        </div>
-                        <div class="input-group">
-                            <select id="admin-campana" title="Campañas dinámicas"></select>
-                        </div>
-                        <button class="btn-action bg-blue" onclick="guardarUsuario()" style="height: 40px;"><i class="fas fa-save"></i> Guardar</button>
-                    </div>
-                </div>
-                <table>
-                    <thead><tr><th>Usuario</th><th>Nombre</th><th>Rol</th><th>Campaña</th><th>Estado</th></tr></thead>
-                    <tbody id="lista-usuarios"></tbody>
-                </table>
-            </section>
-
-            <section id="sec-gestion" class="card hidden">
-                <h2>Formulario de Gestión de Cobro</h2>
-                <div style="border: 1px solid #eee; padding: 15px; border-radius: 8px; margin-bottom: 15px; background: #fafafa;">
-                    <h4>Servicio Solicitado</h4>
-                    <div class="grid-3">
-                        <div class="input-group">
-                            <label>Tipo *</label>
-                            <select id="gc-tipo" onchange="manejarTipoServicio()">
-                                <option value="">Seleccionar...</option>
-                                <option value="Diagnóstico">Diagnóstico</option>
-                                <option value="Mantenimiento">Mantenimiento</option>
-                                <option value="Instalación">Instalación</option>
-                                <option value="Otro">Otro</option>
-                            </select>
-                        </div>
-                        <div class="input-group"><label id="lbl-detalle">Servicio Solicitado *</label><input type="text" id="gc-detalle"></div>
-                        <div class="input-group"><label>Precio (Q) *</label><input type="number" id="gc-precio" value="0"></div>
-                        <div class="input-group"><label>Producto *</label><input type="text" id="gc-producto"></div>
-                        <div class="input-group"><label>Marca *</label><input type="text" id="gc-marca"></div>
-                        <div class="input-group" style="display:flex; gap:10px; align-items:flex-end;">
-                            <div style="flex:1;"><label>Modelo</label><input type="text" id="gc-modelo"></div>
-                            <button class="btn-action bg-blue" onclick="agregarServicio()"><i class="fas fa-plus"></i> Add</button>
-                        </div>
-                    </div>
-                    <table id="tabla-servicios" class="hidden">
-                        <thead><tr><th>Servicio</th><th>Detalle</th><th>Prod/Marca</th><th>Precio</th><th>X</th></tr></thead>
-                        <tbody id="lista-servicios"></tbody>
-                    </table>
-                </div>
-
-                <div class="grid-2">
-                    <div style="border: 1px solid #eee; padding: 15px; border-radius: 8px;">
-                        <h4>Datos Cliente</h4>
-                        <div class="input-group"><input type="text" id="gc-nitCli" placeholder="NIT"></div>
-                        <div class="input-group"><input type="text" id="gc-nomCli" placeholder="Nombre"></div>
-                        <div class="input-group"><input type="text" id="gc-telCli" placeholder="Teléfono"></div>
-                        <div class="input-group"><input type="text" id="gc-dirCli" placeholder="Dirección"></div>
-                    </div>
-                    <div style="border: 1px solid #eee; padding: 15px; border-radius: 8px;">
-                        <h4>Finalizar</h4>
-                        <div class="input-group"><input type="text" id="gc-nitFac" placeholder="NIT Facturación"></div>
-                        <div class="input-group"><input type="text" id="gc-visa" placeholder="Visa Link (Opcional)"></div>
-                        <label><input type="checkbox" id="check-datos"> Datos correctos</label>
-                        <button class="btn-action bg-green" onclick="enviarGestor()" style="width: 100%; margin-top: 15px;"><i class="fas fa-save"></i> Guardar Gestión</button>
-                    </div>
-                </div>
-            </section>
-
-            <section id="sec-seguimiento" class="card hidden">
-                <h2>Historial de Gestiones</h2>
-                <table>
-                    <thead><tr><th>Fecha</th><th>Agente</th><th>Cliente (NIT)</th><th>Teléfono</th><th>Total</th></tr></thead>
-                    <tbody id="lista-seguimientos"></tbody>
-                </table>
-            </section>
-
+            <section id="sec-roles" class="card hidden"><h2>Editor de Roles</h2><p>Contenido del Módulo 0...</p></section>
+            <section id="sec-campanas" class="card hidden"><h2>Campañas</h2><p>Contenido del Módulo 0.1...</p></section>
+            <section id="sec-admin" class="card hidden"><h2>Administración de Usuarios</h2><p>Contenido del Módulo 1...</p></section>
+            <section id="sec-gestion" class="card hidden"><h2>Gestión de Cobro</h2><p>Contenido del Módulo 2...</p></section>
+            <section id="sec-seguimiento" class="card hidden"><h2>Seguimientos</h2><p>Contenido del Módulo 3...</p></section>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, onSnapshot, addDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+        // CONFIGURACIÓN (Verificada con tus capturas)
         const firebaseConfig = {
             apiKey: "AIzaSyDehDeskqPXyZ5Clat2otLHKdB_nrIAWzk",
             authDomain: "gestiondecobrosst.firebaseapp.com",
@@ -212,33 +102,90 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        
         let currentUser = null;
-        let exportData = [];
-        window.servicios = []; 
 
-        // --- SISTEMA POP-UP ---
         window.lanzarPopUp = (msg, color = '#28a745') => {
             const p = document.getElementById('popup-msg');
             p.innerText = msg; p.style.backgroundColor = color; p.style.display = 'block';
             setTimeout(() => p.style.display = 'none', 3000);
         };
 
-        // --- MOSTRAR/OCULTAR CONTRASEÑA ---
-        document.getElementById('btnEye').addEventListener('click', function() {
-            const passInput = document.getElementById('pass');
-            if (passInput.type === 'password') {
-                passInput.type = 'text';
-                this.classList.remove('fa-eye');
-                this.classList.add('fa-eye-slash');
+        // Ver/Ocultar contraseña
+        document.getElementById('btnEye').addEventListener('click', () => {
+            const p = document.getElementById('pass');
+            const icon = document.getElementById('btnEye');
+            if (p.type === 'password') {
+                p.type = 'text'; icon.classList.replace('fa-eye', 'fa-eye-slash');
             } else {
-                passInput.type = 'password';
-                this.classList.remove('fa-eye-slash');
-                this.classList.add('fa-eye');
+                p.type = 'password'; icon.classList.replace('fa-eye-slash', 'fa-eye');
             }
         });
 
-        // --- NAVEGACIÓN ---
+        async function procesarLogin(usuario, pass, isAuto = false) {
+            // MAYÚSCULAS/MINÚSCULAS: Convertimos a minúsculas para coincidir con el ID del documento en Firebase
+            const u = usuario.trim().toLowerCase(); 
+            const btn = document.getElementById('btnLogin');
+            if(!isAuto) { btn.disabled = true; btn.innerText = "VERIFICANDO..."; }
+
+            try {
+                // Buscamos en la colección "Usuarios" (ID del doc debe ser 'admin')
+                const userSnap = await getDoc(doc(db, "Usuarios", u));
+                
+                if (userSnap.exists()) {
+                    const data = userSnap.data();
+                    
+                    if (data.password === pass) {
+                        currentUser = u;
+                        if(document.getElementById('keepSession').checked) {
+                            localStorage.setItem('st_user', u);
+                            localStorage.setItem('st_pass', pass);
+                        }
+
+                        // Cargar Permisos desde la colección Roles
+                        const rolSnap = await getDoc(doc(db, "Roles", data.rol));
+                        let permisos = rolSnap.exists() ? rolSnap.data().permisos : ["2", "3"]; // Modo rescate
+
+                        // Sincronizar UI (usando 'campaña' con ñ como en tu DB)
+                        document.getElementById('displayUser').innerText = data.nombre;
+                        document.getElementById('displayCampana').innerText = "Campaña: " + (data.campaña || "ST");
+                        
+                        configurarMenu(permisos);
+                        document.getElementById('login-view').style.display = 'none';
+                        document.getElementById('app-view').style.display = 'block';
+                        
+                        await updateDoc(doc(db, "Usuarios", u), { enLinea: "SI" });
+                        if(!isAuto) lanzarPopUp("¡Bienvenido!");
+                    } else {
+                        lanzarPopUp("Contraseña incorrecta", "#e30613");
+                    }
+                } else {
+                    lanzarPopUp("El usuario '" + u + "' no existe en Firebase", "#e30613");
+                }
+            } catch (err) {
+                console.error(err);
+                lanzarPopUp("Error de red o permisos de Firebase", "#e30613");
+            }
+            if(!isAuto) { btn.disabled = false; btn.innerText = "INICIAR SESIÓN"; }
+        }
+
+        function configurarMenu(permisos) {
+            const items = document.querySelectorAll('.nav-item');
+            let first = null;
+            items.forEach(item => {
+                const id = item.getAttribute('data-id');
+                if (permisos.includes(id)) {
+                    item.style.display = 'flex';
+                    if(!first) first = item;
+                } else { item.style.display = 'none'; }
+            });
+            if(first) first.click();
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            procesarLogin(document.getElementById('user').value, document.getElementById('pass').value);
+        });
+
         window.verSeccion = (id) => {
             document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
             document.getElementById(id).classList.remove('hidden');
@@ -246,90 +193,21 @@
             if(event) event.currentTarget.classList.add('active');
         };
 
-        // --- LOGIN CON "MANTENER SESIÓN" Y "MODO RESCATE" ---
-        async function procesarLogin(usuarioIngresado, passIngresado, isAutoLogin = false) {
-            // Convertimos todo a minúsculas sin importar cómo lo escriba el usuario (ej: ADMIN -> admin)
-            const u = usuarioIngresado.trim().toLowerCase(); 
-            const p = passIngresado;
-            const btn = document.getElementById('btnLogin');
-            if(!isAutoLogin) { btn.disabled = true; btn.innerText = "VERIFICANDO..."; }
+        window.cerrarSesion = async () => {
+            if(currentUser) await updateDoc(doc(db, "Usuarios", currentUser), { enLinea: "NO" });
+            localStorage.clear();
+            location.reload();
+        };
 
-            try {
-                const userSnap = await getDoc(doc(db, "Usuarios", u));
-                if (userSnap.exists() && userSnap.data().password === p) {
-                    const userData = userSnap.data();
-                    currentUser = u;
-
-                    // Si marcó la casilla, guardamos los datos en LocalStorage
-                    if(document.getElementById('keepSession').checked) {
-                        localStorage.setItem('distelsa_user', u);
-                        localStorage.setItem('distelsa_pass', p);
-                    }
-
-                    // BUSCAR ROLES EN FIREBASE
-                    const rolSnap = await getDoc(doc(db, "Roles", userData.rol));
-                    let permisos = [];
-                    
-                    if (rolSnap.exists()) {
-                        permisos = rolSnap.data().permisos;
-                    } else {
-                        // MODO RESCATE: Si la tabla Roles no está bien configurada, asignamos permisos por defecto
-                        lanzarPopUp("Rol no encontrado en DB. Usando permisos por defecto.", "#ffc107");
-                        if (userData.rol === 'Administrador') permisos = ["0", "0.1", "1", "2", "3"];
-                        else if (userData.rol === 'Líder') permisos = ["1", "2", "3"];
-                        else permisos = ["2", "3"];
-                    }
-
-                    configurarMenu(permisos);
-
-                    document.getElementById('displayUser').innerText = userData.nombre;
-                    document.getElementById('displayRol').innerText = userData.rol;
-                    document.getElementById('login-view').style.display = 'none';
-                    document.getElementById('app-view').style.display = 'block';
-
-                    await updateDoc(doc(db, "Usuarios", u), { enLinea: "SI" });
-                    if(!isAutoLogin) lanzarPopUp("¡Bienvenido!");
-                    
-                    // Iniciar monitores en vivo
-                    escucharUsuarios();
-                    escucharCampanas();
-                    escucharRoles();
-                    escucharSeguimientos();
-                } else {
-                    if(!isAutoLogin) lanzarPopUp("Datos incorrectos", "#e30613");
-                    localStorage.removeItem('distelsa_user');
-                    localStorage.removeItem('distelsa_pass');
-                }
-            } catch (err) { 
-                console.error(err); 
-                if(!isAutoLogin) lanzarPopUp("Error de Conexión a Firebase", "#e30613"); 
-            }
-            if(!isAutoLogin) { btn.disabled = false; btn.innerText = "INICIAR SESIÓN"; }
-        }
-
-        // Evento del botón de Login
-        document.getElementById('loginForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            procesarLogin(document.getElementById('user').value, document.getElementById('pass').value, false);
-        });
-
-        // Auto-Login si la sesión estaba activa
+        // Auto-login
         window.addEventListener('DOMContentLoaded', () => {
-            const savedUser = localStorage.getItem('distelsa_user');
-            const savedPass = localStorage.getItem('distelsa_pass');
-            if(savedUser && savedPass) {
+            const su = localStorage.getItem('st_user');
+            const sp = localStorage.getItem('st_pass');
+            if(su && sp) {
                 document.getElementById('keepSession').checked = true;
-                procesarLogin(savedUser, savedPass, true);
+                procesarLogin(su, sp, true);
             }
         });
-
-        // --- CONFIGURAR MENÚ DINÁMICO ---
-        function configurarMenu(permisos) {
-            const itemsMenu = document.querySelectorAll('.nav-item');
-            let primero = null;
-            itemsMenu.forEach(item => {
-                const idMenu = item.getAttribute('data-id');
-                if (permisos.includes(idMenu)) {
-                    item.style.display = 'flex';
-                    if (!primero) primero = item;
-                } else 
+    </script>
+</body>
+</html>

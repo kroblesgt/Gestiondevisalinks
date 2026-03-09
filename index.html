@@ -9,33 +9,34 @@
         :root { --rojo-distelsa: #e30613; --azul-distelsa: #003366; --fondo: #f4f6f9; --sidebar-w: 250px; }
         body { font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; background: var(--fondo); color: #333; overflow-x: hidden; }
 
-        /* --- NOTIFICACIONES POP-UP --- */
         #popup-msg { position: fixed; top: 20px; right: 20px; padding: 15px 25px; border-radius: 8px; color: white; font-weight: bold; z-index: 3000; display: none; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
 
-        /* --- VISTA DE LOGIN --- */
+        /* --- LOGIN --- */
         #login-view { position: fixed; inset: 0; background: linear-gradient(135deg, var(--azul-distelsa) 0%, #001f3f 100%); display: flex; justify-content: center; align-items: center; z-index: 2000; }
-        .login-card { background: white; padding: 40px; border-radius: 12px; width: 340px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        .login-card { background: white; padding: 40px; border-radius: 12px; width: 340px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); border-top: 5px solid var(--rojo-distelsa); }
         .input-group { text-align: left; margin-bottom: 15px; position: relative; }
-        .input-group label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 5px; color: var(--azul-distelsa); }
-        .input-group input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
-        .toggle-password { position: absolute; right: 12px; top: 32px; cursor: pointer; color: #666; font-size: 18px; }
+        .input-group label { display: block; font-size: 11px; font-weight: bold; margin-bottom: 5px; color: var(--azul-distelsa); text-transform: uppercase; }
+        .input-group input, .input-group select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
+        .toggle-password { position: absolute; right: 12px; top: 32px; cursor: pointer; color: #666; font-size: 18px; z-index: 10; padding: 5px; }
 
-        /* --- ESTRUCTURA PRINCIPAL --- */
+        /* --- APP --- */
         #app-view { display: none; }
         header { position: fixed; top: 0; left: 0; right: 0; height: 60px; background: white; border-bottom: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; z-index: 1000; }
         .sidebar { position: fixed; top: 60px; left: 0; bottom: 0; width: var(--sidebar-w); background: var(--azul-distelsa); color: white; padding-top: 20px; }
-        .nav-item { padding: 15px 20px; cursor: pointer; display: none; align-items: center; gap: 12px; transition: 0.2s; }
+        .nav-item { padding: 15px 20px; cursor: pointer; display: none; align-items: center; gap: 12px; transition: 0.2s; font-size: 14px; }
         .nav-item:hover, .nav-item.active { background: rgba(255,255,255,0.1); border-left: 4px solid var(--rojo-distelsa); }
         .main-content { margin-left: var(--sidebar-w); margin-top: 60px; padding: 25px; }
-        .card { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 20px; }
 
-        /* --- TABLAS Y BOTONES --- */
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th { background: #f8f9fa; color: var(--azul-distelsa); padding: 12px; text-align: left; border-bottom: 2px solid #eee; }
-        td { padding: 12px; border-bottom: 1px solid #eee; font-size: 14px; }
-        .btn-action { padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer; color: white; font-weight: bold; display: inline-flex; align-items: center; gap: 6px; }
-        .bg-red { background: var(--rojo-distelsa); } .bg-blue { background: var(--azul-distelsa); } .bg-green { background: #28a745; }
-        .badge { padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; color: white; }
+        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 20px; border: 1px solid #eee; }
+        .grid-inputs { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px dashed #ccc; }
+        
+        .btn-action { padding: 10px 15px; border: none; border-radius: 6px; cursor: pointer; color: white; font-weight: bold; transition: 0.2s; display: inline-flex; align-items: center; gap: 8px; justify-content: center; }
+        .bg-red { background: var(--rojo-distelsa); } .bg-blue { background: var(--azul-distelsa); } .bg-green { background: #28a745; } .bg-gray { background: #6c757d; }
+        
+        table { width: 100%; border-collapse: collapse; }
+        th { background: #f1f1f1; color: var(--azul-distelsa); padding: 12px; text-align: left; font-size: 12px; border-bottom: 2px solid #ddd; }
+        td { padding: 10px; border-bottom: 1px solid #eee; font-size: 13px; }
+        .btn-mini { padding: 5px 8px; font-size: 12px; }
         .hidden { display: none !important; }
     </style>
 </head>
@@ -45,75 +46,102 @@
 
     <div id="login-view">
         <div class="login-card">
-            <img src="https://www.distelsa.com.gt/media/logo/stores/1/logo_distelsa.png" style="width:180px; margin-bottom:20px;">
+            <img src="https://www.distelsa.com.gt/media/logo/stores/1/logo_distelsa.png" style="width:160px; margin-bottom:20px;">
             <form id="loginForm">
-                <div class="input-group">
-                    <label>Usuario</label>
-                    <input type="text" id="user" required placeholder="admin" autocomplete="username">
-                </div>
+                <div class="input-group"><label>ID Usuario</label><input type="text" id="user" required></div>
                 <div class="input-group">
                     <label>Contraseña</label>
-                    <input type="password" id="pass" required placeholder="••••••" autocomplete="current-password">
+                    <input type="password" id="pass" required autocomplete="current-password">
                     <i class="fas fa-eye toggle-password" id="btnEye"></i>
                 </div>
-                <div style="text-align: left; margin-bottom: 20px;">
-                    <label style="font-size: 13px; color: #555; cursor: pointer;">
-                        <input type="checkbox" id="keepSession"> Mantener sesión activa
-                    </label>
-                </div>
-                <button type="submit" id="btnLogin" class="btn-action bg-red" style="width: 100%; justify-content: center; padding: 12px;">INGRESAR AL PORTAL</button>
+                <button type="submit" id="btnLogin" class="btn-action bg-red" style="width:100%;">ENTRAR</button>
             </form>
         </div>
     </div>
 
     <div id="app-view">
         <header>
-            <div style="font-size: 18px; font-weight: 800; color: var(--azul-distelsa);"><i class="fas fa-headset"></i> DISTELSA ST</div>
-            <div style="text-align: right; display: flex; align-items: center; gap: 15px;">
-                <div style="line-height: 1.2;"><strong id="displayUser"></strong><br><small id="displayRol" style="color: var(--rojo-distelsa);"></small></div>
-                <button onclick="cerrarSesion()" class="btn-action bg-red"><i class="fas fa-power-off"></i></button>
+            <div style="font-weight: 800; color: var(--azul-distelsa);"><i class="fas fa-headset"></i> PORTAL ST DISTELSA</div>
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <div style="text-align: right;"><strong id="displayUser"></strong><br><small id="displayCampana" style="color:var(--rojo-distelsa)"></small></div>
+                <button onclick="cerrarSesion()" class="btn-action bg-red" style="padding: 8px;"><i class="fas fa-power-off"></i></button>
             </div>
         </header>
 
         <div class="sidebar">
-            <div class="nav-item" data-id="0" onclick="verSeccion('sec-roles')"><i class="fas fa-user-shield"></i> 0. Editor Roles</div>
-            <div class="nav-item" data-id="0.1" onclick="verSeccion('sec-campanas')"><i class="fas fa-bullhorn"></i> 0.1 Campañas</div>
-            <div class="nav-item" data-id="1" onclick="verSeccion('sec-admin')"><i class="fas fa-users-cog"></i> 1. Usuarios</div>
-            <div class="nav-item" data-id="2" onclick="verSeccion('sec-gestion')"><i class="fas fa-file-invoice-dollar"></i> 2. Gestión</div>
-            <div class="nav-item" data-id="3" onclick="verSeccion('sec-seguimiento')"><i class="fas fa-history"></i> 3. Seguimientos</div>
+            <div class="nav-item" data-id="0" onclick="verSeccion('sec-0', this)"><i class="fas fa-user-shield"></i> 0. Roles</div>
+            <div class="nav-item" data-id="0.1" onclick="verSeccion('sec-0-1', this)"><i class="fas fa-bullhorn"></i> 0.1 Campañas</div>
+            <div class="nav-item" data-id="1" onclick="verSeccion('sec-1', this)"><i class="fas fa-users-cog"></i> 1. Usuarios</div>
+            <div class="nav-item" data-id="2" onclick="verSeccion('sec-2', this)"><i class="fas fa-file-invoice-dollar"></i> 2. Gestión Cobro</div>
         </div>
 
         <div class="main-content">
-            
-            <section id="sec-roles" class="card hidden">
-                <h2><i class="fas fa-shield-alt"></i> Control de Accesos (Roles)</h2>
-                <p>Asigna qué números de menú puede ver cada nivel de usuario.</p>
-                <table>
-                    <thead>
-                        <tr><th>Rol</th><th>Permisos (IDs separados por coma)</th><th>Acción</th></tr>
-                    </thead>
-                    <tbody id="tabla-roles"></tbody>
-                </table>
-            </section>
-
-            <section id="sec-campanas" class="card hidden">
-                <h2><i class="fas fa-bullhorn"></i> Gestión de Campañas</h2>
-                <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-                    <input type="text" id="nueva-campana" placeholder="Nombre de la campaña" style="padding: 10px; flex: 1; border: 1px solid #ddd; border-radius: 4px;">
-                    <button class="btn-action bg-blue" onclick="crearCampana()"><i class="fas fa-plus"></i> Agregar</button>
+            <section id="sec-0" class="card hidden">
+                <h2><i class="fas fa-user-shield"></i> Configuración de Roles</h2>
+                <div class="grid-inputs">
+                    <div class="input-group"><label>Nombre del Rol</label><input type="text" id="rol-nombre" placeholder="Ej: Supervisor"></div>
+                    <div class="input-group"><label>Permisos (IDs separados por coma)</label><input type="text" id="rol-permisos" placeholder="0, 0.1, 1, 2"></div>
+                    <div style="display: flex; gap: 10px; align-items: flex-end; padding-bottom: 15px;">
+                        <button class="btn-action bg-blue" onclick="guardarRol()">GUARDAR</button>
+                        <button class="btn-action bg-gray" onclick="limpiarRol()">LIMPIAR</button>
+                    </div>
                 </div>
-                <table>
-                    <thead>
-                        <tr><th>Nombre de Campaña</th><th>Acciones</th></tr>
-                    </thead>
-                    <tbody id="tabla-campanas"></tbody>
-                </table>
+                <table><thead><tr><th>Rol</th><th>Permisos</th><th>Acciones</th></tr></thead><tbody id="lista-roles"></tbody></table>
             </section>
 
-            <section id="sec-admin" class="card hidden"><h2>Administración de Usuarios</h2><p>Contenido del Módulo 1...</p></section>
-            <section id="sec-gestion" class="card hidden"><h2>Gestión de Cobro</h2><p>Contenido del Módulo 2...</p></section>
-            <section id="sec-seguimiento" class="card hidden"><h2>Seguimientos</h2><p>Contenido del Módulo 3...</p></section>
+            <section id="sec-0-1" class="card hidden">
+                <h2><i class="fas fa-bullhorn"></i> Gestión de Campañas</h2>
+                <div class="grid-inputs">
+                    <div class="input-group"><label>ID Campaña</label><input type="text" id="camp-nombre" placeholder="Ej: LINEA BLANCA"></div>
+                    <div style="display: flex; gap: 10px; align-items: flex-end; padding-bottom: 15px;">
+                        <button class="btn-action bg-blue" onclick="guardarCampana()">GUARDAR</button>
+                        <button class="btn-action bg-gray" onclick="limpiarCampana()">LIMPIAR</button>
+                    </div>
+                </div>
+                <table><thead><tr><th>Nombre Campaña</th><th>Acciones</th></tr></thead><tbody id="lista-campanas"></tbody></table>
+            </section>
 
+            <section id="sec-1" class="card hidden">
+                <h2><i class="fas fa-users-cog"></i> Gestión de Usuarios</h2>
+                <div class="grid-inputs">
+                    <div class="input-group"><label>ID (Login)</label><input type="text" id="u-id"></div>
+                    <div class="input-group"><label>Nombre Completo</label><input type="text" id="u-nom"></div>
+                    <div class="input-group"><label>Contraseña</label><input type="text" id="u-pass"></div>
+                    <div class="input-group"><label>Rol</label><select id="u-rol"></select></div>
+                    <div class="input-group"><label>Campaña</label><select id="u-camp"></select></div>
+                    <div style="display: flex; gap: 10px; align-items: flex-end; padding-bottom: 15px;">
+                        <button class="btn-action bg-green" onclick="registrarUsuario()">GUARDAR</button>
+                        <button class="btn-action bg-gray" onclick="limpiarUsuario()">NUEVO</button>
+                    </div>
+                </div>
+                <table><thead><tr><th>ID</th><th>Nombre</th><th>Rol</th><th>Campaña</th><th>Estado</th><th>Acciones</th></tr></thead><tbody id="lista-usuarios"></tbody></table>
+            </section>
+
+            <section id="sec-2" class="card hidden">
+                <h2><i class="fas fa-cash-register"></i> Panel de Cobro</h2>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div class="card">
+                        <div class="input-group"><label>Cliente</label><input type="text" id="g-cliente" placeholder="Nombre del cliente"></div>
+                        <div class="input-group"><label>WhatsApp (8 dígitos)</label><input type="number" id="g-tel" placeholder="55554444"></div>
+                        <div class="input-group">
+                            <label>Servicio</label>
+                            <select id="g-tipo" onchange="calcularPrecio()">
+                                <option value="">Seleccione...</option>
+                                <option value="Diagnóstico Blanca">Diagnóstico Blanca (Q175)</option>
+                                <option value="Diagnóstico TV">Diagnóstico TV (Q150)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="input-group"><label>Monto Q</label><input type="number" id="g-monto"></div>
+                        <div class="input-group"><label>Link de Pago</label><input type="text" id="g-link" placeholder="https://link.pago"></div>
+                        <div style="display: flex; gap: 10px; margin-top: 20px;">
+                            <button class="btn-action bg-blue" onclick="copiarTexto()"><i class="fas fa-copy"></i> COPIAR</button>
+                            <button class="btn-action bg-green" onclick="enviarWhatsApp()"><i class="fab fa-whatsapp"></i> WHATSAPP</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
         </div>
     </div>
 
@@ -134,144 +162,156 @@
         const db = getFirestore(app);
         let currentUser = null;
 
-        window.lanzarPopUp = (msg, color = '#28a745') => {
+        const lanzarPopUp = (msg, color = '#28a745') => {
             const p = document.getElementById('popup-msg');
             p.innerText = msg; p.style.backgroundColor = color; p.style.display = 'block';
             setTimeout(() => p.style.display = 'none', 3000);
         };
 
-        // --- LÓGICA DE LOGIN ---
-        document.getElementById('btnEye').addEventListener('click', function() {
-            const pass = document.getElementById('pass');
-            if (pass.type === 'password') {
-                pass.type = 'text'; this.classList.replace('fa-eye', 'fa-eye-slash');
-            } else {
-                pass.type = 'password'; this.classList.replace('fa-eye-slash', 'fa-eye');
-            }
-        });
-
-        async function procesarLogin(usuarioIngresado, passIngresado, isAuto = false) {
-            const u = usuarioIngresado.trim().toLowerCase(); // No importa si escribe Admin o admin
-            const p = passIngresado;
-            const btn = document.getElementById('btnLogin');
-
-            if(!isAuto) { btn.disabled = true; btn.innerText = "VERIFICANDO..."; }
-
-            try {
-                const userSnap = await getDoc(doc(db, "Usuarios", u));
-                if (userSnap.exists() && userSnap.data().password === p) {
-                    const userData = userSnap.data();
-                    currentUser = u;
-
-                    if(document.getElementById('keepSession').checked) {
-                        localStorage.setItem('distelsa_u', u);
-                        localStorage.setItem('distelsa_p', p);
-                    }
-
-                    // Cargar Permisos desde Colección Roles
-                    const rolSnap = await getDoc(doc(db, "Roles", userData.rol));
-                    let permisos = rolSnap.exists() ? rolSnap.data().permisos : ["2", "3"];
-
-                    document.getElementById('displayUser').innerText = userData.nombre;
-                    document.getElementById('displayRol').innerText = userData.rol;
-                    document.getElementById('login-view').style.display = 'none';
-                    document.getElementById('app-view').style.display = 'block';
-
-                    configurarMenu(permisos);
-                    escucharRoles();
-                    escucharCampanas();
-
-                    await updateDoc(doc(db, "Usuarios", u), { enLinea: "SI" });
-                } else {
-                    if(!isAuto) lanzarPopUp("Usuario o contraseña incorrectos", "#e30613");
-                    localStorage.clear();
-                }
-            } catch (e) { lanzarPopUp("Error de conexión", "#e30613"); }
-            if(!isAuto) { btn.disabled = false; btn.innerText = "INGRESAR AL PORTAL"; }
-        }
-
-        document.getElementById('loginForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            procesarLogin(document.getElementById('user').value, document.getElementById('pass').value);
-        });
-
-        // --- MÓDULO 0: ROLES ---
-        function escucharRoles() {
-            onSnapshot(collection(db, "Roles"), (snap) => {
-                const tb = document.getElementById('tabla-roles');
-                tb.innerHTML = '';
-                snap.forEach(d => {
-                    const pStr = d.data().permisos ? d.data().permisos.join(", ") : "";
-                    tb.innerHTML += `<tr>
-                        <td><strong>${d.id}</strong></td>
-                        <td><input type="text" id="p-${d.id}" value="${pStr}" style="width:80%; padding:5px;"></td>
-                        <td><button class="btn-action bg-green" onclick="guardarRol('${d.id}')"><i class="fas fa-save"></i></button></td>
-                    </tr>`;
-                });
-            });
-        }
-        window.guardarRol = async (id) => {
-            const val = document.getElementById(`p-${id}`).value.split(",").map(x => x.trim()).filter(x => x !== "");
-            await setDoc(doc(db, "Roles", id), { permisos: val }, { merge: true });
-            lanzarPopUp("Permisos actualizados");
-        };
-
-        // --- MÓDULO 0.1: CAMPAÑAS ---
-        function escucharCampanas() {
-            onSnapshot(collection(db, "Campañas"), (snap) => {
-                const tb = document.getElementById('tabla-campanas');
-                tb.innerHTML = '';
-                snap.forEach(d => {
-                    tb.innerHTML += `<tr>
-                        <td>${d.id}</td>
-                        <td><button class="btn-action bg-red" onclick="borrarCampana('${d.id}')"><i class="fas fa-trash"></i></button></td>
-                    </tr>`;
-                });
-            });
-        }
-        window.crearCampana = async () => {
-            const n = document.getElementById('nueva-campana').value.trim();
-            if(!n) return;
-            await setDoc(doc(db, "Campañas", n), { nombre: n });
-            document.getElementById('nueva-campana').value = '';
-            lanzarPopUp("Campaña creada");
-        };
-        window.borrarCampana = async (id) => {
-            if(confirm("¿Eliminar campaña?")) await deleteDoc(doc(db, "Campañas", id));
-        };
-
-        // --- UTILIDADES ---
-        function configurarMenu(permisos) {
-            document.querySelectorAll('.nav-item').forEach(item => {
-                const id = item.getAttribute('data-id');
-                item.style.display = permisos.includes(id) ? 'flex' : 'none';
-            });
-            const visible = document.querySelector('.nav-item[style*="flex"]');
-            if(visible) visible.click();
-        }
-
-        window.verSeccion = (id) => {
+        window.verSeccion = (id, el) => {
             document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
             document.getElementById(id).classList.remove('hidden');
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            if(event) event.currentTarget.classList.add('active');
+            if(el) el.classList.add('active');
+        };
+
+        // --- ROLES ---
+        window.guardarRol = async () => {
+            const id = document.getElementById('rol-nombre').value.trim();
+            const raw = document.getElementById('rol-permisos').value;
+            if(id && raw){
+                const perms = raw.split(",").map(p => p.trim());
+                await setDoc(doc(db, "Roles", id), { permisos: perms });
+                lanzarPopUp("✅ Rol guardado");
+                limpiarRol();
+            }
+        };
+        window.limpiarRol = () => {
+            document.getElementById('rol-nombre').value = ""; document.getElementById('rol-permisos').value = "";
+            document.getElementById('rol-nombre').disabled = false;
+        };
+        window.editarRol = (id, perms) => {
+            document.getElementById('rol-nombre').value = id;
+            document.getElementById('rol-nombre').disabled = true;
+            document.getElementById('rol-permisos').value = perms;
+            lanzarPopUp("Modificando Rol: " + id, "#003366");
+        };
+
+        // --- CAMPAÑAS ---
+        window.guardarCampana = async () => {
+            const n = document.getElementById('camp-nombre').value.toUpperCase().trim();
+            if(n){
+                await setDoc(doc(db, "Campañas", n), { nombre: n });
+                lanzarPopUp("✅ Campaña guardada");
+                document.getElementById('camp-nombre').value = "";
+            }
+        };
+        window.limpiarCampana = () => { document.getElementById('camp-nombre').value = ""; };
+
+        // --- USUARIOS ---
+        window.registrarUsuario = async () => {
+            const id = document.getElementById('u-id').value.toLowerCase().trim();
+            const nom = document.getElementById('u-nom').value.trim();
+            const pass = document.getElementById('u-pass').value.trim();
+            if(id && nom && pass){
+                await setDoc(doc(db, "Usuarios", id), {
+                    nombre: nom, password: pass,
+                    rol: document.getElementById('u-rol').value,
+                    campaña: document.getElementById('u-camp').value,
+                    enLinea: "NO"
+                });
+                lanzarPopUp("✅ Usuario guardado");
+                limpiarUsuario();
+            }
+        };
+        window.limpiarUsuario = () => {
+            document.getElementById('u-id').value = ""; document.getElementById('u-nom').value = "";
+            document.getElementById('u-pass').value = ""; document.getElementById('u-id').disabled = false;
+        };
+        window.editarUsuario = (id, nom, pass, rol, camp) => {
+            document.getElementById('u-id').value = id; document.getElementById('u-id').disabled = true;
+            document.getElementById('u-nom').value = nom; document.getElementById('u-pass').value = pass;
+            document.getElementById('u-rol').value = rol; document.getElementById('u-camp').value = camp;
+            lanzarPopUp("Modificando: " + id, "#003366");
+        };
+
+        window.borrarDoc = async (c, id) => { if(confirm("¿Seguro que deseas eliminar '" + id + "'?")) await deleteDoc(doc(db, c, id)); };
+
+        // --- REAL TIME ---
+        function iniciarRealTime() {
+            onSnapshot(collection(db, "Roles"), (s) => {
+                const list = document.getElementById('lista-roles'), sel = document.getElementById('u-rol');
+                list.innerHTML = ""; sel.innerHTML = "";
+                s.forEach(d => {
+                    const p = d.data().permisos.join(",");
+                    list.innerHTML += `<tr><td><b>${d.id}</b></td><td>${p}</td>
+                        <td>
+                            <button class="btn-mini bg-blue" onclick="editarRol('${d.id}','${p}')"><i class="fas fa-edit"></i></button>
+                            <button class="btn-mini bg-red" onclick="borrarDoc('Roles','${d.id}')"><i class="fas fa-trash"></i></button>
+                        </td></tr>`;
+                    sel.innerHTML += `<option value="${d.id}">${d.id}</option>`;
+                });
+            });
+            onSnapshot(collection(db, "Campañas"), (s) => {
+                const list = document.getElementById('lista-campanas'), sel = document.getElementById('u-camp');
+                list.innerHTML = ""; sel.innerHTML = "";
+                s.forEach(d => {
+                    list.innerHTML += `<tr><td><b>${d.id}</b></td>
+                        <td><button class="btn-mini bg-red" onclick="borrarDoc('Campañas','${d.id}')"><i class="fas fa-trash"></i></button></td></tr>`;
+                    sel.innerHTML += `<option value="${d.id}">${d.id}</option>`;
+                });
+            });
+            onSnapshot(collection(db, "Usuarios"), (s) => {
+                const list = document.getElementById('lista-usuarios'); list.innerHTML = "";
+                s.forEach(d => {
+                    const dt = d.data();
+                    const st = dt.enLinea === "SI" ? "🟢" : "⚪";
+                    list.innerHTML += `<tr><td>${d.id}</td><td>${dt.nombre}</td><td>${dt.rol}</td><td>${dt.campaña}</td><td>${st}</td>
+                        <td>
+                            <button class="btn-mini bg-blue" onclick="editarUsuario('${d.id}','${dt.nombre}','${dt.password}','${dt.rol}','${dt.campaña}')"><i class="fas fa-edit"></i></button>
+                            <button class="btn-mini bg-red" onclick="borrarDoc('Usuarios','${d.id}')"><i class="fas fa-trash"></i></button>
+                        </td></tr>`;
+                });
+            });
+        }
+
+        // --- LOGIN ---
+        async function procesarLogin(userId, password, isAuto = false) {
+            const u = userId.trim().toLowerCase();
+            if(!isAuto) document.getElementById('btnLogin').innerText = "VERIFICANDO...";
+            try {
+                const userDoc = await getDoc(doc(db, "Usuarios", u));
+                if (userDoc.exists() && String(userDoc.data().password) === password.trim()) {
+                    currentUser = u;
+                    localStorage.setItem('distelsa_u', u); localStorage.setItem('distelsa_p', password);
+                    const rolDoc = await getDoc(doc(db, "Roles", userDoc.data().rol));
+                    const perms = rolDoc.exists() ? rolDoc.data().permisos : ["2"];
+                    document.getElementById('displayUser').innerText = userDoc.data().nombre;
+                    document.getElementById('displayCampana').innerText = userDoc.data().campaña || "ST";
+                    document.getElementById('login-view').style.display = 'none';
+                    document.getElementById('app-view').style.display = 'block';
+                    configurarMenu(perms); iniciarRealTime();
+                    await updateDoc(doc(db, "Usuarios", u), { enLinea: "SI" });
+                } else if(!isAuto) { lanzarPopUp("❌ Datos incorrectos", "#e30613"); }
+            } catch (e) { console.error(e); }
+            if(!isAuto) document.getElementById('btnLogin').innerText = "ENTRAR";
+        }
+
+        const configurarMenu = (p) => {
+            document.querySelectorAll('.nav-item').forEach(it => {
+                it.style.display = (p.includes(it.dataset.id) || p.includes("ALL")) ? 'flex' : 'none';
+            });
+            const first = document.querySelector('.nav-item[style*="flex"]');
+            if(first) first.click();
         };
 
         window.cerrarSesion = async () => {
             if(currentUser) await updateDoc(doc(db, "Usuarios", currentUser), { enLinea: "NO" });
-            localStorage.clear();
-            location.reload();
+            localStorage.clear(); location.reload();
         };
 
-        // AUTO LOGIN
-        window.addEventListener('DOMContentLoaded', () => {
-            const u = localStorage.getItem('distelsa_u');
-            const p = localStorage.getItem('distelsa_p');
-            if(u && p) {
-                document.getElementById('keepSession').checked = true;
-                procesarLogin(u, p, true);
-            }
-        });
-    </script>
-</body>
-</html>
+        // --- PANEL DE COBRO ---
+        window.calcularPrecio = () => {
+            const t = document.getElementById('g-tipo').value;
+            const m = document.getElementById('g-monto');
+            m.value = (t === "Diagnóstico Blanca") ? 175 : (t === "Diagnóstico TV") 
